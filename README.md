@@ -1,0 +1,2 @@
+# Baccalaureus
+Bachelor's thesis
