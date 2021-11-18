@@ -81,11 +81,20 @@ Integer viverra varius mauris, at cursus ante maximus ac. Maecenas commodo ullam
 
 % Introduction chapter
 \chapter{Introduzione}
-Negli ultimi anni il focus si sta spostando sempre più sullo sviluppo di sistemi distribuiti e, di conseguenza, su tecnologie che facilitino e semplifichino l'utilizzo di quest'ultimi. Un esempio lampante è il linguaggio di programmazione Go (golang) che è stato progettato con particolare riguardo verso la concorrenza e una gestione più semplificata della stessa. Il linguaggio infatti fornisce dei tipi primitivi e delle operazioni sugli stessi che permettono all'utente finale di gestire processi concorrenti in maniera particolarmente semplificata. Parallelamente a questo rinnovato interesse verso la programmazione concorrente e distribuita nascono esigenze di formalizzare dei modelli teorici che possano aiutare nella progettazione, gestione e mantenimento degli stessi. Tra questi strumenti figurano le Choreography (e i rispettivi automi), le quali facilitano la rappresentazione e descrizione di sistemi distruibiti o concorrenti che comunicano tra loro. Un aspetto distintivo delle Choreography è la coesistenza di due diverse view:
+Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
+% ? Keep this paragraph
+Prendendo per esempio Go, talvolta chiamato anche golang, un linguaggio di programmazione creato nel 2009 da Robert Griesemer, Rob Pike e Ken Thompson, che negli anni successivi prende una forte trazione, fino a essere supportato da Google, sopratutto nel settore del web-development e system programming. Alcuni dei fattori da successo sono una compilazione ed esecuzione veloce, una grammatica semplice e snella e un approccio \emph{built-in} alla concorrenza con tipi e primitive fornite direttamente dalla standard library. Quest'ultima infatti fornisce un solo tipo di dato \emph{chan} che può essere \emph{buffered} o \emph{unbuffered}, la comunicazione che avviene su questi canali è rispettivamente asincrona e sincrona.\\
+Parallelamente a questo rinnovato interesse verso la programmazione concorrente e distribuita nasce l'esigenza di formalizzare dei modelli teorici che possano supportare la progettazione, gestione e manutenzione di sistemi concorrenti. Uno di questi modelli sono le \emph{Choreographies}, le quali facilitano la rappresentazione e descrizione di sistemi concorrenti in cui i singoli \emph{attori} comunicano tra di loro. Un aspetto distintivo delle Choreographies è la coesistenza di due \emph{view}:
 \begin{itemize}
-    \item La vista \textbf{globale}, la quale descrive la coordinazione necessaria tra i vari componenti di un sistema
-    \item La vista \textbf{locale}, la quale invece specifica il comportamento del singolo componento \emph{in isolamento}
+    \item Vista \textbf{globale}: descrive la coordinazione necessaria tra i componenti di un sistema
+    \item Vista \textbf{locale}: descrive il comportamento di un singolo componente \emph{in isolamento}
 \end{itemize}
-L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo da più chiaro e immediato.
+% ? Add the parts about Choreography Automatas properties and how them can help making assumption on the Go program
+L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo grafico, più chiaro e immediato rispetto alla lettura del codice sorgente.
+
+
+% Preliminaries and Notation
+\chapter{Nozioni preliminari e notazione}
+TODO
 
 \end{document}
