@@ -18,9 +18,9 @@
     \clearpage            % finish off the page
 }
 
-% ! Document start 
+% Document start 
 \begin{document}
-% ! Title page
+% Title page
 \begin{titlepage}
     \begin{center}
         {{\Large{\textsc{Alma Mater Studiorum $\cdot$ Universit\`a di
@@ -57,18 +57,17 @@
     \end{center}
 \end{titlepage}
 
-% ! Dedication page
+% Dedication page
 \begin{dedication}
     Agli amici che ho conosciuto e che\\
     mi hanno accompagnato in questo viaggio
 \end{dedication}
 
-% ! Auto-generated table of contents
+% Auto-generated table of contents
 \tableofcontents
 
-% ! Template for future uses
+% Template for future uses
 \chapter{Template}
-\par
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
@@ -80,8 +79,13 @@ Vivamus eu mattis metus, vitae venenatis ante. In dictum augue pulvinar tellus r
 Integer viverra varius mauris, at cursus ante maximus ac. Maecenas commodo ullamcorper ex, eget congue lorem cursus eget. Donec consequat eros purus, ac luctus felis congue ut. Proin ut urna malesuada, condimentum libero sed, pretium ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel erat faucibus, egestas ipsum vitae, mattis mauris. Etiam vestibulum, nunc non ornare scelerisque, urna erat molestie lorem, et dapibus nisl purus nec ipsum. Phasellus ac tortor vitae lorem fringilla tristique vitae vel felis. In quis purus urna. Vestibulum id congue enim. Integer a convallis justo, a vehicula felis. Maecenas et tincidunt mi. Morbi et enim dignissim, consectetur diam vitae, iaculis diam. In hac habitasse platea dictumst.\\
 
 
-% ! Introduction chapter
+% Introduction chapter
 \chapter{Introduzione}
-
+Negli ultimi anni il focus si sta spostando sempre più sullo sviluppo di sistemi distribuiti e, di conseguenza, su tecnologie che facilitino e semplifichino l'utilizzo di quest'ultimi. Un esempio lampante è il linguaggio di programmazione Go (golang) che è stato progettato con particolare riguardo verso la concorrenza e una gestione più semplificata della stessa. Il linguaggio infatti fornisce dei tipi primitivi e delle operazioni sugli stessi che permettono all'utente finale di gestire processi concorrenti in maniera particolarmente semplificata. Parallelamente a questo rinnovato interesse verso la programmazione concorrente e distribuita nascono esigenze di formalizzare dei modelli teorici che possano aiutare nella progettazione, gestione e mantenimento degli stessi. Tra questi strumenti figurano le Choreography (e i rispettivi automi), le quali facilitano la rappresentazione e descrizione di sistemi distruibiti o concorrenti che comunicano tra loro. Un aspetto distintivo delle Choreography è la coesistenza di due diverse view:
+\begin{itemize}
+    \item La vista \textbf{globale}, la quale descrive la coordinazione necessaria tra i vari componenti di un sistema
+    \item La vista \textbf{locale}, la quale invece specifica il comportamento del singolo componento \emph{in isolamento}
+\end{itemize}
+L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo da più chiaro e immediato.
 
 \end{document}
