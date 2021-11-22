@@ -1,6 +1,6 @@
 % Setup and import
 \documentclass[12pt,a4paper]{report}
-\usepackage[italian]{babel}
+\usepackage[english, italian]{babel}
 \usepackage{newlfont}
 \textwidth=450pt\oddsidemargin=0pt
 
@@ -18,8 +18,12 @@
     \clearpage            % finish off the page
 }
 
+
 % Document start 
 \begin{document}
+\selectlanguage{italian}
+
+
 % Title page
 \begin{titlepage}
     \begin{center}
@@ -31,11 +35,11 @@
     \end{center}
     \vspace{15mm}
     \begin{center}
-        {\LARGE{\bf TITOLO}}\\
+        {\LARGE{\bf Choreia: A Static Analyzer }}\\
         \vspace{3mm}
-        {\LARGE{\bf DELLA}}\\
+        {\LARGE{\bf to generate Choreography Automata}}\\
         \vspace{3mm}
-        {\LARGE{\bf TESI}}\\
+        {\LARGE{\bf from Go source code}}\\
     \end{center}
     \vspace{40mm}
     \par
@@ -52,10 +56,11 @@
     \end{minipage}
     \vspace{20mm}
     \begin{center}
-        {\large{\bf Sessione III\\ %TODO: check graduation session number
+        {\large{\bf Sessione III\\ % TODO: check graduation session number
                 Anno Accademico 2020/2021 }}
     \end{center}
 \end{titlepage}
+
 
 % Dedication page
 \begin{dedication}
@@ -63,24 +68,22 @@
     mi hanno accompagnato in questo viaggio
 \end{dedication}
 
+
+% Abstract
+\selectlanguage{english}
+\begin{abstract}
+    Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la "coreografia" dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti e loro Choreographies \emph{locali} è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
+    Un ulteriore vantaggio delle Choreographies è che, se rispettano alcune proprietà ben definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks e Race Conditions.
+    Esistono vari modelli formali di Choreographies, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
+    In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automata del sisitema concorrente in maniera bottom-up.
+\end{abstract}
+\selectlanguage{italian}
+
 % Auto-generated table of contents
 \tableofcontents
 
-% Template for future uses
-\chapter{Template}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
-
-\section{Section}
-Vivamus eu mattis metus, vitae venenatis ante. In dictum augue pulvinar tellus rutrum molestie. Pellentesque augue tellus, bibendum in scelerisque sed, porttitor vel ipsum. Nunc at molestie quam, et lobortis eros. Ut congue, metus vel sodales varius, nibh dui vulputate dolor, nec cursus lectus nisi in ante. Etiam lacinia mi et finibus cursus. Nam blandit mi eget pharetra congue. Etiam ac semper lacus. Suspendisse sed sagittis arcu. Sed sit amet fringilla urna. Praesent urna turpis, imperdiet at congue nec, molestie quis lectus. Ut condimentum neque ut nisi scelerisque aliquet.\\
-
-\subsection{Subsection}
-Integer viverra varius mauris, at cursus ante maximus ac. Maecenas commodo ullamcorper ex, eget congue lorem cursus eget. Donec consequat eros purus, ac luctus felis congue ut. Proin ut urna malesuada, condimentum libero sed, pretium ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel erat faucibus, egestas ipsum vitae, mattis mauris. Etiam vestibulum, nunc non ornare scelerisque, urna erat molestie lorem, et dapibus nisl purus nec ipsum. Phasellus ac tortor vitae lorem fringilla tristique vitae vel felis. In quis purus urna. Vestibulum id congue enim. Integer a convallis justo, a vehicula felis. Maecenas et tincidunt mi. Morbi et enim dignissim, consectetur diam vitae, iaculis diam. In hac habitasse platea dictumst.\\
-
-
 % Introduction chapter
-\chapter{Introduzione}
+\chapter{Introduzione} % TODO Should be improved
 Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
 % ? Keep this paragraph
 Prendendo per esempio Go, talvolta chiamato anche golang, un linguaggio di programmazione creato nel 2009 da Robert Griesemer, Rob Pike e Ken Thompson, che negli anni successivi prende una forte trazione, fino a essere supportato da Google, sopratutto nel settore del web-development e system programming. Alcuni dei fattori da successo sono una compilazione ed esecuzione veloce, una grammatica semplice e snella e un approccio \emph{built-in} alla concorrenza con tipi e primitive fornite direttamente dalla standard library. Quest'ultima infatti fornisce un solo tipo di dato \emph{chan} che può essere \emph{buffered} o \emph{unbuffered}, la comunicazione che avviene su questi canali è rispettivamente asincrona e sincrona.\\
@@ -93,8 +96,43 @@ Parallelamente a questo rinnovato interesse verso la programmazione concorrente 
 L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo grafico, più chiaro e immediato rispetto alla lettura del codice sorgente.
 
 
-% Preliminaries and Notation
+% Preliminaries and Notation chapter
 \chapter{Nozioni preliminari e notazione}
 TODO
+
+% Changes and adaptation chapter
+\chapter{Adattazioni e modifiche}
+TODO
+
+
+% Technology stack chapter
+\chapter{Tecnologie utilizzate}
+TODO
+
+
+% Tool description chapter
+\chapter{Descrizione del tool}
+TODO
+
+
+% Conclusion and future works chapter
+\chapter{Conclusioni e lavori futuri}
+TODO
+
+
+% Template for future uses
+\chapter{Template} % ! Will be removed later on...
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
+
+\section{Section}
+Vivamus eu mattis metus, vitae venenatis ante. In dictum augue pulvinar tellus rutrum molestie. Pellentesque augue tellus, bibendum in scelerisque sed, porttitor vel ipsum. Nunc at molestie quam, et lobortis eros. Ut congue, metus vel sodales varius, nibh dui vulputate dolor, nec cursus lectus nisi in ante. Etiam lacinia mi et finibus cursus. Nam blandit mi eget pharetra congue. Etiam ac semper lacus. Suspendisse sed sagittis arcu. Sed sit amet fringilla urna. Praesent urna turpis, imperdiet at congue nec, molestie quis lectus. Ut condimentum neque ut nisi scelerisque aliquet.\\
+
+\subsection{Subsection}
+Integer viverra varius mauris, at cursus ante maximus ac. Maecenas commodo ullamcorper ex, eget congue lorem cursus eget. Donec consequat eros purus, ac luctus felis congue ut. Proin ut urna malesuada, condimentum libero sed, pretium ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel erat faucibus, egestas ipsum vitae, mattis mauris. Etiam vestibulum, nunc non ornare scelerisque, urna erat molestie lorem, et dapibus nisl purus nec ipsum. Phasellus ac tortor vitae lorem fringilla tristique vitae vel felis. In quis purus urna. Vestibulum id congue enim. Integer a convallis justo, a vehicula felis. Maecenas et tincidunt mi. Morbi et enim dignissim, consectetur diam vitae, iaculis diam. In hac habitasse platea dictumst.\\
+
+
+
 
 \end{document}
