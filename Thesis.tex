@@ -4,6 +4,7 @@
 \usepackage{newlfont}
 \textwidth=450pt\oddsidemargin=0pt
 
+% Dedication template
 \newenvironment{dedication}
 {
     \clearpage            % we want a new page
@@ -18,10 +19,11 @@
     \clearpage            % finish off the page
 }
 
+% Definition init
+\newtheorem{definition}{Definition}
 
 % Document start 
 \begin{document}
-\selectlanguage{italian}
 
 
 % Title page
@@ -70,14 +72,12 @@
 
 
 % Abstract
-\selectlanguage{english}
 \begin{abstract}
     Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la "coreografia" dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti e loro Choreographies \emph{locali} è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
     Un ulteriore vantaggio delle Choreographies è che, se rispettano alcune proprietà ben definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks e Race Conditions.
     Esistono vari modelli formali di Choreographies, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
     In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automata del sisitema concorrente in maniera bottom-up.
 \end{abstract}
-\selectlanguage{italian}
 
 % Auto-generated table of contents
 \tableofcontents
@@ -98,7 +98,33 @@ L'obiettivo di questa tesi è quello di progettare e implementare un tool che pe
 
 % Preliminaries and Notation chapter
 \chapter{Nozioni preliminari e notazione}
-TODO
+Prima di introdurre le Choreographies e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune trasformazioni possibili sullo stessso.
+Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
+Alcune applicazioni pratiche di questi automi possono essere regular expression (RegEx o RegExp), lexer e parser solo per citarne alcuni ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo della concorrenza.
+
+\begin{definition}[Finite State Automata]
+    Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s\textsubscript0, \rightarrow, \mathcal{L} \rangle$ dove:
+    % TODO complete itemize
+    %\begin{itemize}
+    %    \item $\matchcal{S}$ è un insieme finito di stati
+    %    \item $s\textsubscript0 \in \mathcal{S}$ è lo stato iniziale dell'automa
+    %    \item \rightarrow %(TODO add "function signature") è la funzione di transizione
+    %\end{itemize}
+\end{definition}
+
+% TODO change s € S to correct notation
+Tipicamente, oltre a quanto definito sopra, è solito trovare anche un insieme di stati di terminazione (o accettazione), detto F. Visto che in questo caso detto insieme non è stato definito assumiamo che ogni s € S sia uno stato di accettazione. Inoltre va notato che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}) e distinto dalla nozione di DFA (\emph{Deterministic Finite Automata}).
+
+% TODO add DFA definition
+\begin{definition}[Deterministic Finite Automata]
+    TODO add definition
+\end{definition}
+
+
+% TODO 
+Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono l'utilizzo di $\epsilon$ transizioni e l'utilizzo più transizioni \emph{uscenti} dallo stesso stato con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o, al contrario, di una migliore chiarezza (i DFA sono più immediati rispetto alla loro controparte).
+
+
 
 % Changes and adaptation chapter
 \chapter{Adattazioni e modifiche}
