@@ -4,6 +4,7 @@
 \usepackage{newlfont}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{tikz}
 \textwidth=450pt\oddsidemargin=0pt
 
 % Dedication template
@@ -29,6 +30,9 @@
 % ForEach construct definition
 \algnewcommand\algorithmicforeach{\textbf{for each}}
 \algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+
+% Tikz submodule import
+\usetikzlibrary{automata, positioning, arrows}
 
 % ! To import subfiles as section
 % \subfile{sections/section2} The relative path to file
@@ -111,9 +115,11 @@ L'obiettivo di questa tesi è quello di progettare e implementare un tool che pe
 \chapter{Nozioni preliminari e notazione}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
-Prima di introdurre le Choreographies e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune trasformazioni possibili sullo stessso.
+Prima di introdurre le Choreographies e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune trasformazioni possibili sugli stesssi.
 Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
 Alcune applicazioni pratiche di questi automi possono essere regular expression (RegEx o RegExp), lexer e parser solo per citarne alcuni ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo della concorrenza.
+
+Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi ai quali corrispondo altrettante classi di inguaggio, anzi gli automi a stati finiti sono tra i più semplici.
 
 \begin{definition}[Finite State Automata]
     Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s\textsubscript0, \mathcal{L}, \delta \rangle$ dove:
@@ -151,27 +157,92 @@ In ogni caso è sempre possibile, dato un NFA qualunque, un DFA ad esso equivale
     Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}(\delta(x, \alpha))$
 \end{definition}
 
-L'algoritmo che permette di ricavare un DFA ad un dato NFA è il seguente:
+\newpage
+L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
-    \caption{Subset Construction Algorithm}\label{alg:cap}
+    \caption{Costruzione per sottoinsiemi}\label{alg:cap}
     \begin{algorithmic}
         \State $x \gets$ $\epsilon$-clos($s\textsubscript0$) \Comment{Lo stato iniziale del DFA}
         \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
-        \While{$\exists$ t $\in \mathcal{T}$ non marcato} 
-            \State marca(t)    
-            \ForEach {$\alpha \in \mathcal{L} $}
-                \State $r \gets \epsilon$-clos(mossa(t, $\alpha$))
-                \If {$r \notin \mathcal{T}$} 
-                    \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
-                \EndIf
-                \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ da output r}
-            \EndFor
+        \While{$\exists$ t $\in \mathcal{T}$ non marcato}
+        \State marca(t)
+        \ForEach {$\alpha \in \mathcal{L} $}
+        \State $r \gets \epsilon$-clos(mossa(t, $\alpha$))
+        \If {$r \notin \mathcal{T}$}
+        \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
+        \EndIf
+        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ da output r}
+        \EndFor
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
+si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente mentre chiaramente $\mathcal{L}$ rimarrà invariato. Quindi il DFA ottenuto in uoutput sarà D = $\langle \mathcal{T}, x, \mathcal{L}, \delta \rangle$.
 
+\subsection{Esempi}
+Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti mostrati in questa sezione. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',node distance=2cm,scale=1, transform shape]
+        \node[state,initial] (q0) {$q_0$};
+        \node[state] (q1) [right of=q0] {$q_1$};
+        \node[state] (q2) [above right of=q1] {$q_2$};
+        \node[state] (q3) [right of=q2] {$q_3$};
+        \node[state] (q4) [below right of=q1] {$q_4$};
+        \node[state] (q5) [right of=q4] {$q_5$};
+        \node[state] (q6) [above right of=q5] {$q_6$};
+        \node[state] (q7) [right of=q6] {$q_7$};
+        \node[state] (q8) [right of=q7] {$q_8$};
+        \node[state, accepting] (q9) [right of=q8] {$q_9$};
+        \draw
+        (q0) edge[above] node{$\epsilon$} (q1)
+        (q0) edge[bend left=60, above] node{$\epsilon$} (q7)
+        (q1) edge[above] node{$\epsilon$} (q2)
+        (q2) edge[above] node{$a$} (q3)
+        (q3) edge[above] node{$\epsilon$} (q6)
+        (q1) edge[above] node{$\epsilon$} (q4)
+        (q4) edge[above] node{$b$} (q5)
+        (q5) edge[above] node{$\epsilon$} (q6)
+        (q6) edge[above] node{$\epsilon$} (q7)
+        (q6) edge[above] node{$\epsilon$} (q1)
+        (q7) edge[above] node{$b$} (q8)
+        (q8) edge[above] node{$a$} (q9);
+    \end{tikzpicture}
+    \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
+    \label{fig:NFA}
+\end{figure}
 
-
+Questo è un possibile NFA in grado di riconoscere questo linguaggio, esistono infiniti NFA diversi tra loro in grado di riconoscere questo linguaggio. Vediamo ora invece un DFA D equivalente ad N calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
+        \node[state,initial] (A) {$A$};
+        \node[state] (B) [above right of=A] {$B$};
+        \node[state] (C) [right of=A] {$C$};
+        \node[state, accepting] (D) [above right of=C] {$D$};
+        \draw
+        (A) edge[above] node{$a$} (B)
+        (A) edge[above] node{$b$} (C)
+        (B) edge[loop above] node{$a$} (B)
+        (B) edge[above] node{$b$} (C)
+        (C) edge[loop below] node{$b$} (C)
+        (C) edge[bend right, above] node{$a$} (D)
+        (D) edge[above] node{$a$} (B)
+        (D) edge[bend right,above] node{$b$} (C);
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        \node (NFA to DFA) [shape=rectangle,draw] {
+            \begin{tabular}{c c}
+                Stati NFA           & Stati DFA \\
+                \{ 0,1,2,4,7 \}     & A         \\
+                \{ 1,2,3,4,6,7 \}   & B         \\
+                \{ 1,2,4,5,6,7,8 \} & C         \\
+                \{ 1,2,3,4,6,7,9 \} & D
+            \end{tabular}
+        };
+    \end{tikzpicture}
+    \caption{Il DFA equivalente a quello in figura 2.1}
+    \label{fig:DFA}
+\end{figure}
 % Changes and adaptation chapter
 \chapter{Adattazioni e modifiche}
 TODO
@@ -190,21 +261,6 @@ TODO
 % Conclusion and future works chapter
 \chapter{Conclusioni e lavori futuri}
 TODO
-
-
-% Template for future uses
-\chapter{Template} % ! Will be removed later on...
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis fringilla augue, cursus feugiat neque. Cras varius tortor ut cursus molestie. Quisque odio felis, sodales a tincidunt a, auctor vestibulum velit. Pellentesque non aliquam elit, vitae dictum augue. Suspendisse vulputate nec ligula et gravida. Etiam dui ligula, malesuada quis massa eget, feugiat rhoncus eros. Aenean at felis eu arcu sagittis molestie. Suspendisse dui elit, consectetur et porttitor quis, aliquam vel enim. Sed id justo sem. Nunc pretium, est non laoreet faucibus, sapien dolor laoreet diam, efficitur consequat justo urna sed ex. Nam blandit quam enim, ac varius purus vestibulum lacinia. Integer dignissim auctor ligula ac pharetra. Cras in urna ac enim consequat euismod in a nisi. Pellentesque imperdiet tellus magna, id sollicitudin risus pulvinar eu. Proin est libero, dictum non suscipit malesuada, mollis sit amet eros.\\
-
-\section{Section}
-Vivamus eu mattis metus, vitae venenatis ante. In dictum augue pulvinar tellus rutrum molestie. Pellentesque augue tellus, bibendum in scelerisque sed, porttitor vel ipsum. Nunc at molestie quam, et lobortis eros. Ut congue, metus vel sodales varius, nibh dui vulputate dolor, nec cursus lectus nisi in ante. Etiam lacinia mi et finibus cursus. Nam blandit mi eget pharetra congue. Etiam ac semper lacus. Suspendisse sed sagittis arcu. Sed sit amet fringilla urna. Praesent urna turpis, imperdiet at congue nec, molestie quis lectus. Ut condimentum neque ut nisi scelerisque aliquet.\\
-
-\subsection{Subsection}
-Integer viverra varius mauris, at cursus ante maximus ac. Maecenas commodo ullamcorper ex, eget congue lorem cursus eget. Donec consequat eros purus, ac luctus felis congue ut. Proin ut urna malesuada, condimentum libero sed, pretium ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel erat faucibus, egestas ipsum vitae, mattis mauris. Etiam vestibulum, nunc non ornare scelerisque, urna erat molestie lorem, et dapibus nisl purus nec ipsum. Phasellus ac tortor vitae lorem fringilla tristique vitae vel felis. In quis purus urna. Vestibulum id congue enim. Integer a convallis justo, a vehicula felis. Maecenas et tincidunt mi. Morbi et enim dignissim, consectetur diam vitae, iaculis diam. In hac habitasse platea dictumst.\\
-
-
 
 
 \end{document}
