@@ -122,10 +122,10 @@ Alcune applicazioni pratiche di questi automi possono essere regular expression 
 Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi ai quali corrispondo altrettante classi di inguaggio, anzi gli automi a stati finiti sono tra i più semplici.
 
 \begin{definition}[Finite State Automata]
-    Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s\textsubscript0, \mathcal{L}, \delta \rangle$ dove:
+    Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ dove:
     \begin{itemize}
         \item $\mathcal{S}$ è un insieme finito di stati
-        \item $s\textsubscript0 \in \mathcal{S}$ è lo stato iniziale dell'automa
+        \item $s_0 \in \mathcal{S}$ è lo stato iniziale dell'automa
         \item $\mathcal{L}$ è l'alfabeto finito, talvolta detto anche insieme di label ($\epsilon \notin \mathcal{L}$)
         \item $\delta \subseteq \mathcal{S} \times (L \cup \{\epsilon\}) \times \mathcal{S}$ è la funzione di transizione ($\epsilon$ denota la stringa vuota)
     \end{itemize}
@@ -134,7 +134,7 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono 
 Tipicamente, oltre a quanto definito sopra, è solito trovare anche un insieme di stati di terminazione (o accettazione), detto $\mathcal{F}$. Visto che in questo caso detto insieme non è stato definito assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione. Inoltre va notato che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}) e distinto dalla nozione di DFA (\emph{Deterministic Finite Automata}).
 
 \begin{definition}[Deterministic Finite Automata]
-    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s\textsubscript0, \mathcal{L}, \delta \rangle$ con $\delta \subseteq \mathcal{S} \times L \times \mathcal{S}$
+    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ con $\delta \subseteq \mathcal{S} \times L \times \mathcal{S}$
 \end{definition}
 
 Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono l'utilizzo di $\epsilon$ transizioni e l'utilizzo più transizioni \emph{uscenti} dallo stesso stato con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o, al contrario, di una migliore chiarezza (i DFA sono più immediati rispetto alla loro controparte).
@@ -142,7 +142,7 @@ Le varianti deterministiche si distinguono dalle loro controparti non determinis
 In ogni caso è sempre possibile, dato un NFA qualunque, un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure} e della funione \emph{mossa} che andiamo a definire di seguito:
 
 \begin{definition}[$\epsilon$ closure]
-    Fissato un NFA N = $\langle \mathcal{S}, s\textsubscript0, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s) il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
+    Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s) il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
     \begin{itemize}
         \item $s \in \epsilon$-clos(s)
         \item se x $\in \epsilon$-clos(s) allora $\delta(x, \epsilon) \subseteq \epsilon$-clos(s)
@@ -162,7 +162,7 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
     \caption{Costruzione per sottoinsiemi}\label{alg:cap}
     \begin{algorithmic}
-        \State $x \gets$ $\epsilon$-clos($s\textsubscript0$) \Comment{Lo stato iniziale del DFA}
+        \State $x \gets$ $\epsilon$-clos($s_0$) \Comment{Lo stato iniziale del DFA}
         \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
         \While{$\exists$ t $\in \mathcal{T}$ non marcato}
         \State marca(t)
@@ -246,6 +246,46 @@ Questo è un possibile NFA in grado di riconoscere questo linguaggio, esistono i
 \end{figure}
 
 \section{Choreography Automata}
+Passiamo ora alla definizione dei \emph{Choreography Automata} (CA) iniziamo diversificando la nozione di \emph{Choreographies} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.
+
+Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{view} possibili:
+\begin{itemize}
+    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} (siano essi processi, programmi o routine) "as a whole" specificando anche come interagiscono tra loro
+    \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri
+\end{itemize}
+
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici e immediati, permettono di sfruttare in maniera molto conveniente i risultati e le nozioni desccritti precedentemente. I Choreography Automata sono dunque dei \emph{casi particolari} di autmi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.
+
+Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
+
+\newpage
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
+        \node[state,initial] (q0) {$q_0$};
+        \node[state] (q1) [right of=q0] {$q_1$};
+        \node[state] (q2) [right of=q1] {$q_2$};
+        \draw
+        (q0) edge[above] node{$A \rightarrow B: tic$} (q1)
+        (q1) edge[below] node{$B \rightarrow C: count$} (q2)
+        (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
+    \end{tikzpicture}
+    \caption{Un esempio di Choreogaphy Automata}
+    \label{fig:Example CA}
+\end{figure}
+In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
+
+\begin{definition}[Choreography Automata]
+    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label $\mathcal{L}_{int} = \{ A \rightarrow B : m | A \neq B \in \mathcal{P}, m \in \mathcal{M} \}$ dove:
+    \begin{itemize}
+        \item $\mathcal{P}$ è l'insieme dei partecipanti (per esempio A, B, ecc)
+        \item $\mathcal{M}$ è l'insieme dei messaggi che possono essere scambiati (m, n, ecc)
+    \end{itemize}
+\end{definition}
+\begin{remark}
+    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibie, come vedremo anche più avanti in questo lavoro, ma si tende ad evitare per avere delle composizioni tra automi piu corrette. 
+\end{remark}
+
 % Changes and adaptation chapter
 \chapter{Adattazioni e modifiche}
 TODO
