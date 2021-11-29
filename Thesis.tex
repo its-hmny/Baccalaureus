@@ -88,8 +88,8 @@
 
 % Abstract
 \begin{abstract}
-    Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la "coreografia" dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti e loro Choreographies \emph{locali} è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
-    Un ulteriore vantaggio delle Choreographies è che, se rispettano alcune proprietà ben definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks e Race Conditions.
+    Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli utlimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la \emph{coreografia} dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti, e le loro Choreographies \emph{locali}, è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
+    Un ulteriore vantaggio delle Choreographies è che, quando rispettano alcune proprietà definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks e Race Conditions.
     Esistono vari modelli formali di Choreographies, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
     In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automata del sisitema concorrente in maniera bottom-up.
 \end{abstract}
@@ -115,34 +115,38 @@ L'obiettivo di questa tesi è quello di progettare e implementare un tool che pe
 \chapter{Nozioni preliminari e notazione}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
-Prima di introdurre le Choreographies e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune trasformazioni possibili sugli stesssi.
-Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
-Alcune applicazioni pratiche di questi automi possono essere regular expression (RegEx o RegExp), lexer e parser solo per citarne alcuni ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo della concorrenza.
-
-Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi ai quali corrispondo altrettante classi di inguaggio, anzi gli automi a stati finiti sono tra i più semplici.
+Prima di introdurre le Choreography e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune operazioni possibili sugli stesssi.
+Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa (come vedremo più avanti).
+Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
+Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati e forniscono una sufficente espressività per gli scopi di questa tesi.
 
 \begin{definition}[Finite State Automata]
-    Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ dove:
+    Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove:
     \begin{itemize}
         \item $\mathcal{S}$ è un insieme finito di stati
         \item $s_0 \in \mathcal{S}$ è lo stato iniziale dell'automa
+        \item $\mathcal{F}$ è l'insieme degli stati finali (o di accettazione)
         \item $\mathcal{L}$ è l'alfabeto finito, talvolta detto anche insieme di label ($\epsilon \notin \mathcal{L}$)
-        \item $\delta \subseteq \mathcal{S} \times (L \cup \{\epsilon\}) \times \mathcal{S}$ è la funzione di transizione ($\epsilon$ denota la stringa vuota)
+        \item $\delta : \mathcal{S} \times (L \cup \{\epsilon\}) \rightarrow \mathcal{P}(\mathcal{S})$ è la funzione di transizione ($\epsilon$ denota la stringa vuota)
     \end{itemize}
 \end{definition}
 
-Tipicamente, oltre a quanto definito sopra, è solito trovare anche un insieme di stati di terminazione (o accettazione), detto $\mathcal{F}$. Visto che in questo caso detto insieme non è stato definito assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione. Inoltre va notato che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}) e distinto dalla nozione di DFA (\emph{Deterministic Finite Automata}).
+\begin{remark}
+    Tipicamente è solito trovare anche una definizione alternativa ma equivalente in cui l'insieme degli stati di terminazione $\mathcal{F}$ non è presente, in tal caso assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
+\end{remark}
+
+\begin{remark}
+    Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}) e distinto dalla nozione di DFA (\emph{Deterministic Finite Automata}).
+\end{remark}
 
 \begin{definition}[Deterministic Finite Automata]
-    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ con $\delta \subseteq \mathcal{S} \times L \times \mathcal{S}$
+    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
 \end{definition}
-
-Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono l'utilizzo di $\epsilon$ transizioni e l'utilizzo più transizioni \emph{uscenti} dallo stesso stato con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o, al contrario, di una migliore chiarezza (i DFA sono più immediati rispetto alla loro controparte).
-
-In ogni caso è sempre possibile, dato un NFA qualunque, un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure} e della funione \emph{mossa} che andiamo a definire di seguito:
+Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono ne l'utilizzo di $\epsilon$ transizioni, ne l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
+In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure} e della funione \emph{mossa} che andremo a definire di seguito:
 
 \begin{definition}[$\epsilon$ closure]
-    Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s) il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
+    Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s), il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
     \begin{itemize}
         \item $s \in \epsilon$-clos(s)
         \item se x $\in \epsilon$-clos(s) allora $\delta(x, \epsilon) \subseteq \epsilon$-clos(s)
@@ -154,10 +158,9 @@ In ogni caso è sempre possibile, dato un NFA qualunque, un DFA ad esso equivale
 \end{remark}
 
 \begin{definition}[Mossa]
-    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}(\delta(x, \alpha))$
+    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}(\delta(x, \alpha))$, , ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
 \end{definition}
-
-\newpage
+\newpage % ! Avoid forcefully break page
 L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
     \caption{Costruzione per sottoinsiemi}\label{alg:cap}
@@ -171,13 +174,12 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
         \If {$r \notin \mathcal{T}$}
         \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
         \EndIf
-        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ da output r}
+        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ darà output r}
         \EndFor
         \EndWhile
     \end{algorithmic}
-\end{algorithm}
-
-Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente mentre chiaramente $\mathcal{L}$ rimarrà invariato. Quindi il DFA ottenuto in uoutput sarà D = $\langle \mathcal{T}, x, \mathcal{L}, \delta \rangle$.
+\end{algorithm}\\
+Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
 
 \subsection{Esempi}
 Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti mostrati in questa sezione. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
@@ -210,9 +212,8 @@ Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti 
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
     \label{fig:NFA}
-\end{figure}
-
-Questo è un possibile NFA in grado di riconoscere questo linguaggio, esistono infiniti NFA diversi tra loro in grado di riconoscere questo linguaggio. Vediamo ora invece un DFA D equivalente ad N calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
+\end{figure}\\\\
+Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri ad equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
@@ -283,7 +284,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
     \end{itemize}
 \end{definition}
 \begin{remark}
-    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibie, come vedremo anche più avanti in questo lavoro, ma si tende ad evitare per avere delle composizioni tra automi piu corrette. 
+    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibie, come vedremo anche più avanti in questo lavoro, ma si tende ad evitare per avere delle composizioni tra automi piu corrette.
 \end{remark}
 
 % Changes and adaptation chapter
