@@ -89,7 +89,7 @@
 % Abstract
 \begin{abstract}
     Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli utlimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la \emph{coreografia} dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti, e le loro Choreographies \emph{locali}, è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
-    Un ulteriore vantaggio delle Choreographies è che, quando rispettano alcune proprietà definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks e Race Conditions.
+    Un ulteriore vantaggio delle Choreographies è che, quando rispettano alcune proprietà definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks, Liveness e Race Conditions.
     Esistono vari modelli formali di Choreographies, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
     In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automata del sisitema concorrente in maniera bottom-up.
 \end{abstract}
@@ -247,18 +247,14 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il lin
 \end{figure}
 
 \section{Choreography Automata}
-Passiamo ora alla definizione dei \emph{Choreography Automata} (CA) iniziamo diversificando la nozione di \emph{Choreographies} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.
-
+Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreographies} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
 Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
-    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} (siano essi processi, programmi o routine) "as a whole" specificando anche come interagiscono tra loro
-    \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri
+    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscano tra loro.
+    \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
-
-La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici e immediati, permettono di sfruttare in maniera molto conveniente i risultati e le nozioni desccritti precedentemente. I Choreography Automata sono dunque dei \emph{casi particolari} di autmi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.
-
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi anche per i meno esperti, permettono di utilizzare loop "nested" e "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\ %TODO ADD needed theoretical notions before
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
-
 \newpage
 \begin{figure}
     \centering
@@ -268,7 +264,7 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
         \node[state] (q2) [right of=q1] {$q_2$};
         \draw
         (q0) edge[above] node{$A \rightarrow B: tic$} (q1)
-        (q1) edge[below] node{$B \rightarrow C: count$} (q2)
+        (q1) edge[above] node{$B \rightarrow C: count$} (q2)
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
     \caption{Un esempio di Choreogaphy Automata}
