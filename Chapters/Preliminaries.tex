@@ -50,7 +50,7 @@ In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso
 \newpage % ! Avoid forcefully break page
 L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
-    \caption{Costruzione per sottoinsiemi}\label{alg:cap}
+    \caption{Costruzione per sottoinsiemi}\label{alg:SubsetConstruction_Algorithm}
     \begin{algorithmic}
         \State $x \gets$ $\epsilon$-clos($s_0$) \Comment{Lo stato iniziale del DFA}
         \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
@@ -68,6 +68,12 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \end{algorithm}\\
 Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
 
+\subsection{Minimizzazione}
+\label{subsec:Minimization_Section}
+% TODO write this subsection
+
+
+\newpage % TODO temporary must remove
 \subsection{Esempi}
 Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti mostrati in questa sezione. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
 \begin{figure}[ht]
@@ -98,7 +104,7 @@ Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti 
         (q8) edge[above] node{$a$} (q9);
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
-    \label{fig:NFA}
+    \label{fig:NonDeterministic_Example}
 \end{figure}\\\\
 Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri ad equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
@@ -130,7 +136,7 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il lin
         };
     \end{tikzpicture}
     \caption{Il DFA equivalente a quello in figura 2.1}
-    \label{fig:DFA}
+    \label{fig:Deterministic_Example}
 \end{figure}
 
 \section{Choreography Automata}
@@ -140,7 +146,7 @@ Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{vie
     \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscano tra loro.
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
-La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi anche per i meno esperti, permettono di utilizzare loop "nested" e "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\ %TODO ADD needed theoretical notions before
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi anche per i meno esperti, permettono di utilizzare loop "nested" e "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
 \begin{figure}[ht]
     \centering
@@ -154,7 +160,7 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
     \caption{Un esempio di Choreogaphy Automata}
-    \label{fig:Example CA}
+    \label{fig:ChoreographyAutomata_Example}
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
@@ -168,3 +174,33 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 \begin{remark}
     Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibie, come vedremo anche più avanti in questo lavoro, ma si tende ad evitare per avere delle composizioni tra automi piu corrette.
 \end{remark}
+
+\subsection{CFSM e Local Views}
+Ora che abbiamo una definizione formale del Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire pero' questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}, come il nome suggerisce questo e' sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai CHoreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
+
+\begin{definition}[Communicating Finite-State Machine]
+    Una Communicating Finite State Machine (CFSM) e' un FSA $C$ con insieme di labels:
+    \\ \\
+    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$} \\ \\
+    dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
+\end{definition}
+Dunque il \emph{soggetto} di un'azione in input "A B ? m" e' A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM con cha ha tutte e solo le transizioni con soggetto A. Si noti che esiste ed e' possibile definire formalmente una funzione \emph{system} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
+Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
+
+\begin{definition}[Proiezione]
+    La proiezione su A di una transizione $t = s$ $\xrightarrow{a}$ $s_{2}$ di un Choreography Automata, scritta $t\downarrow_{A}$ e' definita come:
+    \begin{equation*}
+        t \downarrow_{A} =
+        \begin{cases}
+            s \xrightarrow{\text{A C ! m}} s' & $se $ a = B \rightarrow C : m \wedge B = A       \\
+            s \xrightarrow{\text{B A ? m}} s' & $se $ a = B \rightarrow C : m \wedge C = A       \\
+            s \xrightarrow{\epsilon} s'       & $se $ a = B \rightarrow C : m \wedge B, C \neq A \\
+            s \xrightarrow{\epsilon} s'       & $se $ a = \epsilon
+        \end{cases}
+    \end{equation*}
+\end{definition}
+La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ e' ottenuta ricavando in primis l'automa intermedio:
+\\ \\
+\centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
+\\ \\
+tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio e' deterministico. E'dunque necessario rimuovere le eventuali $\epsilon$-transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima, entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{subsec:Minimization_Section}
