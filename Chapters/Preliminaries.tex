@@ -142,8 +142,7 @@ Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{vie
 \end{itemize}
 La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi anche per i meno esperti, permettono di utilizzare loop "nested" e "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\ %TODO ADD needed theoretical notions before
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
-\newpage
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
@@ -156,7 +155,7 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
     \end{tikzpicture}
     \caption{Un esempio di Choreogaphy Automata}
     \label{fig:Example CA}
-\end{figure}
+\end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
 \begin{definition}[Choreography Automata]
