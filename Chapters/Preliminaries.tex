@@ -105,7 +105,7 @@ Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti 
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
     \label{fig:NonDeterministic_Example}
-\end{figure}\\\\
+\end{figure}
 Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri ad equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
     \centering
@@ -181,7 +181,8 @@ Ora che abbiamo una definizione formale del Choreography Automata, possiamo conc
 \begin{definition}[Communicating Finite-State Machine]
     Una Communicating Finite State Machine (CFSM) e' un FSA $C$ con insieme di labels:
     \\ \\
-    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$} \\ \\
+    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$} 
+    \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
 Dunque il \emph{soggetto} di un'azione in input "A B ? m" e' A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM con cha ha tutte e solo le transizioni con soggetto A. Si noti che esiste ed e' possibile definire formalmente una funzione \emph{system} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\

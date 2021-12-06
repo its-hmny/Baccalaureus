@@ -28,6 +28,9 @@
 \newtheorem{definition}{Definition}[chapter]
 \newtheorem{remark}{Remark}[definition]
 
+% Setup algorithm numeration to follow the definition and remark ones
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}} 
+
 % ForEach construct definition
 \algnewcommand\algorithmicforeach{\textbf{for each}}
 \algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
@@ -71,7 +74,7 @@
     \end{minipage}
     \vspace{20mm}
     \begin{center}
-        {\large{\bf Sessione III\\ % TODO: check graduation session number
+        {\large{\bf Sessione III\\
                 Anno Accademico 2020/2021 }}
     \end{center}
 \end{titlepage}
@@ -123,7 +126,5 @@ L'obiettivo di questa tesi è quello di progettare e implementare un tool che pe
 
 % "Conclusion and future works" chapter
 \input{Chapters/Conclusions.tex}
-
-
 
 \end{document}
