@@ -69,11 +69,25 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
 
 \subsection{Minimizzazione}
-\label{subsec:Minimization_Section}
-% TODO write this subsection
+Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che e' possibile effettuare, un esempio puo' essere la composizione di piu' automi, tuttavia nel nostro caso poniamo particolare rigurado sulla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione e' possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa piu' snello (in numero di stati e transizioni) e piu' facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma puo' anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
+L'algoritmo piu' conosciuto per minimizzare un automa e' detto \emph{Algoritmo di Riempimento a Scala} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso e' legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
+Negli automi incompleti la funzione di transizione e' parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice e' quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non e' possibile uscirne.\\
+L'intuizione alla base dell'algoritmo di riempimento a scala e' la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
+L'algoritmo di Riempimento della Tabella a Scala e' definito come segue:
+\begin{algorithm}
+    \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
+    \begin{algorithmic}
+        \State Inizializza la tabella a scala con le coppie (p,q)
+        \State Marca le coppie (x,y) con marca $x_0$ con $x \in \mathcal{F}$ e $y \notin \mathcal{F}$
+        \While{$\exists$ almeno un marchio $x_i$ all'iterazione i}
+        \If{$\exists \alpha \in \mathcal{L}, \exists p, q \in \mathcal{S}$ tale che $\delta(p, \alpha) \neq \delta(q, \alpha)$}
+        \State Marca (p, q) con marca $x_i$
+        \EndIf
+        \State Considera all'iterazione seguente solo gli stati non marcati
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
 
-
-\newpage % TODO temporary must remove
 \subsection{Esempi}
 Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti mostrati in questa sezione. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
 \begin{figure}[ht]
@@ -105,7 +119,7 @@ Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti 
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
     \label{fig:NonDeterministic_Example}
-\end{figure}
+\end{figure}\\
 Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri ad equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
     \centering
@@ -125,7 +139,7 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il lin
         (D) edge[bend right,above] node{$b$} (C);
     \end{tikzpicture}
     \begin{tikzpicture}
-        \node (NFA to DFA) [shape=rectangle,draw] {
+        \node (NFA to DFA) {
             \begin{tabular}{c c}
                 Stati NFA           & Stati DFA \\
                 \{ 0,1,2,4,7 \}     & A         \\
@@ -137,6 +151,36 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il lin
     \end{tikzpicture}
     \caption{Il DFA equivalente a quello in figura 2.1}
     \label{fig:Deterministic_Example}
+\end{figure}\\
+Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati equivalenti tramite l'algoritmo di \emph{Riempimento della Tabella a Scala}
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
+        \node[state,initial] (AB) {$A,B$};
+        \node[state] (C) [right of=A] {$C$};
+        \node[state, accepting] (D) [right of=C] {$D$};
+        \draw
+        (AB) edge[loop above] node{$a$} (AB)
+        (AB) edge[above] node{$b$} (C)
+        (C) edge[loop above] node{$b$} (C)
+        (C) edge[bend left, above] node{$a$} (D)
+        (D) edge[bend left, above] node{$b$} (C)
+        (D) edge[bend left, below] node{$b$} (A);
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        \node (NFA to DFA) {
+            \centering
+            \begin{tabular}{ | c | c | c | c |}
+                \hline B &       & $//$  & $//$  \\
+                \hline C & $x_1$ & $x_1$ & $//$  \\
+                \hline D & $x_0$ & $x_0$ & $x_0$ \\
+                \hline   & A     & B     & C     \\
+                \hline
+            \end{tabular}
+        };
+    \end{tikzpicture}
+    \caption{Il DFA minimizzato ottenuto da quello in figura 2.2}
+    \label{fig:Minimization_Example}
 \end{figure}
 
 \section{Choreography Automata}
@@ -181,7 +225,7 @@ Ora che abbiamo una definizione formale del Choreography Automata, possiamo conc
 \begin{definition}[Communicating Finite-State Machine]
     Una Communicating Finite State Machine (CFSM) e' un FSA $C$ con insieme di labels:
     \\ \\
-    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$} 
+    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
@@ -204,4 +248,4 @@ La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \r
 \\ \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
-tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio e' deterministico. E'dunque necessario rimuovere le eventuali $\epsilon$-transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima, entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{subsec:Minimization_Section}
+tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio e' deterministico. E'dunque necessario rimuovere le eventuali $\epsilon$-transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima, entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
