@@ -82,14 +82,14 @@
 
 % Dedication page
 \begin{dedication}
-    Agli amici che ho conosciuto e che\\
+    Alla mia famiglia e agli amici che\\
     mi hanno accompagnato in questo viaggio
 \end{dedication}
 
 
 % Abstract
 \begin{abstract}
-    Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli utlimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento il quale permetta di capire in maniera immediata la \emph{coreografia} dei participanti nel sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti, e le loro Choreographies \emph{locali}, è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
+    Le Choreographies sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli utlimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento che permetta di capire in maniera immediata la \emph{coreografia} dei participanti all'interno del sistema e come questi interagiscano tra loro. Partendo dai singoli partecipanti, e le loro Choreographies \emph{locali}, è possibile ricomporre in maniera bottom-up l'intera Choreography \emph{globale} del sistema.
     Un ulteriore vantaggio delle Choreographies è che, quando rispettano alcune proprietà definite, permettono di fare assunzioni sull'assenza di tipici problemi di concorrenza quali Deadlocks, Liveness e Race Conditions.
     Esistono vari modelli formali di Choreographies, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
     In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automata del sisitema concorrente in maniera bottom-up.
@@ -100,6 +100,7 @@
 
 % Introduction chapter
 \chapter{Introduzione} % TODO Should be improved
+TODO \iffalse
 Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
 % ? Keep this paragraph
 Prendendo per esempio Go, talvolta chiamato anche golang, un linguaggio di programmazione creato nel 2009 da Robert Griesemer, Rob Pike e Ken Thompson, che negli anni successivi prende una forte trazione, fino a essere supportato da Google, sopratutto nel settore del web-development e system programming. Alcuni dei fattori da successo sono una compilazione ed esecuzione veloce, una grammatica semplice e snella e un approccio \emph{built-in} alla concorrenza con tipi e primitive fornite direttamente dalla standard library. Quest'ultima infatti fornisce un solo tipo di dato \emph{chan} che può essere \emph{buffered} o \emph{unbuffered}, la comunicazione che avviene su questi canali è rispettivamente asincrona e sincrona.\\
@@ -110,6 +111,7 @@ Parallelamente a questo rinnovato interesse verso la programmazione concorrente 
 \end{itemize}
 % ? Add the parts about Choreography Automatas properties and how them can help making assumption on the Go program
 L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo grafico, più chiaro e immediato rispetto alla lettura del codice sorgente.
+\fi
 
 
 % "Preliminaries and Notation" chapter

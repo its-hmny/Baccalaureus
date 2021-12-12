@@ -2,17 +2,17 @@
 \chapter{Nozioni preliminari e notazione}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
-Prima di introdurre le Choreography e i Choreographies Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune operazioni possibili sugli stesssi.
-Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa (come vedremo più avanti).
+Prima di introdurre le Choreography e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune operazioni possibili sugli stesssi.
+Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
 Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
-Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati e forniscono una sufficente espressività per gli scopi di questa tesi.
+Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati e forniscono una sufficente espressività per i nostri scopi.
 
 \begin{definition}[Finite State Automata]
     Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove:
     \begin{itemize}
         \item $\mathcal{S}$ è un insieme finito di stati
         \item $s_0 \in \mathcal{S}$ è lo stato iniziale dell'automa
-        \item $\mathcal{F}$ è l'insieme degli stati finali (o di accettazione)
+        \item $\mathcal{F}$ è l'insieme degli stati finali o di accettazione ($\mathcal{F} \subseteq \mathcal{S}$)
         \item $\mathcal{L}$ è l'alfabeto finito, talvolta detto anche insieme di label ($\epsilon \notin \mathcal{L}$)
         \item $\delta : \mathcal{S} \times (L \cup \{\epsilon\}) \rightarrow \mathcal{P}(\mathcal{S})$ è la funzione di transizione ($\epsilon$ denota la stringa vuota)
     \end{itemize}
@@ -45,7 +45,7 @@ In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso
 \end{remark}
 
 \begin{definition}[Mossa]
-    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}(\delta(x, \alpha))$, , ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
+    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}\delta(x, \alpha)$, ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
 \end{definition}
 \newpage % ! Avoid forcefully break page
 L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
@@ -69,11 +69,11 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
 
 \subsection{Minimizzazione}
-Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che e' possibile effettuare, un esempio puo' essere la composizione di piu' automi, tuttavia nel nostro caso poniamo particolare rigurado sulla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione e' possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa piu' snello (in numero di stati e transizioni) e piu' facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma puo' anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
-L'algoritmo piu' conosciuto per minimizzare un automa e' detto \emph{Algoritmo di Riempimento a Scala} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso e' legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
-Negli automi incompleti la funzione di transizione e' parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice e' quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non e' possibile uscirne.\\
-L'intuizione alla base dell'algoritmo di riempimento a scala e' la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
-L'algoritmo di Riempimento della Tabella a Scala e' definito come segue:
+Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare rigurado sulla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
+L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
+Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
+L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
+L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \begin{algorithm}
     \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
     \begin{algorithmic}
@@ -89,7 +89,7 @@ L'algoritmo di Riempimento della Tabella a Scala e' definito come segue:
 \end{algorithm}
 
 \subsection{Esempi}
-Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti mostrati in questa sezione. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
+Per concludere questa sezione mostriamo di seguito esempi dei vari concetti definiti in precedenza. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=2cm,scale=1, transform shape]
@@ -120,7 +120,7 @@ Per concludere questa sezione mostriamo di seguito un esempio dei vari concetti 
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
     \label{fig:NonDeterministic_Example}
 \end{figure}\\
-Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri ad equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
+Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
@@ -184,13 +184,13 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
 \end{figure}
 
 \section{Choreography Automata}
-Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreographies} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
+Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreography} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
 Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
     \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscano tra loro.
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
-La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi anche per i meno esperti, permettono di utilizzare loop "nested" e "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop "nested" ed "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
 \begin{figure}[ht]
     \centering
@@ -220,20 +220,20 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 \end{remark}
 
 \subsection{CFSM e Local Views}
-Ora che abbiamo una definizione formale del Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire pero' questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}, come il nome suggerisce questo e' sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai CHoreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
+Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dalla view globale. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
 \begin{definition}[Communicating Finite-State Machine]
-    Una Communicating Finite State Machine (CFSM) e' un FSA $C$ con insieme di labels:
+    Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
     \\ \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
-Dunque il \emph{soggetto} di un'azione in input "A B ? m" e' A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM con cha ha tutte e solo le transizioni con soggetto A. Si noti che esiste ed e' possibile definire formalmente una funzione \emph{system} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
+Dunque il \emph{soggetto} di un'azione in input "A B ? m" è A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM con cha ha tutte e sole le transizioni con soggetto A. Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
 Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
 
 \begin{definition}[Proiezione]
-    La proiezione su A di una transizione $t = s$ $\xrightarrow{a}$ $s_{2}$ di un Choreography Automata, scritta $t\downarrow_{A}$ e' definita come:
+    La proiezione su A di una transizione $t = s$ $\xrightarrow{a}$ $s_{2}$ di un Choreography Automata, scritta $t\downarrow_{A}$ è definita come:
     \begin{equation*}
         t \downarrow_{A} =
         \begin{cases}
@@ -244,8 +244,34 @@ Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di segui
         \end{cases}
     \end{equation*}
 \end{definition}
-La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ e' ottenuta ricavando in primis l'automa intermedio:
+La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ è ottenuta ricavando in primis l'automa intermedio:
 \\ \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
-tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio e' deterministico. E'dunque necessario rimuovere le eventuali $\epsilon$-transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima, entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
+Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è nondeterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
+        \node[state,initial] (A0) {0};
+        \node[state] (A1) [below of=A0] {1,2};
+
+        \node[state,initial] (B0) [right of=A0] {0,2};
+        \node[state] (B1) [below of=B0] {1};
+
+        \node[state,initial] (C0) [right of=B0] {0,1};
+        \node[state] (C1) [below of=C0] {2};
+
+        \draw
+        (A0) edge[bend left, above] node[rotate=270]{AB! tic} (A1)
+        (A1) edge[bend left, above] node[rotate=90]{AC? toc} (A0)
+
+        (B0) edge[bend left, above] node[rotate=270]{BA? tic} (B1)
+        (B1) edge[bend left, above] node[rotate=90]{BC! count} (B0)
+
+        (C0) edge[bend left, above] node[rotate=270]{BC? count} (C1)
+        (C1) edge[bend left, above] node[rotate=90]{CA! toc} (C0);
+    \end{tikzpicture}
+    \caption{Le tre view locali estratte dall'automa in figura \ref{fig:ChoreographyAutomata_Example}}
+    \label{fig:Projection_Example}
+\end{figure}
