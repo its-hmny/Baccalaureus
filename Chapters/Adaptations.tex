@@ -1,3 +1,23 @@
 % "Changes and adaptations" chapter
-\chapter{Adattazioni e modifiche}
-TODO
+\chapter{Adattamento del modello}
+\section{Obiettivi e problematiche}
+L'obiettivo del progetto, ad lato livello, e' quello di prendere in input un file contenente del codice sorgente \emph{Go} ed estrarre in qualche modo il Choreography Automata che definisca come i vari processi interagiscono tra loro durante l'esecuzione.
+Per fare questo l'esecuzione del nostro programma si divide in tre fasi:
+\begin{enumerate}
+    \item \textbf{Parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstact Syntax Tree} (AST)
+    \item \textbf{Analisi statica}: Viene navigato l'AST estraendo tutte le informazioni necessarie (metadati) e salvandole in strutture dati appropriate.
+    \item \textbf{Estrazione delle local views}: Partendo dai metadati si generano gli automi locali dei vari processi (o attori), estraendo, di fatto, delle view locali.
+    \item \textbf{Riconcialiazione}: Avendo ora le view locali serve fonderli insieme e riconciliarli, ottenendo il Choreography Automata (ovvero la view globale)
+\end{enumerate}
+Come appare chiaro da quanto detto sopra questo approccio e' chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo 1 e' \emph{Top-Down}, infatti nel capitolo precendente dal Choreography Automata completo abbiamo ricavato poi le singole proiezioni (o view locali) mentre in questo caso l'approccio e' opposto.\\
+Si rende dunque necessario l'implementazione di una nuova operazione sulle view locali che in qualche modo peremetta di ottenere una global view partendo dalle sue view locali, piuttosto che l'utilizzo di una operazione di proiezione.
+
+\subsection{Problematiche generali} % TODO ADD REF
+Abbiamo visto nella definizione dei Choreography Automata in \ref{fig:ChoreographyAutomata_Example} che vengono utilizzati due insieme $\mathcal{P}$ e $\mathcal{M}$ i quali indicano rispettivamente gli insiemi dei partecipanti/attori della coreografia e l'insieme dei messaggi scambiati. Nel caso dell'insime $\mathcal{M}$ sorge un problema riguardante la determinazione del numero di elementi all'interno di tale insieme.
+L'analisi statica non è uno strumento sufficentemente potente per determinare esattamente il valore di una variabile a runtime e di conseguenza il valore contenuto dal messaggio al momento dell'invio e più in generale all'interno dell'intera coreografia.
+\lstinputlisting[language=Go]{Snippets/DynamicAnalysis.go}
+L'esempio in figura mostra un caso molto semplice: un processo sta inviando un messaggio attraverso un canale, questo messaggio è composto da un numero generato randomicamente e da un timestamp. Ora attraverso l'analisi statica non è possibile ottenere un valore specifico  e definito per questi campi poichè questo valore è strettamente legato all'esecuzione a runtime del programma stesso. L'unico modo per avere un valore ben definito richiederebbe l'utilizo di analisi dinamica: ovvero valutare e raccogliere informazioni riguardanti le interazioni tra i processi proprio mentre questo eseguono.\\ 
+Questo approccio oltre a essere più complicato da implementare non garantisce una visione completa dell'intera coreografia in quanto a runtime interi branch di istruzioni potrebbero non essere eseguiti basti pensare al caso di un semplice if-then-else: a runtime solo uno dei due rami potrà essere eseguito limitando le informazioni disponibili al programma.\\
+Una soluzione in questo caso potrebbe essere quella di utilizzare il \emph{tipo di dato} che viene inviato come elemento dell'insieme $\mathcal{M}$, riprendendo l'esempio di sopra noi non conosciamo il valore effettivo inviato sul canale in tuttavia possiamo determinare molto facilmente che ad ogni invio vengano madndati una coppia di interi.
+
+\subsection{Particolarita' di Go}
