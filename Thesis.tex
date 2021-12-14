@@ -38,21 +38,21 @@
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    breakatwhitespace=false,
+    breaklines=false,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
+    showtabs=false,
     tabsize=2
 }
 \lstset{style=mystyle}
@@ -128,16 +128,16 @@
 % Introduction chapter
 \chapter{Introduzione} % TODO Should be improved
 TODO \iffalse
-Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
-% ? Keep this paragraph
-Prendendo per esempio Go, talvolta chiamato anche golang, un linguaggio di programmazione creato nel 2009 da Robert Griesemer, Rob Pike e Ken Thompson, che negli anni successivi prende una forte trazione, fino a essere supportato da Google, sopratutto nel settore del web-development e system programming. Alcuni dei fattori da successo sono una compilazione ed esecuzione veloce, una grammatica semplice e snella e un approccio \emph{built-in} alla concorrenza con tipi e primitive fornite direttamente dalla standard library. Quest'ultima infatti fornisce un solo tipo di dato \emph{chan} che può essere \emph{buffered} o \emph{unbuffered}, la comunicazione che avviene su questi canali è rispettivamente asincrona e sincrona.\\
-Parallelamente a questo rinnovato interesse verso la programmazione concorrente e distribuita nasce l'esigenza di formalizzare dei modelli teorici che possano supportare la progettazione, gestione e manutenzione di sistemi concorrenti. Uno di questi modelli sono le \emph{Choreographies}, le quali facilitano la rappresentazione e descrizione di sistemi concorrenti in cui i singoli \emph{attori} comunicano tra di loro. Un aspetto distintivo delle Choreographies è la coesistenza di due \emph{view}:
-\begin{itemize}
-    \item Vista \textbf{globale}: descrive la coordinazione necessaria tra i componenti di un sistema
-    \item Vista \textbf{locale}: descrive il comportamento di un singolo componente \emph{in isolamento}
-\end{itemize}
-% ? Add the parts about Choreography Automatas properties and how them can help making assumption on the Go program
-L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo grafico, più chiaro e immediato rispetto alla lettura del codice sorgente.
+    Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
+    % ? Keep this paragraph
+    Prendendo per esempio Go, talvolta chiamato anche golang, un linguaggio di programmazione creato nel 2009 da Robert Griesemer, Rob Pike e Ken Thompson, che negli anni successivi prende una forte trazione, fino a essere supportato da Google, sopratutto nel settore del web-development e system programming. Alcuni dei fattori da successo sono una compilazione ed esecuzione veloce, una grammatica semplice e snella e un approccio \emph{built-in} alla concorrenza con tipi e primitive fornite direttamente dalla standard library. Quest'ultima infatti fornisce un solo tipo di dato \emph{chan} che può essere \emph{buffered} o \emph{unbuffered}, la comunicazione che avviene su questi canali è rispettivamente asincrona e sincrona.\\
+    Parallelamente a questo rinnovato interesse verso la programmazione concorrente e distribuita nasce l'esigenza di formalizzare dei modelli teorici che possano supportare la progettazione, gestione e manutenzione di sistemi concorrenti. Uno di questi modelli sono le \emph{Choreographies}, le quali facilitano la rappresentazione e descrizione di sistemi concorrenti in cui i singoli \emph{attori} comunicano tra di loro. Un aspetto distintivo delle Choreographies è la coesistenza di due \emph{view}:
+    \begin{itemize}
+        \item Vista \textbf{globale}: descrive la coordinazione necessaria tra i componenti di un sistema
+        \item Vista \textbf{locale}: descrive il comportamento di un singolo componente \emph{in isolamento}
+    \end{itemize}
+    % ? Add the parts about Choreography Automatas properties and how them can help making assumption on the Go program
+    L'obiettivo di questa tesi è quello di progettare e implementare un tool che permetta, preso un sorgente Go e per mezzo di analisi statica, di estrarre un Choreography Automata, ovvero un automa a stati finiti che rappresenta la Choreography in modo grafico, più chiaro e immediato rispetto alla lettura del codice sorgente.
 \fi
 
 
