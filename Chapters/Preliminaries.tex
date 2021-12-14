@@ -209,7 +209,7 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
-\begin{definition}[Choreography Automata]
+\begin{definition}[Choreography Automata] \label{def:Choreography_Automata}
     Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label $\mathcal{L}_{int} = \{ A \rightarrow B : m | A \neq B \in \mathcal{P}, m \in \mathcal{M} \}$ dove:
     \begin{itemize}
         \item $\mathcal{P}$ è l'insieme dei partecipanti (per esempio A, B, ecc)
