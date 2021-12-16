@@ -1,3 +1,15 @@
 % "Technology stack" chapter
-\chapter{Tecnologie utilizzate}
+\chapter{Tecnologie e librereie utilizzate}
+\section{Go (golang)}
+Go (anche chiamato {golang}) e' un linguaggio di programmazione \emph{general purpose} open source sviluppato nel 2007 da Robert Griesemer, Rob Pike e Ken Thompson e poi supportato da Google stesso negli anni a seguire. Fortemente ispirato al C presenta una sintasssi minimale e molto semplice, Go e' \emph{statically typed} e fornisce un \emph{Garbage Collector} lasciando comunque all'utente la possibilita' di interagire con i puntatori e allocare dinamicamente la memoria in modo autonomo.\\
+Alcuni dei problemi che Go mira a risolvere sono
+\begin{itemize}
+    \item \textbf{Controllo restrittivo delle dipendenze}: Infatti per evitare di appensantire l'eseguibile finale Go rifiuta di compilare moduli o file dove non tutte le dipendenze importate vengono utilizzate
+    \item \textbf{Compilazione piu veloce}: Grazie a quanto detto sopra e alla sintassi estremamente semplice e snella il compilatore riesce a diminuire drasticamente il tempo richiesto alla compilazione mantenendo tutti i vantaggi dell'avere le eventuali ottimizzazioni della compilazione
+    \item \textbf{Approccio semplificato alla concorrenza}: Il linguaggio utilizza le Goroutine, dei \emph{processi leggeri}, le quali permettono un utilizzo semplificato e piu' accessibile della programmazione concorrente
+\end{itemize}
+Altre feauture del linguaggio degne di nota sono: il package manager della \emph{standard library} e l'ecosistema di pacchetti totalmente ditribuito e librerie disponibili, e la grande varieta' di architetture supportate (comprensive di \emph{microcontroller} e \emph{embedded systems}).\\
+Go e' stato utilizzato nello sviluppo di tecnologie celeberrime come Docker e Kubernetes e attualmente viene utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
+
+\section{Graphviz e Linguaggio DOT}
 TODO
