@@ -224,6 +224,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dalla view globale. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
 \begin{definition}[Communicating Finite-State Machine]
+    \label{def:CommunicatingFiniteStateMachine}
     Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
     \\ \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}

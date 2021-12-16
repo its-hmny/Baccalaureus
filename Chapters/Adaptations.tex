@@ -32,12 +32,25 @@ Visto che il progetto deve gestire del codice sorgente Go e' bene considerare de
     \item \textbf{Select}: Un costrutto particolare che permette eseguire operazioni di invio o ricezione su piu' canali ed eseguire la prima, tra queste operazioni, che non sia bloccante.
 \end{itemize}
 Mentre i canali e il costrutto sintattico "select" non generano particolari problemi o conflitti con il modello teorico attuale lo stesso non si puo' dire per le Goroutine, in particolare il problema sta nel fatto che le Goroutine siano intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \emph{main}), sara' poi questa durante la sua esecuzione a farne partire altre, le quali a loro volta potranno avviarne altre ancora e cosi via.
-Il problema che sorge da questo approccio deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano gia' avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi e' stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante, ci serve determinare il momento esatto in cui una view locale (risp. Goroutine) inizia a interagire con le altre.\\\\
-Per fare questo possiamo estendere la definizione di Choreography Automata data in \ref{def:Choreography_Automata} come segue:
+Il problema che sorge da questo approccio deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano gia' avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi e' stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante, ci serve determinare il momento esatto in cui una view locale (risp. Goroutine) inizia a interagire con le altre.\\ \\
+Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
+
 \begin{definition}[Choreography Automata (Estesa)]
-    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\\\\
-    \centerline{
-        $\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$
-    }\\\\
+    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\\ \\
+    \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$}\\ \\
     con $\mathcal{L}_{int}$ e $\mathcal{P}$ definiti come in \ref{def:Choreography_Automata} e $\mathcal{M}$ definito come in \ref{subsec:Static_Analysis_Limits}
 \end{definition}
+
+\begin{definition}[Communicating Finite-State Machine (Estesa)]
+    Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
+    \\ \\
+    \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m, A $\bigtriangleup$ B $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
+\end{definition}
+
+\begin{remark}
+    Seppur non interessante per gli scopi di questa tesi e' possibile adattare la nozione di proiezione in modo che tenga in considerazione di transizione del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
+\end{remark}
+
+\newpage % TODO Remove this line
+\section{Algoritmo di Riconciliazione}
+TODO
