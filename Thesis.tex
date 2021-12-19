@@ -5,6 +5,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{amsmath}
+\usepackage{biblatex}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{tikz}
@@ -65,6 +66,8 @@
 
 % Tikz submodule import
 \usetikzlibrary{automata, positioning, arrows}
+
+\addbibresource{Bibliography.bib}
 
 % Document start 
 \begin{document}
@@ -156,5 +159,9 @@ TODO \iffalse
 
 % "Conclusion and future works" chapter
 \input{Chapters/Conclusions.tex}
+
+
+\printbibliography
+
 
 \end{document}

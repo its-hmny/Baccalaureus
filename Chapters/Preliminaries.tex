@@ -3,7 +3,7 @@
 \label{cap:Preliminaries}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
-Prima di introdurre le Choreography e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA) e alcune operazioni possibili sugli stesssi.
+Prima di introdurre le Choreography e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA)\cite{Linguaggi_di_Prorgammazione} e alcune operazioni possibili sugli stesssi.
 Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
 Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
 Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati e forniscono una sufficente espressività per i nostri scopi.
@@ -31,7 +31,7 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono 
     Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
 \end{definition}
 Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono ne l'utilizzo di $\epsilon$ transizioni, ne l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
-In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure} e della funione \emph{mossa} che andremo a definire di seguito:
+In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
 
 \begin{definition}[$\epsilon$ closure]
     Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s), il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
@@ -71,7 +71,7 @@ Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato inizi
 
 \subsection{Minimizzazione}
 Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare rigurado sulla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
-L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
+L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
 Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
 L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
 L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
@@ -181,7 +181,7 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
 \end{figure}
 
 \section{Choreography Automata}
-Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreography} e \emph{Choreography Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
+Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreography} e \emph{Choreography Automata}\cite{Choreography_Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
 Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
     \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscano tra loro.
@@ -205,7 +205,8 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
-\begin{definition}[Choreography Automata] \label{def:Choreography_Automata}
+\begin{definition}[Choreography Automata]
+    \label{def:Choreography_Automata}
     Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label $\mathcal{L}_{int} = \{ A \rightarrow B : m | A \neq B \in \mathcal{P}, m \in \mathcal{M} \}$ dove:
     \begin{itemize}
         \item $\mathcal{P}$ è l'insieme dei partecipanti (per esempio A, B, ecc)
