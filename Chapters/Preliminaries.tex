@@ -124,7 +124,7 @@ Per concludere questa sezione mostriamo di seguito esempi dei vari concetti defi
 Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algorimo di \emph{Costruzione per sottoinsiemi}
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (A) {$A$};
         \node[state] (B) [above right of=A] {$B$};
         \node[state] (C) [right of=A] {$C$};
@@ -139,24 +139,22 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconscere il lin
         (D) edge[above] node{$a$} (B)
         (D) edge[bend right,above] node{$b$} (C);
     \end{tikzpicture}
-    \begin{tikzpicture}
-        \node (NFA to DFA) {
-            \begin{tabular}{c c}
-                Stati NFA           & Stati DFA \\
-                \{ 0,1,2,4,7 \}     & A         \\
-                \{ 1,2,3,4,6,7 \}   & B         \\
-                \{ 1,2,4,5,6,7,8 \} & C         \\
-                \{ 1,2,3,4,6,7,9 \} & D
-            \end{tabular}
-        };
-    \end{tikzpicture}
-    \caption{Il DFA equivalente a quello in figura 2.1}
+    \parbox{5cm}{
+        \begin{tabular}{c c}
+            Stati NFA           & Stati DFA \\
+            \{ 0,1,2,4,7 \}     & A         \\
+            \{ 1,2,3,4,6,7 \}   & B         \\
+            \{ 1,2,4,5,6,7,8 \} & C         \\
+            \{ 1,2,3,4,6,7,9 \} & D
+        \end{tabular}
+    }
+    \caption{Il DFA equivalente a quello in figura \ref{fig:NonDeterministic_Example}}
     \label{fig:Deterministic_Example}
 \end{figure}\\
 Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati equivalenti tramite l'algoritmo di \emph{Riempimento della Tabella a Scala}
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (AB) {$A,B$};
         \node[state] (C) [right of=A] {$C$};
         \node[state, accepting] (D) [right of=C] {$D$};
@@ -168,19 +166,17 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
         (D) edge[bend left, above] node{$b$} (C)
         (D) edge[bend left, below] node{$b$} (A);
     \end{tikzpicture}
-    \begin{tikzpicture}
-        \node (NFA to DFA) {
-            \centering
-            \begin{tabular}{ | c | c | c | c |}
-                \hline B &       & $//$  & $//$  \\
-                \hline C & $x_1$ & $x_1$ & $//$  \\
-                \hline D & $x_0$ & $x_0$ & $x_0$ \\
-                \hline   & A     & B     & C     \\
-                \hline
-            \end{tabular}
-        };
-    \end{tikzpicture}
-    \caption{Il DFA minimizzato ottenuto da quello in figura 2.2}
+    \space \space \space
+    \parbox{5cm}{
+        \begin{tabular}{ | c | c | c | c |}
+            \hline B &       & $//$  & $//$  \\
+            \hline C & $x_1$ & $x_1$ & $//$  \\
+            \hline D & $x_0$ & $x_0$ & $x_0$ \\
+            \hline   & A     & B     & C     \\
+            \hline
+        \end{tabular}
+    }
+    \caption{Il DFA minimizzato ottenuto da quello in figura \ref{fig:Deterministic_Example}}
     \label{fig:Minimization_Example}
 \end{figure}
 
