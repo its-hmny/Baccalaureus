@@ -11,5 +11,27 @@ Alcuni dei problemi che Go mira a risolvere sono
 Altre feauture del linguaggio degne di nota sono: il package manager della \emph{standard library} e l'ecosistema di pacchetti totalmente ditribuito e librerie disponibili, e la grande varieta' di architetture supportate (comprensive di \emph{microcontroller} e \emph{embedded systems}).\\
 Go e' stato utilizzato nello sviluppo di tecnologie celeberrime come Docker e Kubernetes e attualmente viene utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
 
-\section{Graphviz e Linguaggio DOT}
-TODO
+%TODO ADD CITATION TO CORINNE PAPER
+\section{Graphviz e DOT}
+Vista la necessita' di \emph{rappresentare} in qualche modo il Choreography Automata finale e gli eventuali risultati intermedi si e' reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi, si puo' dire che i secondi siano una generalizzazione dei primi, abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
+Abbiamo quindi scelto di usare Graphviz, una librearia open source per la visualizzazione di grafi il quale utiliza DOT, un formato specificatamente progettato per la descrizione dei grafi.\\
+La scelta e' ricaduta su DOT e Graphviz per alcuni motivi principali:
+\begin{itemize}
+    \item Il linguaggio DOT e' \emph{human readable} e particolarmente facile da comprendere, inoltre Graphviz permette di \emph{convertire} o \emph{esportare} in formati di uso piu comune come PNG o SVG
+    \item Permette un utilizzo combinato con \emph{Corinne},un tool grafico per la visualizzazione e manipolazione dei Choreography Automata
+    \item Essendo Graphviz ormai uno standard \emph{de facto} sono presenti librerie e binding che ne permettono l'utilizzo con moltissimi linguaggi di programmazione, tra cui Go
+\end{itemize}
+Di seguto un mostriamo un esempio banale di Choreography Automata definito attraverso il linguaggio DOT.
+\begin{lstlisting}[caption=Rappresentazione in DOT dell'automa in figura \ref{fig:ChoreographyAutomata_Example}]
+    digraph DOT_Graph_Example {
+        node [shape=circle, fontsize=20]
+        edge [length=100, fontcolor=black]
+      
+        q0 -> q1[label="A->B:tic"];
+        q1 -> q2[label="B->C:count"];
+        q2 -> q0[label="C->A:toc"];
+    }
+\end{lstlisting}
+Chiaramente i Choreography Automata generati da Choreia non saranno cosi' semplici e immediati, ciononostante dovrebbe essere comunque possibile interagirvi e comprenderli.
+
+\section{Altre librerie} % TODO Keep this section 
