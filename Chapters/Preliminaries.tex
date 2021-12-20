@@ -3,10 +3,10 @@
 \label{cap:Preliminaries}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
-Prima di introdurre le Choreography e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA)\cite{Linguaggi_di_Prorgammazione} e alcune operazioni possibili sugli stesssi.
+Prima di introdurre le coreografie e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA)\cite{Linguaggi_di_Prorgammazione} e alcune operazioni possibili sugli stesssi.
 Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
-Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono anche essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
-Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati e forniscono una sufficente espressività per i nostri scopi.
+Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
+Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati.
 
 \begin{definition}[Finite State Automata]
     Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove:
@@ -20,18 +20,18 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti sono 
 \end{definition}
 
 \begin{remark}
-    Tipicamente è solito trovare anche una definizione alternativa ma equivalente in cui l'insieme degli stati di terminazione $\mathcal{F}$ non è presente, in tal caso assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
+    Tipicamente è solito trovare una definizione in cui è presente anche l'insieme degli stati di terminazione (o di accettazione) $\mathcal{F}$. In questo caso non è stato definito e pertanto assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
 \end{remark}
 
 \begin{remark}
-    Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}) e distinto dalla nozione di DFA (\emph{Deterministic Finite Automata}).
+    Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}). Una sottoclasse particolarmente rilevante è quella dei DFA (\emph{Deterministic Finite Automata}) che andremo a definire di seguito.
 \end{remark}
 
 \begin{definition}[Deterministic Finite Automata]
     Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
 \end{definition}
 Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono ne l'utilizzo di $\epsilon$ transizioni, ne l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
-In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
+In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente anche se quest'ultimo spesso ha un numero maggiore di stati rispetto all' NFA di partenza. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
 
 \begin{definition}[$\epsilon$ closure]
     Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s), il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
@@ -70,7 +70,7 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
 
 \subsection{Minimizzazione}
-Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare rigurado sulla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
+Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazzione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
 L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la lettereatura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
 Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
 L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
@@ -181,8 +181,8 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
 \end{figure}
 
 \section{Choreography Automata}
-Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{Choreography} e \emph{Choreography Automata}\cite{Choreography_Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece sono inece un'\emph{implementazione} possibile per questo modello. In questo caso noi stiamo scegliendo di implementare le Choreographies tramite degli Automi a Stati Finiti ma questo non esclude altre possibili implementazioni equivalenti alla nostra.\\
-Per prima cosa ricordiamo che le Choreographies hanno due tipologie di \emph{view} possibili:
+Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{coreografia} e \emph{Choreography Automata}\cite{Choreography_Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece un'\emph{istanza} possibile per questo modello. In questo caso noi stiamo scegliendo di rappresentare le coreografie tramite degli Automi a Stati Finiti ma questo non esclude altre possibili realizzazioni.\\
+Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
     \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscano tra loro.
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
@@ -214,11 +214,11 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
     \end{itemize}
 \end{definition}
 \begin{remark}
-    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibie, come vedremo anche più avanti in questo lavoro, ma si tende ad evitare per avere delle composizioni tra automi piu corrette.
+    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibile, come vedremo anche più avanti in questo lavoro.
 \end{remark}
 
 \subsection{CFSM e Local Views}
-Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dalla view globale. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
+Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
 \begin{definition}[Communicating Finite-State Machine]
     \label{def:CommunicatingFiniteStateMachine}
@@ -228,11 +228,12 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
-Dunque il \emph{soggetto} di un'azione in input "A B ? m" è A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM con cha ha tutte e sole le transizioni con soggetto A. Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
-Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
+Dunque il \emph{soggetto} di un'azione in input "A B ? m" è A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A. Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
+Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata. \\
+Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione per indicare che esiste una transizione da $s_1$ a $s_2$ con label a, formalmente $\exists a \in \mathcal{L}_{act}, s_1, s_2 \in \mathcal{S}. \delta(s_1, a) = s_2$.
 
 \begin{definition}[Proiezione]
-    La proiezione su A di una transizione $t = s$ $\xrightarrow{a}$ $s_{2}$ di un Choreography Automata, scritta $t\downarrow_{A}$ è definita come:
+    La proiezione su A di una transizione $t = s_1$ $\xrightarrow{a}$ $s_2$ di un Choreography Automata, scritta $t\downarrow_{A}$ è definita come:
     \begin{equation*}
         t \downarrow_{A} =
         \begin{cases}
@@ -247,7 +248,7 @@ La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \r
 \\ \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
-Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è nondeterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente in \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
+Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è nondeterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
 
 \begin{figure}[ht]
     \centering

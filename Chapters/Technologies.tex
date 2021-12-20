@@ -1,6 +1,7 @@
 % "Technology stack" chapter
 \chapter{Tecnologie e librereie utilizzate}
 \section{Go (golang)}
+\subsection{Overview}
 Go\cite{Go_Wikipedia} (anche chiamato {golang}) e' un linguaggio di programmazione \emph{general purpose} open source sviluppato nel 2007 da Robert Griesemer, Rob Pike e Ken Thompson e poi supportato da Google stesso negli anni a seguire. Fortemente ispirato al C presenta una sintasssi minimale e molto semplice, Go e' \emph{statically typed} e fornisce un \emph{Garbage Collector} lasciando comunque all'utente la possibilita' di interagire con i puntatori e allocare dinamicamente la memoria in modo autonomo.\\
 Alcuni dei problemi che Go mira a risolvere sono
 \begin{itemize}
@@ -11,7 +12,18 @@ Alcuni dei problemi che Go mira a risolvere sono
 Altre feauture del linguaggio degne di nota sono: il package manager della \emph{standard library} e l'ecosistema di pacchetti totalmente ditribuito e librerie disponibili, e la grande varieta' di architetture supportate (comprensive di \emph{microcontroller} e \emph{embedded systems}).\\
 Go e' stato utilizzato nello sviluppo di tecnologie celeberrime come Docker e Kubernetes e attualmente viene utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
 
-%TODO ADD CITATION TO CORINNE PAPER
+\subsection{Costrutti di concorrenza}
+Come accennato sopra Go fornisce un approccio semplificato e built-in alla concorrenza e alla gestione della stessa, il linguaggio permette di avviare dei processi leggeri chiamati e Goroutine e scambiare messaggi tra quest'ultimi adottando entrambi i tipi di comunicazione \emph{sincrona} o \emph{asincrona} in base alle necessita' dell'utente finale.\\
+Introduciamo brevemente i principali costrutti di concorrenza messi a disposizione dal linguaggio:
+\begin{itemize}
+    \item \textbf{Canali}: Go fornisce un tipo di dato built-in \emph{chan} su cui e' possibile fare operazioni di \emph{send} e \emph{receive}, la comunicazione sugli stessi puo' essere sia sincrona che asincrona.
+    \item \textbf{Goroutine}: E' possibile far partire delle Goroutine anteponendo la keyword go ad una qualsiasi function call, questa funzione verra' eseguita in un contesto separato e parallelo rispetto al thread che l'ha creato.
+    \item \textbf{Select}: Un costrutto particolare che permette eseguire operazioni di invio o ricezione su piu' canali ed eseguire la prima, tra queste operazioni, che non sia bloccante.
+\end{itemize}
+Oltre a questi costrutti sono disponibili altri tipi di dato e costrutti \emph{classici} come i \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi.
+
+% TODO Add code example
+
 \section{Graphviz e DOT}
 Vista la necessita' di \emph{rappresentare} in qualche modo il Choreography Automata finale e gli eventuali risultati intermedi si e' reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi, si puo' dire che i secondi siano una generalizzazione dei primi, abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
 Abbiamo quindi scelto di usare Graphviz\cite{Graphviz_Wikipedia}, una librearia open source per la visualizzazione di grafi il quale utiliza DOT\cite{DOT_Wikipedia}, un formato specificatamente progettato per la descrizione dei grafi.\\
@@ -33,5 +45,3 @@ Di seguto un mostriamo un esempio banale di Choreography Automata definito attra
     }
 \end{lstlisting}
 Chiaramente i Choreography Automata generati da Choreia non saranno cosi' semplici e immediati, ciononostante dovrebbe essere comunque possibile interagirvi e comprenderli.
-
-\section{Altre librerie} % TODO Keep this section 

@@ -1,5 +1,5 @@
 % "Changes and adaptations" chapter
-\chapter{Adattamento del modello}
+\chapter{Coreografie per Go}
 \section{Obiettivi e problematiche}
 L'obiettivo del progetto, ad lato livello, e' quello di prendere del codice sorgente \emph{Go} ed estarre in qualche modo il Choreography Automata associato a quel programma e che esprima in particolare come i processi interagiscono tra loro durante l'esecuzione.\\
 L'esecuzione del nostro programma si divide in quattro fasi:
@@ -21,16 +21,11 @@ L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l
 
 Come possiamo vedere il programma mostrato e' in realta' alquanto banale il processo \emph{main} genera un intero random che poi invia su un canale precedentemente condiviso con i due processi \emph{worker}, uno dei due processi ricevera' questo intero lo incrementera' e poi lo reinviera' su un canale di output con in aggiunta un timestamp del momento dell'invio. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale "in" ne' entrambi i valori inviati sul canale "out". \\\\
 Una possibile soluzione a questo tipo di problemi puo' essere quello di utilizzare un tipo di analisi detta dinamica dove essenzialmente si osserva il programma mentre questo esegue e si raccolgono dati di esecuzione a runtime, questo tipo di analisi risolverebbe il problema posto sopra ma allo stesso tempo ne introrubbe alcuni nuovi. L'analisi dinamica presenta per esempio problemi di \emph{incompletezza dei dati} per esempio: prendiamo un costrutto \emph{if-then-else}, sappiamo che a \emph{runtime} l'esecuzione entrera' in uno o nell'altro ramo questo tuttavia significa che saremo in grado di estrarre informazioni solo riguardanti il ramo in cui l'esecuzione si e' svolta e non conosceremo nulla di quanto succede nell'altro. Questo problema diventa ancora piu' evidente per codice che non e' \emph{centrale} nel nostro programma, ovvero quel codice che non essendo \emph{core} viene eseguito di rado e solo al sussistere di condizioni particolari.\\\\
-% TODO: Add citation to SW Eng. paper
 La soluzione adottata qui e' in realta' molto semplice: prendiamo $\mathcal{M}$ non come l'insieme dei messaggi scambiati tra i partecipante ma come l'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica e non limitano l'espressivita' del modello. Nel caso della figura sopra $\mathcal{M}$ sara' definito come segue: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $int \xrightarrow{payload} main$.
 
 \subsection{Peculiarita' di Go}
-Visto che il progetto deve gestire del codice sorgente Go e' bene considerare delle particolarita' del linguaggio in modo da adattare il modello teorico al linguaggio stesso. Introduciamo brevemente gli strumenti di concorrenza messi a disposizione dal linguaggio:
-\begin{itemize}
-    \item \textbf{Canali}: Go fornisce un tipo di dato built-in \emph{chan} su cui e' possibile fare operazioni di \emph{send} e \emph{receive}, la comunicazione sugli stessi puo' essere sia sincrona che asincrona.
-    \item \textbf{Goroutine}: E' possibile far partire delle Goroutine anteponendo la keyword go ad una qualsiasi function call, questa funzione verra' eseguita in un contesto separato e parallelo rispetto al thread che l'ha creato.
-    \item \textbf{Select}: Un costrutto particolare che permette eseguire operazioni di invio o ricezione su piu' canali ed eseguire la prima, tra queste operazioni, che non sia bloccante.
-\end{itemize}
+Visto che il progetto deve gestire del codice sorgente Go e' bene considerare delle particolarita' del linguaggio in modo da adattare il modello teorico al linguaggio stesso. 
+%TODO linkt this up with the next phrase
 Mentre i canali e il costrutto sintattico "select" non generano particolari problemi o conflitti con il modello teorico attuale lo stesso non si puo' dire per le Goroutine, in particolare il problema sta nel fatto che le Goroutine siano intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \emph{main}), sara' poi questa durante la sua esecuzione a farne partire altre, le quali a loro volta potranno avviarne altre ancora e cosi via.
 Il problema che sorge da questo approccio deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano gia' avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi e' stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante, ci serve determinare il momento esatto in cui una view locale (risp. Goroutine) inizia a interagire con le altre.\\ \\
 Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
@@ -51,6 +46,5 @@ Per fare questo possiamo estendere la definizione di Choreography Automata e di 
     Seppur non interessante per gli scopi di questa tesi e' possibile adattare la nozione di proiezione in modo che tenga in considerazione di transizione del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
 \end{remark}
 
-\newpage % TODO Remove this line
-\section{Algoritmo di Riconciliazione}
-TODO
+\section{Generazione della coreografia}
+TODO % TODO
