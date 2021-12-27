@@ -1,14 +1,14 @@
 % "Tool description" chapter
 \chapter{Descrizione del tool}
-Choreia e' il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte al capitolo descritte precedentemente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal sorgente in formato DOT.
-Choreia e' un software libero con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. E' disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia} \\
+Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte al capitolo descritte precedentemente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal sorgente in formato DOT.
+Choreia è un software libero con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia} \\
 Il nome \emph{Choreia} deriva dalla medesima parola greca da cui deriva Coreografia parola composta da \emph{choreia}, "danza" e \emph{graphè}, scrittura.
 
 \section{Struttura del progetto}
 
 \section{Parametri da linea di comando}
-Il tool non ha una GUI in quanto, almeno per gli scopi attuali, non e' necessaria: infatti non e' stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
-Tuttavia e' possibile tramite \emph{command line} fornire alcuni parametri e flags per un utilizzo \emph{personalizzato}, di seguito troviamo una spiegazone di ognuno di essi:
+Il tool non ha una GUI in quanto, almeno per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
+Tuttavia è possibile tramite \emph{command line} fornire alcuni parametri e flags per un utilizzo \emph{personalizzato}, di seguito troviamo una spiegazone di ognuno di essi:
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l l}
@@ -22,7 +22,7 @@ Tuttavia e' possibile tramite \emph{command line} fornire alcuni parametri e fla
 \end{table}
 
 \section{Input}
-Il tool prende ha come unico input \emph{obbligatorio} un path (relativo o assoluto) ad un file .go dal quale verranno estratti i metadati, generati gli automi parziali e infine il Choreography Automata completo da mostrare all'utente. Un ulteriore requisito e' che il file dato in input deve essere un programma \emph{self-contained}, ovverro tutte le funzioni chiamate all'interno del file devono essere dichiarate all'interno del file stesso (eccezione fatta per le funzione messe a disposizione dalla \emph{standard library}), questo perche' attualmente Choreia non sopporta i moduli ne locali ne installati come dipendenze tramite il package manager. Altro requisito piu' banale e' che il file fornito deve contenere almeno la funzione main, questo perche' questa funzione essendo l'entrypoint del programma Go viene usata internamente per l'estrazione di tutte le local views, se cosi' non fosse l'esecuzione terminera' con errore e non verra' restituito nulla all'utente.
+Il tool prende ha come unico input \emph{obbligatorio} un path (relativo o assoluto) ad un file .go dal quale verranno estratti i metadati, generati gli automi parziali e infine il Choreography Automata completo da mostrare all'utente. Un ulteriore requisito è che il file dato in input deve essere un programma \emph{self-contained}, ovverro tutte le funzioni chiamate all'interno del file devono essere dichiarate all'interno del file stesso (eccezione fatta per le funzione messe a disposizione dalla \emph{standard library}), questo perchè attualmente Choreia non sopporta i moduli ne locali ne installati come dipendenze tramite il package manager. Altro requisito più banale è che il file fornito deve contenere almeno la funzione main, questo perchè questa funzione essendo l'entrypoint del programma Go viene usata internamente per l'estrazione di tutte le local views, se così non fosse l'esecuzione terminerà con errore e non verrà restituito nulla all'utente.
 
 \section{Flusso d'esecuzione}
 
