@@ -1,32 +1,24 @@
 % "Changes and adaptations" chapter
 \chapter{Coreografie per Go}
-\section{Obiettivi e problematiche}
-L'obiettivo del progetto, ad lato livello, è quello di prendere del codice sorgente \emph{Go} ed estarre in qualche modo il Choreography Automata associato a quel programma e che esprima in particolare come i processi interagiscono tra loro durante l'esecuzione.\\
-L'esecuzione del nostro programma si divide in quattro fasi:
+\section{Outline}
+L'obiettivo del progetto, ad alto livello, è quello di prendere del codice sorgente \emph{Go} ed estrarre il Choreography Automata che esprima come le Goroutine interagiscono tra loro durante l'esecuzione del programma, in modo da tale da fornire uno strumento allo sviluppatore per \emph{visualizzare} il sistema concorrente.\\
+Concettualmente possiamo dividere questo obiettivo in 4 fasi:
 \begin{enumerate}
-    \item \textbf{Parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstact Syntax Tree} (AST)
-    \item \textbf{Analisi statica}: Viene navigato l'AST estraendo tutte le informazioni necessarie (i metadati) e salvandole in strutture dati appropriate.
-    \item \textbf{Estrazione delle local views}: Partendo dai metadati si generano le local views dei vari processi (o attori).
-    \item \textbf{Riconcialiazione}: Ottenere partendo dalle view locali un singolo Choreography Automata che rappresenti l'intera coreografia del sistema (view globale).
+    \item \textbf{Validazione e parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstact Syntax Tree} (AST).
+    \item \textbf{Estrazione dei metadati}: Viene navigato l'AST estraendo tutte le informazioni necessarie (i metadati relativi a funzioni, canali, ecc) e salvandole in strutture dati appropriate.
+    \item \textbf{Derivazione delle local views}: Partendo dai metadati si derivano le local views delle varie Goroutine (gli attori del sistema concorrente).
+    \item \textbf{Generazione della coreografia}: Dalle local view ottenute, è necessario generare un singolo Choreography Automata che rappresenti l'intera Coreografia del sistema (la view globale).
 \end{enumerate}
-Questo approccio è chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{Top-Down}, infatti abbiamo visto come, partendo dal Choreography Automata possiamo ricavare le singole view locali attraverso l'operazione di \emph{Proiezione}.\\
+Questo approccio è chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{Top-Down}, abbiamo visto infatti come sia possibile, partendo dal Choreography Automata ricavare le singole view locali attraverso l'operazione di \emph{Proiezione}.\\
 Come accennato sopra si rende necessaria l'implementazione di un'operazione opposta alla proiezione, chiamata \emph{riconciliazione} che permetta di ottenere un view globale a partire dalle sue singole componenti, ovvero le view locali.
 
-\subsection{Limiti dell'analisi statica} \label{subsec:Static_Analysis_Limits}
-Per quanto riguarda la fase di estrazione dei metadati, esplicata brevemente sopra, sorge una inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messagi non è determinabile in maniera precisa attraverso l'analisi statica.
-Questo tipo di analisi viene effettuata infatti utilizzando solo il codice sorgente e ricavando dei dati senza eseguire in alcun modo il codice stesso (per questo motivo è detta \emph{statica}) e nel caso di Go e altri linguaggi non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutti i messaggi, questo perchè detto valore può essere soggetto a vari tipi di \emph{side effect} durante l'esecuzione, può essere legato a parametri temporali (timestamp o chron) o input forniti dall'utente. Tutti questi \emph{aspetti}  non sono \emph{catturabili}\cite{Static_Analysis} attraverso l'analisi statica e dunque devono essere  gestiti in maniera oppurtuna.\\ \\
-L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l'analisi statica non riesce a catturare i valori effettivi dei vari messaggi scambiati tra i processi:
-
-\lstinputlisting[language=Go]{Snippets/DynamicAnalysis.go}
-Come possiamo vedere il programma mostrato è in realtà alquanto banale il processo \emph{main} genera un intero random che poi invia su un canale precedentemente condiviso con i due processi \emph{worker}, uno dei due processi riceverà questo intero lo incrementerà e poi lo reinvierà su un canale di output con in aggiunta un timestamp del momento dell'invio. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale "in" nè entrambi i valori inviati sul canale "out". \\\\
-Una possibile soluzione a questo tipo di problemi può essere quello di utilizzare un tipo di analisi detta dinamica dove essenzialmente si osserva il programma mentre questo esegue e si raccolgono dati di esecuzione a runtime, questo tipo di analisi risolverebbe il problema posto sopra ma allo stesso tempo ne introrubbe alcuni nuovi. L'analisi dinamica presenta per esempio problemi di \emph{incompletezza dei dati} per esempio: prendiamo un costrutto \emph{if-then-else}, sappiamo che a \emph{runtime} l'esecuzione entrerà in uno o nell'altro ramo questo tuttavia significa che saremo in grado di estrarre informazioni solo riguardanti il ramo in cui l'esecuzione si è svolta e non conosceremo nulla di quanto succede nell'altro. Questo problema diventa ancora più evidente per codice che non è \emph{centrale} nel nostro programma, ovvero quel codice che non essendo \emph{core} viene eseguito di rado e solo al sussistere di condizioni particolari.\\\\
-La soluzione adottata qui è in realtà molto semplice: prendiamo $\mathcal{M}$ non come l'insieme dei messaggi scambiati tra i partecipante ma come l'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica e non limitano l'espressività del modello. Nel caso della figura sopra $\mathcal{M}$ sarà definito come segue: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
+\subsection{Problematiche generali}
+TODO MOVE TO CHAPTER 5 ?
 
 \subsection{Peculiarità di Go}
-Visto che il progetto deve gestire del codice sorgente Go è bene considerare delle particolarità del linguaggio in modo da adattare il modello teorico al linguaggio stesso.
-%TODO linkt this up with the next phrase
-Mentre i canali e il costrutto sintattico "select" non generano particolari problemi o conflitti con il modello teorico attuale lo stesso non si può dire per le Goroutine, in particolare il problema sta nel fatto che le Goroutine siano intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \emph{main}), sarà poi questa durante la sua esecuzione a farne partire altre, le quali a loro volta potranno avviarne altre ancora e cosi via.
-Il problema che sorge da questo approccio deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi è stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante, ci serve determinare il momento esatto in cui una view locale (risp. Goroutine) inizia a interagire con le altre.\\ \\
+Dal momento che serve gestire in input del codice sorgente Go è bene considerare le particolarità del linguaggio in modo da adattare il modello teorico allo stesso e \emph{risolvere} le eventuali incongruenze.\bigskip \\
+Mentre aspetti tipici di Go come i canali e il costrrutto \texttt{select} non generano particolari conflitti con il modello teorico lo stesso non si può dire per le Goroutine: quest'ultime sono intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \texttt{main} e che si comporta come \emph{entry point} del programma stesso) sarà poi questa, durante la sua esecuzione, ad avviarne altre, quest'ultime a loro volta potranno avviarne altre ancora e cosi via.
+Il problema deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi è stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale, senza questo ulteriore controllo si potrebbero verificare delle inconsistenze.\bigskip \\
 Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
 \begin{definition}[Choreography Automata (Estesa)]
@@ -44,6 +36,30 @@ Per fare questo possiamo estendere la definizione di Choreography Automata e di 
 \begin{remark}
     Seppur non interessante per gli scopi di questa tesi è possibile adattare la nozione di proiezione in modo che tenga in considerazione di transizione del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
 \end{remark}
+
+\section{Validazione e parsing}
+Prima ancora di preoccuparsi della generazione del Choreography Automata, serve valutare la \emph{bontà} degli input forniti. Banalmente se il programma fornito in input non rispetta le regole del linguaggio Go (oppure il file fornito non è nemmeno un codice sorgente Go) non ci si può aspettare che venga generato un AST valido dallo stesso, da quest'ultimo non potranno essere estratti metadati corretti e così via lungo tutta la catena di operazioni definite sopra.\\
+Una volta validati gli input forniti possiamo passare alla fase di \emph{parsing}, il parsing è un'operazione comune a tutti i linguaggi di programmazione, siano essi interpretati o compilati, infatti è l'operazione che permette di trasformare una generica stringa di codice sorgente in una rappresentazione intermedia, l' \emph{Abstract Syntax Tree} o AST , il quale può essere utilizzato dal compilatore nelle fasi successive come ottimizzazione e generazione del codice macchina.\\
+L'AST non è solo importante per un compilatore ma in generale è necessario per chiunque, come nel nostro caso, sia interessato a fare qualche tipo di analisi o operazione sul codice sorgente di un programma. Trasformare il codice sorgente in un AST ha vari vantaggi, innanzitutto diventa possibile navigare delle strutture dati ben definite e chiare anziichè dover ricavare tutte le informazioni da una singolo stringa arbitrariamente lunga, dalla possibilità di navigare l'albero di sintassi ne coonsegue la possibilità di ricavare dei dati dallo stesso, eseguire trasformazioni o verificare che l'albero (risp. il codice sorgente) verifichi certe prorietà.
+
+
+\section{Estrazione dei metadati}
+Per estrarre i metadati
+
+\subsection{Limiti dell'analisi statica} \label{subsec:Static_Analysis_Limits}
+Per quanto riguarda la fase di estrazione dei metadati, esplicata brevemente sopra, sorge una inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messagi non è determinabile in maniera precisa attraverso l'analisi statica.
+Questo tipo di analisi viene effettuata infatti utilizzando solo il codice sorgente e ricavando dei dati senza eseguire in alcun modo il codice stesso (per questo motivo è detta \emph{statica}) e nel caso di Go e altri linguaggi non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutti i messaggi, questo perchè detto valore può essere soggetto a vari tipi di \emph{side effect} durante l'esecuzione, può essere legato a parametri temporali (timestamp o chron) o input forniti dall'utente. Tutti questi \emph{aspetti}  non sono \emph{catturabili}\cite{Static_Analysis} attraverso l'analisi statica e dunque devono essere  gestiti in maniera oppurtuna.\\ \\
+L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l'analisi statica non riesce a catturare i valori effettivi dei vari messaggi scambiati tra i processi:
+
+\lstinputlisting[language=Go]{Snippets/DynamicAnalysis.go}
+Come possiamo vedere il programma mostrato è in realtà alquanto banale il processo \emph{main} genera un intero random che poi invia su un canale precedentemente condiviso con i due processi \emph{worker}, uno dei due processi riceverà questo intero lo incrementerà e poi lo reinvierà su un canale di output con in aggiunta un timestamp del momento dell'invio. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale "in" nè entrambi i valori inviati sul canale "out". \\\\
+Una possibile soluzione a questo tipo di problemi può essere quello di utilizzare un tipo di analisi detta dinamica dove essenzialmente si osserva il programma mentre questo esegue e si raccolgono dati di esecuzione a runtime, questo tipo di analisi risolverebbe il problema posto sopra ma allo stesso tempo ne introrubbe alcuni nuovi. L'analisi dinamica presenta per esempio problemi di \emph{incompletezza dei dati} per esempio: prendiamo un costrutto \emph{if-then-else}, sappiamo che a \emph{runtime} l'esecuzione entrerà in uno o nell'altro ramo questo tuttavia significa che saremo in grado di estrarre informazioni solo riguardanti il ramo in cui l'esecuzione si è svolta e non conosceremo nulla di quanto succede nell'altro. Questo problema diventa ancora più evidente per codice che non è \emph{centrale} nel nostro programma, ovvero quel codice che non essendo \emph{core} viene eseguito di rado e solo al sussistere di condizioni particolari.\\\\
+La soluzione adottata qui è in realtà molto semplice: prendiamo $\mathcal{M}$ non come l'insieme dei messaggi scambiati tra i partecipante ma come l'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica e non limitano l'espressività del modello. Nel caso della figura sopra $\mathcal{M}$ sarà definito come segue: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
+
+\subsection{Gestione degli stati finali}
+TODO KEEP THIS
+
+\section{Derivazione delle local views}
 
 \section{Generazione della coreografia}
 TODO % TODO
