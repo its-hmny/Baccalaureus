@@ -22,14 +22,14 @@ Il problema deriva dal fatto che nella definizione di Choreography Automata si a
 Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
 \begin{definition}[Choreography Automata (Estesa)]
-    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\\ \\
-    \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$}\\ \\
+    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\bigskip \\
+    \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$} \\ \\
     con $\mathcal{L}_{int}$ e $\mathcal{P}$ definiti come in \ref{def:Choreography_Automata} e $\mathcal{M}$ definito come in \ref{subsec:Static_Analysis_Limits}
 \end{definition}
 
 \begin{definition}[Communicating Finite-State Machine (Estesa)]
     Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
-    \\ \\
+    \bigskip \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m, A $\bigtriangleup$ B $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
 \end{definition}
 
@@ -44,22 +44,22 @@ L'AST non è solo importante per un compilatore ma in generale è necessario per
 
 
 \section{Estrazione dei metadati}
-Per estrarre i metadati
+Una volta ottenuto un AST valido, serve estrarre i metadati necessari da quest'ultimo. Per gli scopi di questa tesi siamo interessati ad estrarre informazioni sui canali, per esempio: il nome della variabile associata, il \emph{tipo} di messaggi che possono essere scambiati sullo stesso e la tipologia del canale (\emph{buffered} o \emph{unbuffered}) con particolare distinzione tra canali dichiarati nello scope globale e quelli dichiaratie in uno scope locale. Inoltre siamo interessati ad estrarre metadati dalle \emph{function declarations} come: il nome della funzione, canali dichiarati nello scope della stessa e un FSA che rappresenti il flusso d'esecuzione all'interno della funzione stessa (detto Scope Automata). Inoltre vogliamo memorizzare eventuali \emph{parammetri formali} della funzione che richiedono trattamenti particolari come canali o \emph{callback functions}, infatti i canali passati come parametro dal chiamante dovranno poi essere \emph{sostituiti} nel momento in cui la funzione viene chiamata o avviata come Goroutine da un'altra funzione. \bigskip \\
+Questa estrazione dei metadati avviene tramite analisi statica, una tecnica di analisi descritta al capitolo \ref{cap:Preliminaries}. Questa tecnica è preferibile rispetto all'analisi dinamica poichè non richiede alcun tipo di esecuzione e quindi protegge da programmi potenzialmente pericolosi e sconosciuti, evita lo scaricamento di eventuali dipendenze per il programma in input e in generale fornisce una visione più ampia e meglio approssimata per i nostri scopi senza richiedere profilazioni multiple. Infatti utilizzando analisi dinamica per questo progetto otterremmo per ogni profilazione eseguita solo un sottografo del Choreography Automata finale che rappresenta il particolare percorso intrapreso dalla Coreografia durante quella esecuzione e non l'intera Coreografia.
 
 \subsection{Limiti dell'analisi statica} \label{subsec:Static_Analysis_Limits}
-Per quanto riguarda la fase di estrazione dei metadati, esplicata brevemente sopra, sorge una inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messagi non è determinabile in maniera precisa attraverso l'analisi statica.
-Questo tipo di analisi viene effettuata infatti utilizzando solo il codice sorgente e ricavando dei dati senza eseguire in alcun modo il codice stesso (per questo motivo è detta \emph{statica}) e nel caso di Go e altri linguaggi non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutti i messaggi, questo perchè detto valore può essere soggetto a vari tipi di \emph{side effect} durante l'esecuzione, può essere legato a parametri temporali (timestamp o chron) o input forniti dall'utente. Tutti questi \emph{aspetti}  non sono \emph{catturabili}\cite{Static_Analysis} attraverso l'analisi statica e dunque devono essere  gestiti in maniera oppurtuna.\\ \\
-L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l'analisi statica non riesce a catturare i valori effettivi dei vari messaggi scambiati tra i processi:
-
+Anche per questa fase sorge un'inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messagi non è determinabile in maniera precisa attraverso l'analisi statica. La definizione \ref{def:Choreography_Automata} sembra suggerire che esista un numero finito e definito di messaggi scambiabili tra i vari attori tuttavia questo insieme non è calcolabile con l'approccio utilizzato.
+Ricordiamo infatti che questo tipo di analisi viene effettuata utilizzando solo il codice sorgente e ricavando dei dati senza mai eseguire il codice, in generale non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutte le variabili (e dunque tutti i messaggi inviati), questo perchè tale valore può essere soggetto a svariati \emph{side effect} durante l'esecuzione o può essere legato a parametri temporali (p.e. timestamp), input forniti dall'utente o altri valori ricavabili solo a runtime. Questi \emph{aspetti} non sono \emph{catturabili} attraverso l'analisi statica e dunque devono essere  gestiti in maniera oppurtuna. \bigskip \\
+L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l'analisi statica non riesce a catturare i valori effettivi dei vari messaggi scambiati tra i processi: \\
 \lstinputlisting[language=Go]{Snippets/DynamicAnalysis.go}
-Come possiamo vedere il programma mostrato è in realtà alquanto banale il processo \emph{main} genera un intero random che poi invia su un canale precedentemente condiviso con i due processi \emph{worker}, uno dei due processi riceverà questo intero lo incrementerà e poi lo reinvierà su un canale di output con in aggiunta un timestamp del momento dell'invio. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale "in" nè entrambi i valori inviati sul canale "out". \\\\
-Una possibile soluzione a questo tipo di problemi può essere quello di utilizzare un tipo di analisi detta dinamica dove essenzialmente si osserva il programma mentre questo esegue e si raccolgono dati di esecuzione a runtime, questo tipo di analisi risolverebbe il problema posto sopra ma allo stesso tempo ne introrubbe alcuni nuovi. L'analisi dinamica presenta per esempio problemi di \emph{incompletezza dei dati} per esempio: prendiamo un costrutto \emph{if-then-else}, sappiamo che a \emph{runtime} l'esecuzione entrerà in uno o nell'altro ramo questo tuttavia significa che saremo in grado di estrarre informazioni solo riguardanti il ramo in cui l'esecuzione si è svolta e non conosceremo nulla di quanto succede nell'altro. Questo problema diventa ancora più evidente per codice che non è \emph{centrale} nel nostro programma, ovvero quel codice che non essendo \emph{core} viene eseguito di rado e solo al sussistere di condizioni particolari.\\\\
-La soluzione adottata qui è in realtà molto semplice: prendiamo $\mathcal{M}$ non come l'insieme dei messaggi scambiati tra i partecipante ma come l'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica e non limitano l'espressività del modello. Nel caso della figura sopra $\mathcal{M}$ sarà definito come segue: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
-
+\bigskip
+Come possiamo vedere il programma mostrato è in realtà alquanto banale: la Goroutine \texttt{main} genera un intero random che poi invia su un canale precedentemente condiviso con le due Goroutine \texttt{worker}, uno dei due processi riceverà questo intero lo incrementerà per poi lo inviarlo nuovamente con un timestamp aggiuntivo. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale \texttt{in} nè entrambi i valori inviati sul canale \texttt{out}. \bigskip \\
+La soluzione adottata è in realtà molto semplice e permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
 \subsection{Gestione degli stati finali}
 TODO KEEP THIS
 
 \section{Derivazione delle local views}
+TODO % TODO
 
 \section{Generazione della coreografia}
 TODO % TODO
