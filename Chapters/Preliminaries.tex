@@ -222,8 +222,7 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
 
 \begin{definition}[Communicating Finite-State Machine]
     \label{def:CommunicatingFiniteStateMachine}
-    Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
-    \\ \\
+    Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels: \bigskip \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
@@ -245,7 +244,7 @@ Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione
     \end{equation*}
 \end{definition}
 La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ è ottenuta ricavando in primis l'automa intermedio:
-\\ \\
+\bigskip \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
 Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è nondeterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
@@ -284,7 +283,7 @@ A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
     \item \textbf{Testuale}: ovvero il codice sorgente, un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrive, ad alto livello, i passi che devono esere intrapresi durante la computazione. Questo formato è quello più utilizzata dagli umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
     \item \textbf{Binario}: il codice macchina (o codice eseguibile) generato dal compilatore (come nel nostro caso) o dall'interprete. Questo formato è difficilmente comprensibile da un umano, ma al contrario è perfettamente comprensibile per una macchina tant'è che può essere \emph{eseguito} dalla stessa.
 \end{itemize}
-Se consideriamo la definzione di programma come \emph{un insieme di istruzioni per arrivare ad un risultato finale partendo da input forniti} i formati sudedetti sono due rappresentazioni equivalenti del medesimo programma e dunque possono essere usate intercambiabilmente e senza alterare la \emph{sostanza} del programma stesso.\\\\
+Se consideriamo la definzione di programma come \emph{un insieme di istruzioni per arrivare ad un risultato finale partendo da input forniti} i formati sudedetti sono due rappresentazioni equivalenti del medesimo programma e dunque possono essere usate intercambiabilmente e senza alterare la \emph{sostanza} del programma stesso. \bigskip \\
 Tornando all'estrazione dei dati da un programma esistono due diverse di tecniche, legate fortemente al \emph{formato} del programma stesso:
 \begin{itemize}
     \item \textbf{Analisi statica}: questo tipo di analisi viene eseguita sul codice sorgente, estrando dei dati dallo stesso ma senza compilarlo ne eseguirlo. Questo tipo di analisi non considera e non è in grado di catturare il \emph{contesto d'esecuzione}, ovvvero i fattori esterni che possono influenzare l'esecuzione di un programma a \emph{runtime}.
@@ -292,5 +291,6 @@ Tornando all'estrazione dei dati da un programma esistono due diverse di tecnich
 \end{itemize}
 Entrambe le tecniche presentano i rispettivi vantaggi e svantaggi: l'analisi statica permette una visione più completa in tempo più breve poichè osservando il codice sorgente riesce a catturare tutti i possibili percorsi in cui un programma potrebbe entrare, al contrario l'analisi dinamica non permette di avere sempre una visione completa in quanto è limitata ad osservare solo il percorso che l'esecuzione ha preso in quel momento.
 Un esempio di questo comportamento è dato da un semplice costrutto come l'\texttt{if-then-else}: tramite l'analisi statica è possibile catturare con facilità entrambi i rami mentre tramite l'analisi dinamica è possibile solo osservare un ramo, quello che a runtime verifica la condizione specificata. Per questo specifico aspetto l'analisi dinamica restituisce dei dati \emph{parziali} e non è possibile fare assunzioni sul ramo che non è stato eseguito. Tuttavia l'approssimazione di queste informazioni può essere migliorata eseguendo più profilazioni con input diversi, si noti pero che questo non è sufficente a garantire che le informazioni siano complete ma solo meglio approssimate e inoltre il tempo richiesto per completare l'analisi diventa maggiore (proporzionale rispetto al numero di profilazioni).\\
-In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'inflluenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiamo sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\\ \\
+In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'inflluenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiamo sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\bigskip \\
 In conclusione, anche se le tecniche mostrate sopra prese singolarmente rappresentano un ottimo strumento per estrarre informazione da un programma, sono fondamentalmente complementari e vanno usate in combinazione per ottenre una visione \emph{completa} del programma stesso.
+% TODO Add ref to Static Analysis paper

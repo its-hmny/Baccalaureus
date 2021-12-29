@@ -20,10 +20,9 @@ Introduciamo brevemente i principali costrutti di concorrenza messi a disposizio
     \item \textbf{Goroutine}: è possibile far partire delle Goroutine anteponendo la keyword \texttt{go} ad una qualsiasi function call, questa funzione verrà eseguita in un contesto condiviso (si preservano gli \emph{scope} e le variabili locali) ma parallelo rispetto alla Goroutine che l'ha creato.
     \item \textbf{Select}: Un costrutto particolare che permette eseguire operazioni di invio o ricezione su più canali ed eseguire la prima, tra queste operazioni, che non sia bloccante, oltre a questo è possibile definire anche un blocco da eseguire una volta completata suddetta operazione. Opzionalmente è possibile definire un blocco di default che viene eseguito quando nessuna delle operazioni sopra può essere completata in maniera non bloccante.
 \end{itemize}
-Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi.
-
-\newpage
+Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi. \\
 \lstinputlisting[language=Go]{Snippets/GoConcurrency.go}
+\bigskip
 Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè attende di ricevere i vari messaggi da entrambi i canali contemporaneamente fintanto che entrambi non vengano chiusi per poi terminare.
 
 \section{Graphviz e DOT}
@@ -47,5 +46,3 @@ Di seguito un mostriamo un esempio banale di Choreography Automata definito attr
     }
 \end{lstlisting}
 Chiaramente i Choreography Automata generati da Choreia non saranno così semplici e immediati, ciononostante dovrebbe essere comunque possibile interagirvi e comprenderli.
-
-% TODO one section for each of the 4 phases in Choreia (parsing, static analysis, localv views extraction and reconciliation)
