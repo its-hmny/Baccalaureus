@@ -276,7 +276,7 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
 \end{figure}
 
 
-\section{Analisi statica e dinamica}
+\section{Analisi statica e dinamica} % TODO Rename section
 Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante ai fini di questi tesi. Considerando che l'obiettivo è quello di ottenere un Choreogaphy Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
 A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
 \begin{itemize}
@@ -294,3 +294,7 @@ Un esempio di questo comportamento è dato da un semplice costrutto come l'\text
 In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'inflluenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiamo sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\bigskip \\
 In conclusione, anche se le tecniche mostrate sopra prese singolarmente rappresentano un ottimo strumento per estrarre informazione da un programma, sono fondamentalmente complementari e vanno usate in combinazione per ottenre una visione \emph{completa} del programma stesso.
 % TODO Add ref to Static Analysis paper
+\subsection{Parsing e AST}
+Appurato che l'analisi statica estrae i dati dal formato \emph{testuale} del programma, serve capire come e' possibile ottenre informazioni da del codice sorgente Go.\bigskip\\
+Il \emph{parsing} e' l'operazione che permette di trasformare del codice sorgente in una struttura dati appropriata (l'\emph{Abstract Syntax Tree} o AST) dalla quale e' poi possibile ricavare informazioni in maniera semplificata rispetto al dover utilizzare e manipolare la stringa iniziale (il contenuto del file). Questa operazione non viene solo utilizzata nell'analisi statica ma e' anche una fase importante del processo di compilazione (o interpretazione) di qualunque linguaggio di programmazione, il compilatore infatti puo' utilizzare l'AST per ottimizzare il codice sorgente e, in seguito, per generare il codice binario.\\
+In generale, l'utilizzo di un AST fornisce vari vantaggi: il principale e' quello di avere una struttura dati ben definita e gerarchica. Da questo consegue che e' possibile navigare l'AST (in maniera molto simile ad una classica \emph{visita} su alberi) e questo permette di estrarre dati in maniera algoritmica dall'AST stesso. Inoltre, sempre grazie alla struttura gerarchica, e' possibile definire delle trasformazioni per la stessa o validare che rispetti certe proprieta'.
