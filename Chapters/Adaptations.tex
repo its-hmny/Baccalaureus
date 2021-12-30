@@ -21,13 +21,13 @@ Mentre aspetti tipici di Go come i canali e il costrrutto \texttt{select} non ge
 Il problema deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi è stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale, senza questo ulteriore controllo si potrebbero verificare delle inconsistenze.\bigskip \\
 Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
-\begin{definition}[Choreography Automata (Estesa)]
+\begin{definition}[Choreography Automata - Estesa]
     Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\bigskip \\
     \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$} \\ \\
     con $\mathcal{L}_{int}$ e $\mathcal{P}$ definiti come in \ref{def:Choreography_Automata} e $\mathcal{M}$ definito come in \ref{subsec:Static_Analysis_Limits}
 \end{definition}
 
-\begin{definition}[Communicating Finite-State Machine (Estesa)]
+\begin{definition}[Communicating Finite-State Machine - Estesa]
     Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels:
     \bigskip \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m, A $\bigtriangleup$ B $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
@@ -36,11 +36,6 @@ Per fare questo possiamo estendere la definizione di Choreography Automata e di 
 \begin{remark}
     Seppur non interessante per gli scopi di questa tesi è possibile adattare la nozione di proiezione in modo che tenga in considerazione di transizione del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
 \end{remark}
-
-\section{Validazione e parsing}
-Prima ancora di preoccuparsi della generazione del Choreography Automata, serve valutare la \emph{bontà} degli input forniti. Banalmente se il programma fornito in input non rispetta le regole del linguaggio Go (oppure il file fornito non è nemmeno un codice sorgente Go) non ci si può aspettare che venga generato un AST valido dallo stesso, da quest'ultimo non potranno essere estratti metadati corretti e così via lungo tutta la catena di operazioni definite sopra.\\
-Una volta validati gli input forniti possiamo passare alla fase di \emph{parsing}, il parsing è un'operazione comune a tutti i linguaggi di programmazione, siano essi interpretati o compilati, infatti è l'operazione che permette di trasformare una generica stringa di codice sorgente in una rappresentazione intermedia, l' \emph{Abstract Syntax Tree} o AST , il quale può essere utilizzato dal compilatore nelle fasi successive come ottimizzazione e generazione del codice macchina.\\
-L'AST non è solo importante per un compilatore ma in generale è necessario per chiunque, come nel nostro caso, sia interessato a fare qualche tipo di analisi o operazione sul codice sorgente di un programma. Trasformare il codice sorgente in un AST ha vari vantaggi, innanzitutto diventa possibile navigare delle strutture dati ben definite e chiare anziichè dover ricavare tutte le informazioni da una singolo stringa arbitrariamente lunga, dalla possibilità di navigare l'albero di sintassi ne coonsegue la possibilità di ricavare dei dati dallo stesso, eseguire trasformazioni o verificare che l'albero (risp. il codice sorgente) verifichi certe prorietà.
 
 
 \section{Estrazione dei metadati}
@@ -51,7 +46,7 @@ Questa estrazione dei metadati avviene tramite analisi statica, una tecnica di a
 Anche per questa fase sorge un'inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messagi non è determinabile in maniera precisa attraverso l'analisi statica. La definizione \ref{def:Choreography_Automata} sembra suggerire che esista un numero finito e definito di messaggi scambiabili tra i vari attori tuttavia questo insieme non è calcolabile con l'approccio utilizzato.
 Ricordiamo infatti che questo tipo di analisi viene effettuata utilizzando solo il codice sorgente e ricavando dei dati senza mai eseguire il codice, in generale non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutte le variabili (e dunque tutti i messaggi inviati), questo perchè tale valore può essere soggetto a svariati \emph{side effect} durante l'esecuzione o può essere legato a parametri temporali (p.e. timestamp), input forniti dall'utente o altri valori ricavabili solo a runtime. Questi \emph{aspetti} non sono \emph{catturabili} attraverso l'analisi statica e dunque devono essere  gestiti in maniera oppurtuna. \bigskip \\
 L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l'analisi statica non riesce a catturare i valori effettivi dei vari messaggi scambiati tra i processi: \\
-\lstinputlisting[language=Go]{Snippets/DynamicAnalysis.go}
+\lstinputlisting[language=Go, caption={Codice sorgente per cui non e' possibile calcolare $\mathcal{M}$ tramite analisi statica}, label={lst:DynamicAnalysis}]{Snippets/DynamicAnalysis.go}
 \bigskip
 Come possiamo vedere il programma mostrato è in realtà alquanto banale: la Goroutine \texttt{main} genera un intero random che poi invia su un canale precedentemente condiviso con le due Goroutine \texttt{worker}, uno dei due processi riceverà questo intero lo incrementerà per poi lo inviarlo nuovamente con un timestamp aggiuntivo. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale \texttt{in} nè entrambi i valori inviati sul canale \texttt{out}. \bigskip \\
 La soluzione adottata è in realtà molto semplice e permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.

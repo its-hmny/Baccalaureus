@@ -21,7 +21,7 @@ Introduciamo brevemente i principali costrutti di concorrenza messi a disposizio
     \item \textbf{Select}: Un costrutto particolare che permette eseguire operazioni di invio o ricezione su più canali ed eseguire la prima, tra queste operazioni, che non sia bloccante, oltre a questo è possibile definire anche un blocco da eseguire una volta completata suddetta operazione. Opzionalmente è possibile definire un blocco di default che viene eseguito quando nessuna delle operazioni sopra può essere completata in maniera non bloccante.
 \end{itemize}
 Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi. \\
-\lstinputlisting[language=Go]{Snippets/GoConcurrency.go}
+\lstinputlisting[language=Go, caption=Esempio di utilizzo dei costrutti di concorrenza forniti da Go]{Snippets/GoConcurrency.go}
 \bigskip
 Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè attende di ricevere i vari messaggi da entrambi i canali contemporaneamente fintanto che entrambi non vengano chiusi per poi terminare.
 
