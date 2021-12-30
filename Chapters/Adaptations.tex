@@ -10,14 +10,14 @@ Concettualmente possiamo dividere questo obiettivo in 4 fasi:
     \item \textbf{Generazione della coreografia}: Dalle local view ottenute, è necessario generare un singolo Choreography Automata che rappresenti l'intera Coreografia del sistema (la view globale).
 \end{enumerate}
 Questo approccio è chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{Top-Down}, abbiamo visto infatti come sia possibile, partendo dal Choreography Automata ricavare le singole view locali attraverso l'operazione di \emph{Proiezione}.\\
-Come accennato sopra si rende necessaria l'implementazione di un'operazione opposta alla proiezione, chiamata \emph{riconciliazione} che permetta di ottenere un view globale a partire dalle sue singole componenti, ovvero le view locali.
-
-\subsection{Problematiche generali}
-TODO MOVE TO CHAPTER 5 ?
+Come accennato sopra si rende necessaria l'implementazione di un'operazione opposta alla proiezione, chiamata \emph{riconciliazione} che permetta di ottenere un view globale a partire dalle sue singole componenti, ovvero le view locali. \\
+Il punto cruciale della nostra tecnica e' quello di \emph{approssimare} ogni funzione trovata all'interno del codice sorgente in un automa a stati finiti che ne rappresenti il flusso d'esecuzione. In particolare ogni transizione di questo automa rappresentera' un'interazione tra la funzione stessa e il resto della Coreografia. \bigskip \\
+Per ragioni di chiarezza e semplicita' questa tesi si concentra su un sottoinsieme di Go limitato all'utilizzo di canali, iterazione determinata sugli stessi, select statement, canali passati come parametro tra funzioni e creazione di nuove Goroutine. Altre \emph{feature} del linguaggio come \emph{selector expression}, \emph{anonymous functions}, \emph{high order function} o iterazioni su liste e mappe non sono attualmente supportare e potrebbero dunque causare delle inconsistenze durante l'esecuzione o nel Choreography Automata finale. \\
+Alcuni esempi di programmi che non sono supportati includono: programmi utilizzino ricorsione o spawn di Goroutine in ricorsione, programmi che utilizzano la riassegnazione dei canali (i canali sono assunti essere \emph{immutable}) o programmi che utilizzano collection (liste, mappe o altri tipi di strutture) contenenti canali o iterano sulle stesse. \\
 
 \subsection{Peculiarità di Go}
-Dal momento che serve gestire in input del codice sorgente Go è bene considerare le particolarità del linguaggio in modo da adattare il modello teorico allo stesso e \emph{risolvere} le eventuali incongruenze.\bigskip \\
-Mentre aspetti tipici di Go come i canali e il costrrutto \texttt{select} non generano particolari conflitti con il modello teorico lo stesso non si può dire per le Goroutine: quest'ultime sono intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \texttt{main} e che si comporta come \emph{entry point} del programma stesso) sarà poi questa, durante la sua esecuzione, ad avviarne altre, quest'ultime a loro volta potranno avviarne altre ancora e cosi via.
+Per gli scopi di questa tesi è bene considerare le particolarità di Go in modo da adattare il modello teorico allo stesso e \emph{risolvere} le eventuali incongruenze.\bigskip \\
+Mentre aspetti tipici di Go come i canali e il costrutto \texttt{select} non generano particolari conflitti con il modello teorico lo stesso non si può dire per le Goroutine: quest'ultime sono intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \texttt{main} e che si comporta come \emph{entry point} del programma stesso) sarà poi questa, durante la sua esecuzione, ad avviarne altre, quest'ultime a loro volta potranno avviarne altre ancora e cosi via.
 Il problema deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe invece sapere qaundo e da chi è stata avviata una Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale, senza questo ulteriore controllo si potrebbero verificare delle inconsistenze.\bigskip \\
 Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
@@ -49,12 +49,58 @@ L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l
 \lstinputlisting[language=Go, caption={Codice sorgente per cui non e' possibile calcolare $\mathcal{M}$ tramite analisi statica}, label={lst:DynamicAnalysis}]{Snippets/DynamicAnalysis.go}
 \bigskip
 Come possiamo vedere il programma mostrato è in realtà alquanto banale: la Goroutine \texttt{main} genera un intero random che poi invia su un canale precedentemente condiviso con le due Goroutine \texttt{worker}, uno dei due processi riceverà questo intero lo incrementerà per poi lo inviarlo nuovamente con un timestamp aggiuntivo. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale \texttt{in} nè entrambi i valori inviati sul canale \texttt{out}. \bigskip \\
-La soluzione adottata è in realtà molto semplice e permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
-\subsection{Gestione degli stati finali}
-TODO KEEP THIS
+La soluzione da noi adottata è in realtà molto semplice e permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
+
+\iffalse
+    \subsection{Gestione degli stati finali}
+    % TODO remove or discuss
+    % ? Should I discuss the approximation of final state with example of the fact that log.Fatal() which causes the program to exit with an error code + message should be handled as final state when encountered but it isn't since it would be mind blowing to determine every (also custom) method that has similar effect 
+\fi
 
 \section{Derivazione delle local views}
-TODO % TODO
+Una volta ottenuti tutti i metadati necessari sorge la necessita' di derivare dagli stessi le local views di ogni Gorountine creata durante l'esecuzione dell'intero programma, da queste poi potremmo procedere alla costruzione della global view.\bigskip\\
+Fortunamente in questo fase l'esistenza di una gerarchia \emph{intrinseca} nelle Goroutine ci e' di aiuto: sappiamo che inizialmente esiste solo una Goroutine, quella che esegue il \texttt{main}, e sara' questa ad avviare le altre \emph{in cascata}.
+
+% TODO ADD PRELIMINARIES NOTES ON INLINING AND FSA TRANSITION IN SCOPEAUTOMATA
+
+\begin{algorithm}
+    \caption{Derivazione delle local views}
+    \begin{algorithmic}
+        \State $grSet \gets \{ main \}$
+        \While{$\exists$ gr $\in grSet$ non marcato} \Comment{Per ogni Goroutine trovata}
+        \ForEach {$t \in gr$} \Comment{Per ogni transizione nell'FSA di questa Goroutine}
+        \If {$t.kind = Call$}
+        \State espande i parametri formali con quelli attuali
+        \State inline del chiamato all'interno del chiamante
+        \ElsIf {$t.kind = Spawn$}
+        \State espande i parametri formali con quelli attuali
+        \State $grSet \gets grSet \cup \{ t.target \}$
+        \EndIf
+        \EndFor
+        \State marca $gr$
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (AB) {$A,B$};
+        \node[state] (C) [right of=A] {$C$};
+        \node[state, accepting] (D) [right of=C] {$D$};
+        \draw
+        (AB) edge[loop above] node{$a$} (AB)
+        (AB) edge[above] node{$b$} (C)
+        (C) edge[loop above] node{$b$} (C)
+        (C) edge[bend left, above] node{$a$} (D)
+        (D) edge[bend left, above] node{$b$} (C)
+        (D) edge[bend left, below] node{$b$} (A);
+    \end{tikzpicture}
+    \space \space \space
+    \parbox{5cm}{Here will be put text}
+    \caption{La local views per i processoi \texttt{main} e \texttt{worker} visti in \ref{lst:DynamicAnalysis}}
+\end{figure}
 
 \section{Generazione della coreografia}
 TODO % TODO
