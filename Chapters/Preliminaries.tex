@@ -89,6 +89,29 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
     \end{algorithmic}
 \end{algorithm}
 
+\subsection{Prodotto}
+L'ultima operazione su Automi a Stati Finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e i rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi. Noi non la utilizzeremo in questo senso ma come step intermedio nella composizione di più Choreography Automata.
+
+\begin{definition}[Prodotto di automi]
+    \label{def:FSA_Product}
+    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{L}_1, \delta_1, \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ è definito come segue:
+    \begin{itemize}
+        \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
+        \item $s_0 = (s_{01}, s_{02})$
+        \item $\mathcal{L} = \mathcal{L}_1 \cup \mathcal{L}_2$
+        \item $\delta$ è invece definita nel seguente modo:
+    \end{itemize}
+    \begin{equation*}
+        \begin{cases}
+            \text{$\delta ((s_1, s_2), a) = \{ (x,y) | x \in \delta(s_1, a) \land y \in \delta(s_2, a) \}$ \hfill se $\delta_1$ e $\delta_2$ sono definite} \\
+            \text{non definito} \hfill \text{altrimenti}
+        \end{cases}
+    \end{equation*}
+\end{definition}
+\begin{remark}
+    Per quanto riguarda $\mathcal{F}$ si può procedere in due modi diversi: se siamo interessati all'unione dei due linguaggi allora $\mathcal{F} = \{(x,y) | x \in \mathcal{F}_1 \lor y \in \mathcal{F}_2 \} $ mentre se siamo interessati all'intersezione di tali linguaggi prenderemo $\mathcal{F} = \{(x,y) | x \in \mathcal{F}_1 \land y \in \mathcal{F}_2 \}$.
+\end{remark}
+
 \subsection{Esempi}
 Per concludere questa sezione mostriamo di seguito esempi dei vari concetti definiti in precedenza. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
 \begin{figure}[ht]
@@ -178,6 +201,51 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
     }
     \caption{Il DFA minimizzato ottenuto da quello in figura \ref{fig:Deterministic_Example}}
     \label{fig:Minimization_Example}
+\end{figure}
+\newpage % TODO remove newpage
+Concludiamo mostrando un esempio di prodotto tra due automi, prendiamo in considerazione i due automi di partenza:
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
+        % Automata 1
+        \node[state] (0) {$0$};
+        \node[state] (1) [right of=0] {$1$};
+        \node[state] (2) [right of=1] {$2$};
+        % Automata 2
+        \node[state] (3) [right of=2] {$0$};
+        \node[state] (4) [right of=3] {$1$};
+        % Product automata
+        \node[state] (5) [below of=0, right of=1] {$0, 0$};
+        \node[state] (6) [below of=0, right of=0] {$0, 1$};
+        \node[state] (7) [below of=0, left of=4] {$0, 2$};
+        \node[state] (9) [below of=6] {$1, 0$};
+        \node[state] (8) [below of=5] {$1, 1$};
+        \node[state] (10) [below of=7] {$1, 2$};
+
+        \draw
+        % Automata 1
+        (0) edge[bend left, above] node{$a$} (1)
+        (1) edge[bend left, above] node{$b$} (2)
+        (2) edge[bend left, below] node{$c$} (0)
+        % Automata 2
+        (3) edge[bend left, above] node{$a$} (4)
+        (4) edge[bend left, below] node{$a$} (3)
+        % Product Automata
+        (5) edge node{$a$} (6)
+        (5) edge[bend left] node{$a$} (8)
+        (6) edge[bend left, above] node{$b$} (7)
+        (6) edge[bend left] node{$a$} (9)
+        (7) edge[bend left] node{$a$} (10)
+        (7) edge node{$c$} (5)
+        (8) edge[bend left] node{$b$} (5)
+        (8) edge node{$a$} (9)
+        (9) edge[bend left] node{$b$} (6)
+        (9) edge[bend right, below] node{$b$} (10)
+        (10) edge[bend left] node{$b$} (7)
+        (10) edge node{$c$} (8);
+    \end{tikzpicture}
+    \caption{Prodotto tra due automi}
+    \label{}
 \end{figure}
 
 \section{Choreography Automata}
@@ -275,6 +343,25 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
     \label{fig:Projection_Example}
 \end{figure}
 
+\subsection{Composizione delle global views}
+Esiste anche un'operazione opposta alla proiezione, infatti è possible \emph{comporre} più Choreography Automata in uno unico che rappresenti le interazione di tutti gli attori presenti. Questo può essere utile per vari motivi: potremmo avere, per esempio, delle \emph{global views locali} (composte da processi, thread o routine) che talvolta comunicano con altre \emph{global views remote} tramite delle \emph{interfacce} (come endpoint REST, WebSocket o connessioni TCP/IP). Da una situazione come questa può nascere l'esigenza di comporre insieme queste global views in una unica per visualizzare le interazioni (locali e non) che intercorrono tra i vari attori.\\
+Introduciamo dunque l'operazione di \emph{composizione}, in questo caso assumiamo che gli insiemi dei partecipanti delle varie global views di partenza sia disgiunto in questo modo si evitano ambiguità nel risultato finale. La composizione si ottiene concatenando due operazioni:
+\begin{itemize}
+    \item \textbf{Prodotto} tra tutti le $n$ global views
+    \item \textbf{Sincronizzazzione} dell'automa prodotto precedentemente ottenuto
+\end{itemize}
+L'operazione di prodotto tra automi è stata definita in \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece più particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta che la global view A vorra mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. L'operazione di sincronizzazzione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
+L'operazione di sincronizzazione è definito come segue:
+\begin{equation*}
+    \mathcal{C}(A, B) = 
+    \begin{cases}
+        TODO \\
+        TODO \\
+        TODO
+    \end{cases}
+\end{equation*}
+
+% TODO complete section
 
 \section{Analisi statica e dinamica} % TODO Rename section
 Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante ai fini di questi tesi. Considerando che l'obiettivo è quello di ottenere un Choreogaphy Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
