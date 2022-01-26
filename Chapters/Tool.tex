@@ -1,5 +1,5 @@
 % "Tool description" chapter
-\chapter{Descrizione del tool}
+\chapter{Choreia}
 Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte al capitolo descritte precedentemente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal sorgente in formato DOT.
 Choreia è un software libero con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia} \\
 Il nome \emph{Choreia} deriva dalla medesima parola greca da cui deriva Coreografia parola composta da \emph{choreia}, "danza" e \emph{graphè}, scrittura.
@@ -12,17 +12,14 @@ Tuttavia è possibile tramite \emph{command line} fornire alcuni parametri e fla
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l l}
-        Breve & Esteso      & Descrizione                                            \\
-        -i    & --input     & Il \emph{path} del file .go in input                   \\
-        -t    & --trace     & Stampa un AST \emph{sintetico} sul terminale           \\
-        -e    & --ext-trace & Stampa un AST \emph{esteso} sul terminale              \\
-        -h    & --help      & Mostra un messaggio di aiuto con una breve spiegazione \\
+        Breve & Esteso   & Descrizione                                               \\
+        -i    & --input  & Il \emph{path} del file .go in input                      \\
+        -o    & --output & La directory in cui verrano salvati i file i vasri automi \\
+        -t    & --trace  & Stampa l'AST sullo \texttt{stdout}                       \\
+        -h    & --help   & Mostra un messaggio di aiuto con una breve spiegazione    \\
     \end{tabular}
-    \caption{La lista di \emph{CLI Arugments} accettati da Choreia}
+    \caption{La lista di argomenti da linea di comando  accettati da Choreia}
 \end{table}
-
-\section{Input}
-Il tool prende ha come unico input \emph{obbligatorio} un path (relativo o assoluto) ad un file .go dal quale verranno estratti i metadati, generati gli automi parziali e infine il Choreography Automata completo da mostrare all'utente. Un ulteriore requisito è che il file dato in input deve essere un programma \emph{self-contained}, ovverro tutte le funzioni chiamate all'interno del file devono essere dichiarate all'interno del file stesso (eccezione fatta per le funzione messe a disposizione dalla \emph{standard library}), questo perchè attualmente Choreia non sopporta i moduli ne locali ne installati come dipendenze tramite il package manager. Altro requisito più banale è che il file fornito deve contenere almeno la funzione main, questo perchè questa funzione essendo l'entrypoint del programma Go viene usata internamente per l'estrazione di tutte le local views, se così non fosse l'esecuzione terminerà con errore e non verrà restituito nulla all'utente.
 
 \section{Flusso d'esecuzione}
 

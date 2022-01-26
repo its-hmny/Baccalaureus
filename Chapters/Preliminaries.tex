@@ -353,14 +353,42 @@ L'operazione di sincronizzazione genera un nuovo automa le cui label sono defini
 \begin{equation*}
     \mathcal{C}(A \times B) =
     \begin{cases}
-        p \xrightarrow{A \rightarrow B: m} r \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  q \xrightarrow{K \rightarrow B: m} r. (A \neq B) \\
-        p \xrightarrow{A \rightarrow B: m} r \hfill \text{ se } A, B\in \mathcal{P}                                                                                     \\
+        p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  p \xrightarrow{K \rightarrow B: m} q. (A \neq B) \\
+        p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } A, B\in \mathcal{P}                                                                                     \\
         \text{nessuna transizione} \hfill \text{altrimenti}
     \end{cases}
 \end{equation*}
-Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.
+Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.\\
+Vediamo di seguito l'esempio di una composizione tra due automi:
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape]
+        \node[state] (X0) {$0$};
+        \node[state] (X1) [right of=X0] {$1$};
+        \node[state] (X2) [right of=X1] {$2$};
 
-% TODO add example
+        \node[state] (Y0) [right of=X2] {$0$};
+        \node[state] (Y1) [right of=Y0] {$1$};
+
+        \node[state] (Z0) [below of=X1] {$0$};
+        \node[state] (Z1) [right of=Z0] {$1$};
+        \node[state] (Z2) [right of=Z1] {$2$};
+
+        \draw
+        (X0) edge node[above]{$A \rightarrow H : m$} (X1)
+        (X1) edge node[above]{$I \rightarrow A : n$} (X2)
+        (X2) edge[bend left, above] node{$A \rightarrow C : p$} (X0)
+
+        (Y0) edge[bend left, above] node{$B \rightarrow J : m$} (Y1)
+        (Y1) edge[bend left, above] node[below]{$K \rightarrow B : n$} (Y0)
+
+        (Z0) edge node[above]{$A \rightarrow B : m$} (Z1)
+        (Z1) edge node[above]{$B \rightarrow A : n$} (Z2)
+        (Z2) edge[bend right, above] node{$A \rightarrow C : p$} (Z0);
+    \end{tikzpicture}
+    \caption{Un esempio di composizione tra due Choreography Automata}
+    \label{fig:NonDeterministic_Example}
+\end{figure}\\
 
 \section{Analisi statica e dinamica}
 Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questi tesi. Considerando che l'obiettivo è quello di ottenere un Choreogaphy Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
