@@ -204,16 +204,16 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
 Concludiamo mostrando un esempio di prodotto tra due automi, prendiamo in considerazione i due automi di partenza:
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
         % Automata 1
-        \node[state] (0) {$0$};
+        \node[state, initial] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
         \node[state] (2) [right of=1] {$2$};
         % Automata 2
-        \node[state] (3) [right of=2] {$0$};
+        \node[state, initial] (3) [right of=2] {$0$};
         \node[state] (4) [right of=3] {$1$};
         % Product automata
-        \node[state] (5) [below of=0, right of=1] {$0, 0$};
+        \node[state, initial, initial where=below] (5) [below of=0, right of=1] {$0, 0$};
         \node[state] (6) [below of=0, right of=0] {$0, 1$};
         \node[state] (7) [below of=0, left of=4] {$0, 2$};
         \node[state] (9) [below of=6] {$1, 0$};
@@ -362,15 +362,15 @@ Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati no
 Vediamo di seguito l'esempio di una composizione tra due automi:
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape]
-        \node[state] (X0) {$0$};
+    \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape, initial text=$ $,]
+        \node[state, initial] (X0) {$0$};
         \node[state] (X1) [right of=X0] {$1$};
         \node[state] (X2) [right of=X1] {$2$};
 
-        \node[state] (Y0) [right of=X2] {$0$};
+        \node[state, initial] (Y0) [right of=X2] {$0$};
         \node[state] (Y1) [right of=Y0] {$1$};
 
-        \node[state] (Z0) [below of=X1] {$0$};
+        \node[state, initial] (Z0) [below of=X1] {$0$};
         \node[state] (Z1) [right of=Z0] {$1$};
         \node[state] (Z2) [right of=Z1] {$2$};
 
