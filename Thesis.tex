@@ -8,6 +8,7 @@
 \usepackage{algpseudocode}
 \usepackage{amsmath}
 \usepackage{biblatex}
+\usepackage{forest}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{tikz}
@@ -28,6 +29,18 @@
     \clearpage            % finish off the page
 }
 
+% Project Tree definition
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+
+\tikzset{
+  folder/.pic={
+    \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+      (-1.05*4pt,0.24pt+5pt) rectangle ++(.75*4pt,-0.24pt-5pt);  
+    \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+      (-1.15*4pt,-4pt) rectangle (1.15*4pt,4pt);
+  }
+}
 
 % Definition init
 \newtheorem{definition}{Definition}[chapter]

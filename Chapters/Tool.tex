@@ -1,26 +1,75 @@
 % "Tool description" chapter
 \chapter{Choreia}
-Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte al capitolo descritte precedentemente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal sorgente in formato DOT.
-Choreia è un software libero con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia} \\
-Il nome \emph{Choreia} deriva dalla medesima parola greca da cui deriva Coreografia parola composta da \emph{choreia}, "danza" e \emph{graphè}, scrittura.
-
-\section{Struttura del progetto}
+Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal codice sorgente in formato DOT. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
 
 \section{Parametri da linea di comando}
-Il tool non ha una GUI in quanto, almeno per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
-Tuttavia è possibile tramite \emph{command line} fornire alcuni parametri e flags per un utilizzo \emph{personalizzato}, di seguito troviamo una spiegazione di ognuno di essi:
+Il tool non ha una GUI in quanto, per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
+In ogni caso è possibile tramite \emph{command line} fornire alcuni parametri e flags per un utilizzo \emph{personalizzato}, i parametri disponibili sono:
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l l}
-        Breve & Esteso   & Descrizione                                               \\
-        -i    & --input  & Il \emph{path} del file .go in input                      \\
+        Breve & Esteso   & Descrizione                                              \\
+        -i    & --input  & Il \emph{path} del file .go in input                     \\
         -o    & --output & La directory in cui verrano salvati i file i vari automi \\
         -t    & --trace  & Stampa l'AST sullo \texttt{stdout}                       \\
-        -h    & --help   & Mostra un messaggio di aiuto con una breve spiegazione    \\
+        -h    & --help   & Mostra un messaggio di aiuto con una breve spiegazione   \\
     \end{tabular}
     \caption{La lista di argomenti da linea di comando  accettati da Choreia}
 \end{table}
 
+\section{Struttura del progetto}
+Il progetto è strutturto su 3 moduli principali, ognuno con uno specifico compito: Il modulo \texttt{fsa} fornisce un implementazione per gli Automi a stati finiti (implementati attraverso i multigrafi), il modulo \texttt{static analysis} gestisce il parsing (fatto tramite la \emph{standard library} golang) e l'estrazione dei metadati dall'AST ed infine il modulo \texttt{transforms} implementa varie operazioni su FSA come per esempio: determinizzazione e minimizzazione (per FSA generici) o la composizione (per Choreography Automata). \\
+La validazione dei dati e l'orchestrazione delle funzionalità fornite dai vari moduli sono gestite nel \texttt{main} che agisce come entry point del programma.\bigskip \\
+\begin{forest}
+    for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    inner xsep=7pt,
+    edge path={
+            \noexpand\path [draw, \forestoption{edge}]
+            (!u.south west) +(7.5pt,0) |- (.child anchor) pic {folder} \forestoption{edge label};
+        },
+    % style for your file node 
+    file/.style={edge path={
+                    \noexpand\path [draw, \forestoption{edge}]
+                    (!u.south west) +(7.5pt,0) |- (.child anchor) \forestoption{edge label};},
+            inner xsep=2pt,font=\small\ttfamily
+        },
+    before typesetting nodes={
+            if n=1
+                {insert before={[,phantom]}}
+                {}
+        },
+    fit=band,
+    before computing xy={l=15pt},
+    }
+    [Choreia
+        [cmd
+                [main.go, file]
+        ]
+        [go.mod, file]
+        [go.sum, file]
+        [internal
+                [fsa
+                        [\text{fsa.go, transition.go}, file]
+                ]
+                [static analysis
+                        [\text{branch.go, channel.go, function.go, loop.go, ...}, file]
+                ]
+                [transforms
+                        [\text{extraction.go, minimization.go, composition.go, ...}, file]
+                ]
+        ]
+        [LICENSE, file]
+        [README, file]
+    ]
+\end{forest}
+
 \section{Flusso d'esecuzione}
+Il flusso d'esecuzione riprende le quattro macrofasi definite nella sezione \ref{sec:GoOutline}: il file in input viene validato e parsato, generando un AST (tutta queste funzionalità sono fornite dal modulo \texttt{go/ast} della standard library), l'AST viene poi navigato da un \emph{visitor} che si occupa di raccogliere e organizzare i dati nelle apposite strutture dati. In particolare durante questa fase vengono generati degli automi a stati finiti (uno per ogni funzione dichiarata) che descriveranno l'evoluzione della computazione all'interno della funzione. Una volta ottenuti gli automi e i vari metadati si procede ad estrarre le local views (sempre automi a stati finiti) ciascuna associata ad una Goroutine presente nel programma.
 
 \section{Esempi pratici}
