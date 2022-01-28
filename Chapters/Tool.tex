@@ -1,6 +1,6 @@
 % "Tool description" chapter
 \chapter{Choreia}
-Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal codice sorgente in formato DOT. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
+Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreogaphy Automata ricavato dal codice sorgente in formato DOT.. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
 
 \section{Parametri da linea di comando}
 Il tool non ha una GUI in quanto, per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
@@ -70,6 +70,58 @@ La validazione dei dati e l'orchestrazione delle funzionalità fornite dai vari 
 \end{forest}
 
 \section{Flusso d'esecuzione}
-Il flusso d'esecuzione riprende le quattro macrofasi definite nella sezione \ref{sec:GoOutline}: il file in input viene validato e parsato, generando un AST (tutta queste funzionalità sono fornite dal modulo \texttt{go/ast} della standard library), l'AST viene poi navigato da un \emph{visitor} che si occupa di raccogliere e organizzare i dati nelle apposite strutture dati. In particolare durante questa fase vengono generati degli automi a stati finiti (uno per ogni funzione dichiarata) che descriveranno l'evoluzione della computazione all'interno della funzione. Una volta ottenuti gli automi e i vari metadati si procede ad estrarre le local views (sempre automi a stati finiti) ciascuna associata ad una Goroutine presente nel programma.
+Il flusso d'esecuzione riprende le quattro macrofasi definite nella sezione \ref{sec:GoOutline}.\bigskip\\
+Come prima cosa il file in input viene validato e parsato, generando un AST (queste funzionalità sono fornite dal modulo \texttt{go/ast} della standard library), l'AST viene poi navigato da un \emph{visitor} che si occupa di raccogliere e organizzare i dati in apposite strutture dati. Durante questa fase vengono generati degli automi a stati finiti non deterministici ad ogni funzione dichiarata all'interno del file in input, questi NFA descriveranno l'evoluzione della computazione nello scope di funzione.\bigskip\\
+Una volta ottenuti gli automi e i metadati si procede con lo step successivo, ovvero ricavare gli automi associati alle Goroutine presenti nel programma. Per fare questo si utilizza l'algoritmo sopra che attraverso l'\emph{inlining} delle chiamate di funzione e la sostituzione dei parametri formali con quelli attuali ricava in maniera ricorsiva degli automi non deterministici che rappresentano il flusso d'esecuzione completo della Goroutine. Come fase finale di questo step gli automi, ancora non deterministici, vengono determinizzati e minimizzati tramite mostrati algoritmi al capitolo \ref{cap:Preliminaries}.\bigskip\\
+L'ultimo step dell'esecuzione è quello di generare la global view a partire dalle view locali (e rispettivi automi), esattamente come detto sopra generiamo l'automa prodotto di tutte le local views e poi eseguiamo l'operazione di sincronizzazione su quest'ultimo. Come ultima cosa esportiamo questo automa \emph{finale} in formato DOT.
 
 \section{Esempi pratici}
+Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography Automata associatogli da Choreia. % TODO add link to Choreia repo /folders
+
+\subsection{Operazioni condizionali con \texttt{select}}
+\begin{minipage}[t]{0.50\textwidth}
+    \lstinputlisting[language=Go]{Snippets/Example1.go}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (0)[below=0.3cm] {$0$};
+        \node[state] (1)[below of=0] {$1$};
+        \node[state] (2)[below of=1] {$2$};
+        \node[state] (3)[below of=2, left=10pt] {$3$};
+        \node[state] (4)[below of=2, right=10pt] {$4$};
+        \node[state, accepting] (5)[below of=3] {$5$};
+        \node[state, accepting] (6)[below of=4] {$6$};
+        \draw
+        (0) edge node{$main_0 \bigtriangleup responder_1$} (1)
+        (1) edge node{$main_0 \bigtriangleup responder_2$} (2)
+        (2) edge node[right]{$main_0 \leftarrow responder_1$} (3)
+        (2) edge node[left]{$main_0 \leftarrow responder_2$} (4)
+        (3) edge node[right]{$main_0 \leftarrow responder_2$} (5)
+        (4) edge node[left]{$main_0 \leftarrow responder_1$} (6);
+    \end{tikzpicture}
+\end{minipage}
+
+\subsection{Infinite loop con molteplici partecipanti}
+\begin{minipage}[t]{0.50\textwidth}
+    \lstinputlisting[language=Go]{Snippets/Example2.go}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (0)[below=0.3cm] {$0$};
+        \node[state] (1)[below of=0] {$1$};
+        \node[state] (2)[below of=1] {$2$};
+        \node[state] (3)[below of=2, left=30pt] {$3$};
+        \node[state] (4)[below of=2, right=30pt] {$4$};
+        \node[state] (5)[below of=3] {$5$};
+        \node[state] (6)[below of=4] {$6$};
+        \draw
+        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
+        (1) edge node{$main_0 \bigtriangleup worker_2$} (2)
+        (2) edge node[left=10pt]{$worker_1 \leftarrow main_0$} (3)
+        (2) edge node[right=10pt]{$worker_2 \leftarrow main_0$} (4)
+        (3) edge node[left=10pt]{$main_0 \leftarrow worker_1$} (5)
+        (3) edge node[above]{$main_0 \leftarrow worker_2$} (6)
+        (4) edge node[below]{$main_0 \leftarrow worker_2$} (5);
+        (4) edge node[right=10pt]{$main_0 \leftarrow worker_1$} (6);
+    \end{tikzpicture}
+\end{minipage}
