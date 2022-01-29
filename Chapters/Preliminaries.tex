@@ -6,7 +6,7 @@
 Prima di introdurre le coreografie e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA)\cite{Linguaggi_di_Prorgammazione} e alcune operazioni possibili sugli stessi.
 Gli automi a stati finiti sono la descrizione di un sistema dinamico che si evolve nel tempo, esiste un parallelo tra gli automi e i calcolatori moderni, per esempio il flusso d'esecuzione di un programma può essere rappresentato attraverso un automa.
 Alcune applicazioni pratiche di questi automi possono essere, per esempio, regular expression (RegEx o RegExp), lexer e parser ma possono essere impiegati, come vedremo in questa tesi, anche nel campo dei sistemi concorrenti.\\
-Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano dei costrutti sufficentemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondo altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati.
+Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano dei costrutti sufficientemente potenti esistono tuttavia altre classi di automi, espressivamente più potenti, ai quali corrispondono altrettante classi di linguaggi (si veda, per esempio, gli automi a pila) tuttavia gli automi appartenenti a questa classe sono tra i più semplici e immediati.
 
 \begin{definition}[Finite State Automata]
     Un automa a stati finiti (FSA) è una tupla A = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove:
@@ -48,7 +48,7 @@ In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso
 \begin{definition}[Mossa]
     Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}\delta(x, \alpha)$, ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
 \end{definition}
-\newpage % ! Avoid forcefully break page
+\newpage % TODO Avoid forcefully break page
 L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
     \caption{Costruzione per sottoinsiemi}\label{alg:SubsetConstruction_Algorithm}
@@ -72,7 +72,7 @@ Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato inizi
 \subsection{Minimizzazione}
 Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
 L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
-Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato d'errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
+Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
 L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
 L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \begin{algorithm}
@@ -90,11 +90,10 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \end{algorithm}
 
 \subsection{Prodotto}
-L'ultima operazione su Automi a Stati Finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e i rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi. Noi non la utilizzeremo in questo senso ma come step intermedio nella composizione di più Choreography Automata.
-
+L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
 \begin{definition}[Prodotto di automi]
     \label{def:FSA_Product}
-    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{L}_1, \delta_1, \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ è definito come segue:
+    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ è definito come segue:
     \begin{itemize}
         \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
         \item $s_0 = (s_{01}, s_{02})$
@@ -201,21 +200,20 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
     }
     \caption{Il DFA minimizzato ottenuto da quello in figura \ref{fig:Deterministic_Example}}
     \label{fig:Minimization_Example}
-\end{figure}
-\newpage % TODO remove newpage
+\end{figure}\\
 Concludiamo mostrando un esempio di prodotto tra due automi, prendiamo in considerazione i due automi di partenza:
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
         % Automata 1
-        \node[state] (0) {$0$};
+        \node[state, initial] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
         \node[state] (2) [right of=1] {$2$};
         % Automata 2
-        \node[state] (3) [right of=2] {$0$};
+        \node[state, initial] (3) [right of=2] {$0$};
         \node[state] (4) [right of=3] {$1$};
         % Product automata
-        \node[state] (5) [below of=0, right of=1] {$0, 0$};
+        \node[state, initial, initial where=below] (5) [below of=0, right of=1] {$0, 0$};
         \node[state] (6) [below of=0, right of=0] {$0, 1$};
         \node[state] (7) [below of=0, left of=4] {$0, 2$};
         \node[state] (9) [below of=6] {$1, 0$};
@@ -268,7 +266,7 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
         (q1) edge[above] node{$B \rightarrow C: count$} (q2)
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
-    \caption{Un esempio di Choreogaphy Automata}
+    \caption{Un esempio di Choreography Automata}
     \label{fig:ChoreographyAutomata_Example}
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
@@ -315,7 +313,7 @@ La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \r
 \bigskip \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
-Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è nondeterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
+Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
 
 \begin{figure}[ht]
     \centering
@@ -344,44 +342,74 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
 \end{figure}
 
 \subsection{Composizione delle global views}
-Esiste anche un'operazione opposta alla proiezione, infatti è possible \emph{comporre} più Choreography Automata in uno unico che rappresenti le interazione di tutti gli attori presenti. Questo può essere utile per vari motivi: potremmo avere, per esempio, delle \emph{global views locali} (composte da processi, thread o routine) che talvolta comunicano con altre \emph{global views remote} tramite delle \emph{interfacce} (come endpoint REST, WebSocket o connessioni TCP/IP). Da una situazione come questa può nascere l'esigenza di comporre insieme queste global views in una unica per visualizzare le interazioni (locali e non) che intercorrono tra i vari attori.\\
+Esiste anche un'operazione opposta alla proiezione, infatti è possibile \emph{comporre}\cite{CA_Composition} più Choreography Automata in uno unico che rappresenti le interazioni di tutti gli attori presenti. Questo può essere utile per vari motivi: potremmo avere, per esempio, delle \emph{global views locali} (composte da processi, thread o routine) che talvolta comunicano con altre \emph{global views remote} tramite delle \emph{interfacce} (come endpoint REST, WebSocket o connessioni TCP/IP). Da una situazione come questa può nascere l'esigenza di comporre insieme queste global views in una unica per visualizzare le interazioni (locali e non) che intercorrono tra i vari attori.\\
 Introduciamo dunque l'operazione di \emph{composizione}, in questo caso assumiamo che gli insiemi dei partecipanti delle varie global views di partenza sia disgiunto in questo modo si evitano ambiguità nel risultato finale. La composizione si ottiene concatenando due operazioni:
 \begin{itemize}
-    \item \textbf{Prodotto} tra tutti le $n$ global views
-    \item \textbf{Sincronizzazzione} dell'automa prodotto precedentemente ottenuto
+    \item \textbf{Prodotto} tra tutte le $n$ global views
+    \item \textbf{Sincronizzazione} dell'automa prodotto precedentemente ottenuto
 \end{itemize}
-L'operazione di prodotto tra automi è stata definita in \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece più particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta che la global view A vorra mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. L'operazione di sincronizzazzione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
-L'operazione di sincronizzazione è definito come segue:
+L'operazione di prodotto tra automi è stata definita in \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece più particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta che la global view A vorrà mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. La Sincronizzazione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
+L'operazione di sincronizzazione genera un nuovo automa le cui label sono definite come segue:
 \begin{equation*}
-    \mathcal{C}(A, B) = 
+    \mathcal{C}(A \times B) =
     \begin{cases}
-        TODO \\
-        TODO \\
-        TODO
+        p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  p \xrightarrow{K \rightarrow B: m} q. (A \neq B) \\
+        p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } A, B\in \mathcal{P}                                                                                     \\
+        \text{nessuna transizione} \hfill \text{altrimenti}
     \end{cases}
 \end{equation*}
+Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.\\
+Vediamo di seguito l'esempio di una composizione tra due automi:
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape, initial text=$ $,]
+        \node[state, initial] (X0) {$0$};
+        \node[state] (X1) [right of=X0] {$1$};
+        \node[state] (X2) [right of=X1] {$2$};
 
-% TODO complete section
+        \node[state, initial] (Y0) [right of=X2] {$0$};
+        \node[state] (Y1) [right of=Y0] {$1$};
 
-\section{Analisi statica e dinamica} % TODO Rename section
-Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante ai fini di questi tesi. Considerando che l'obiettivo è quello di ottenere un Choreogaphy Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
+        \node[state, initial] (Z0) [below of=X1] {$0$};
+        \node[state] (Z1) [right of=Z0] {$1$};
+        \node[state] (Z2) [right of=Z1] {$2$};
+
+        \draw
+        (X0) edge node[above]{$A \rightarrow H : m$} (X1)
+        (X1) edge node[above]{$I \rightarrow A : n$} (X2)
+        (X2) edge[bend left, above] node{$A \rightarrow C : p$} (X0)
+
+        (Y0) edge[bend left, above] node{$B \rightarrow J : m$} (Y1)
+        (Y1) edge[bend left, above] node[below]{$K \rightarrow B : n$} (Y0)
+
+        (Z0) edge node[above]{$A \rightarrow B : m$} (Z1)
+        (Z1) edge node[above]{$B \rightarrow A : n$} (Z2)
+        (Z2) edge[bend right, above] node{$A \rightarrow C : p$} (Z0);
+    \end{tikzpicture}
+    \caption{Un esempio di composizione tra due Choreography Automata}
+    \label{fig:NonDeterministic_Example}
+\end{figure}\\
+
+\section{Analisi statica e dinamica}
+Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questi tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
 A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
 \begin{itemize}
-    \item \textbf{Testuale}: ovvero il codice sorgente, un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrive, ad alto livello, i passi che devono esere intrapresi durante la computazione. Questo formato è quello più utilizzata dagli umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
+    \item \textbf{Testuale}: ovvero il codice sorgente, un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrivono, ad alto livello, i passi che devono essere intrapresi durante la computazione. Questo formato è quello più utilizzata dagli umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
     \item \textbf{Binario}: il codice macchina (o codice eseguibile) generato dal compilatore (come nel nostro caso) o dall'interprete. Questo formato è difficilmente comprensibile da un umano, ma al contrario è perfettamente comprensibile per una macchina tant'è che può essere \emph{eseguito} dalla stessa.
 \end{itemize}
-Se consideriamo la definzione di programma come \emph{un insieme di istruzioni per arrivare ad un risultato finale partendo da input forniti} i formati sudedetti sono due rappresentazioni equivalenti del medesimo programma e dunque possono essere usate intercambiabilmente e senza alterare la \emph{sostanza} del programma stesso. \bigskip \\
-Tornando all'estrazione dei dati da un programma esistono due diverse di tecniche, legate fortemente al \emph{formato} del programma stesso:
+Se consideriamo la definizione di programma come \emph{un insieme di istruzioni per arrivare ad un risultato finale partendo da input forniti} i formati suddetti sono due rappresentazioni equivalenti del medesimo programma e dunque possono essere usati intercambiabilmente e senza alterare la \emph{sostanza} del programma stesso. \bigskip \\
+Tornando all'estrazione dei dati da un programma esistono due diverse di tecniche, legate al \emph{formato} del programma stesso:
 \begin{itemize}
-    \item \textbf{Analisi statica}: questo tipo di analisi viene eseguita sul codice sorgente, estrando dei dati dallo stesso ma senza compilarlo ne eseguirlo. Questo tipo di analisi non considera e non è in grado di catturare il \emph{contesto d'esecuzione}, ovvvero i fattori esterni che possono influenzare l'esecuzione di un programma a \emph{runtime}.
-    \item \textbf{Analisi dinamica}: questo tipo di analisi invece viene fatta attraverso la \emph{profilazione} del programma mentre lo stesso esegue, il programma è dunque in un formato binario. La profilazione può avvenire attraverso dei log emessi dal programma stesso oppure attraverso l'utilizzo di un'altro programma (detto \emph{tracer}) che controlla le operazioni eseguite dal programma target (il \emph{tracee})
+    \item \textbf{Analisi statica}\cite{Static_Analysis}: questo tipo di analisi viene eseguita sul codice sorgente, estraendo dei dati dallo stesso ma senza compilarlo ne eseguirlo. Questo tipo di analisi non considera e non è in grado di catturare il \emph{contesto d'esecuzione}, ovvero i fattori esterni che possono influenzare l'esecuzione di un programma a \emph{runtime}.
+    \item \textbf{Analisi dinamica}\cite{Dynamic_Analysis}: questo tipo di analisi invece viene fatta attraverso la \emph{profilazione} del programma mentre lo stesso esegue, il programma è dunque in un formato binario. La profilazione può avvenire attraverso dei log emessi dal programma stesso oppure attraverso l'utilizzo di un'altro programma (detto \emph{tracer}) che controlla le operazioni eseguite dal programma target (il \emph{tracee})
 \end{itemize}
-Entrambe le tecniche presentano i rispettivi vantaggi e svantaggi: l'analisi statica permette una visione più completa in tempo più breve poichè osservando il codice sorgente riesce a catturare tutti i possibili percorsi in cui un programma potrebbe entrare, al contrario l'analisi dinamica non permette di avere sempre una visione completa in quanto è limitata ad osservare solo il percorso che l'esecuzione ha preso in quel momento.
-Un esempio di questo comportamento è dato da un semplice costrutto come l'\texttt{if-then-else}: tramite l'analisi statica è possibile catturare con facilità entrambi i rami mentre tramite l'analisi dinamica è possibile solo osservare un ramo, quello che a runtime verifica la condizione specificata. Per questo specifico aspetto l'analisi dinamica restituisce dei dati \emph{parziali} e non è possibile fare assunzioni sul ramo che non è stato eseguito. Tuttavia l'approssimazione di queste informazioni può essere migliorata eseguendo più profilazioni con input diversi, si noti pero che questo non è sufficente a garantire che le informazioni siano complete ma solo meglio approssimate e inoltre il tempo richiesto per completare l'analisi diventa maggiore (proporzionale rispetto al numero di profilazioni).\\
-In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'inflluenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiamo sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\bigskip \\
-In conclusione, anche se le tecniche mostrate sopra prese singolarmente rappresentano un ottimo strumento per estrarre informazione da un programma, sono fondamentalmente complementari e vanno usate in combinazione per ottenre una visione \emph{completa} del programma stesso.
+Entrambe le tecniche presentano i rispettivi vantaggi e svantaggi: l'analisi statica permette una visione più completa in tempo più breve poichè osservando il codice sorgente riesce a catturare tutti i possibili percorsi in cui un programma potrebbe entrare, al contrario l'analisi dinamica non permette di avere sempre una visione completa in quanto è limitata ad osservare solo il percorso che l'esecuzione ha preso in quel momento.\\
+Un esempio di questo comportamento è dato da un semplice costrutto come l'\texttt{if-then-else}: tramite l'analisi statica è possibile catturare con facilità entrambi i rami mentre tramite l'analisi dinamica è possibile solo osservare un ramo, quello che a runtime verifica la condizione specificata. Per questo specifico aspetto l'analisi dinamica restituisce dei dati \emph{parziali} e non è possibile fare assunzioni sul ramo che non è stato eseguito, tuttavia l'approssimazione di queste informazioni può essere migliorata eseguendo più profilazioni con input diversi. Si noti però che questo non è sufficiente a garantire che le informazioni siano complete ma solo meglio approssimate e il tempo richiesto per completare l'analisi diventa maggiore (proporzionale rispetto al numero di profilazioni).\\
+In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'influenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiamo sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\bigskip \\
+In conclusione, anche se le tecniche mostrate sopra prese singolarmente rappresentano un ottimo strumento per estrarre informazione da un programma, sono fondamentalmente complementari e andrebbero usate in combinazione per ottenere una visione \emph{completa} del programma stesso.
+
 % TODO Add ref to Static Analysis paper
+
 \subsection{Parsing e AST}
-Appurato che l'analisi statica estrae i dati dal formato \emph{testuale} del programma, serve capire come e' possibile ottenre informazioni da del codice sorgente Go.\bigskip\\
-Il \emph{parsing} e' l'operazione che permette di trasformare del codice sorgente in una struttura dati appropriata (l'\emph{Abstract Syntax Tree} o AST) dalla quale e' poi possibile ricavare informazioni in maniera semplificata rispetto al dover utilizzare e manipolare la stringa iniziale (il contenuto del file). Questa operazione non viene solo utilizzata nell'analisi statica ma e' anche una fase importante del processo di compilazione (o interpretazione) di qualunque linguaggio di programmazione, il compilatore infatti puo' utilizzare l'AST per ottimizzare il codice sorgente e, in seguito, per generare il codice binario.\\
-In generale, l'utilizzo di un AST fornisce vari vantaggi: il principale e' quello di avere una struttura dati ben definita e gerarchica. Da questo consegue che e' possibile navigare l'AST (in maniera molto simile ad una classica \emph{visita} su alberi) e questo permette di estrarre dati in maniera algoritmica dall'AST stesso. Inoltre, sempre grazie alla struttura gerarchica, e' possibile definire delle trasformazioni per la stessa o validare che rispetti certe proprieta'.
+Appurato che l'analisi statica estrae i dati dal formato \emph{testuale} del programma, serve capire come è possibile ottenere informazioni dal codice sorgente Go. Il \emph{parsing} è l'operazione che permette di trasformare del codice sorgente in una struttura dati appropriata (l'\emph{Abstract Syntax Tree} o AST\cite{Abstract_Syntax_Tree}) dalla quale è poi possibile ricavare informazioni in maniera semplificata rispetto al dover utilizzare e manipolare la stringa iniziale (il contenuto testuale del file). Questa operazione non viene solo utilizzata nell'analisi statica ma è anche una fase importante del processo di compilazione (o interpretazione) di qualunque linguaggio di programmazione, il compilatore infatti può utilizzare l'AST per ottimizzare il codice sorgente e, in seguito, per generare il codice binario.\\
+In generale, l'utilizzo di un AST fornisce vari vantaggi: il principale è quello di avere una struttura dati ben definita e gerarchica. Da questo consegue che è possibile navigare l'AST (in maniera molto simile ad una classica \emph{visita} su alberi) e questo permette di estrarre dati in maniera algoritmica dall'AST stesso. Inoltre, sempre grazie alla struttura gerarchica, è possibile definire delle trasformazioni per la stessa o validare che rispetti certe proprietà.
