@@ -351,7 +351,7 @@ Introduciamo dunque l'operazione di \emph{composizione}, in questo caso assumiam
 L'operazione di prodotto tra automi è stata definita in \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece più particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta che la global view A vorrà mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. La Sincronizzazione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
 L'operazione di sincronizzazione genera un nuovo automa le cui label sono definite come segue:
 \begin{equation*}
-    \mathcal{C}(A \times B) =
+    \mathcal{S}(A \times B) =
     \begin{cases}
         p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  p \xrightarrow{K \rightarrow B: m} q. (A \neq B) \\
         p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } A, B\in \mathcal{P}                                                                                     \\

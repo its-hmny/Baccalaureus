@@ -87,21 +87,22 @@ Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography 
         \node[state,initial] (0)[below=0.3cm] {$0$};
         \node[state] (1)[below of=0] {$1$};
         \node[state] (2)[below of=1] {$2$};
-        \node[state] (3)[below of=2, left=10pt] {$3$};
-        \node[state] (4)[below of=2, right=10pt] {$4$};
+        \node[state] (3)[below of=2, left=7pt] {$3$};
+        \node[state] (4)[below of=2, right=7pt] {$4$};
         \node[state, accepting] (5)[below of=3] {$5$};
         \node[state, accepting] (6)[below of=4] {$6$};
         \draw
         (0) edge node{$main_0 \bigtriangleup responder_1$} (1)
         (1) edge node{$main_0 \bigtriangleup responder_2$} (2)
-        (2) edge node[right]{$main_0 \leftarrow responder_1$} (3)
-        (2) edge node[left]{$main_0 \leftarrow responder_2$} (4)
-        (3) edge node[right]{$main_0 \leftarrow responder_2$} (5)
-        (4) edge node[left]{$main_0 \leftarrow responder_1$} (6);
+        (2) edge node[left]{$main_0 \leftarrow responder_1$} (3)
+        (2) edge node[right]{$main_0 \leftarrow responder_2$} (4)
+        (3) edge node[left]{$main_0 \leftarrow responder_2$} (5)
+        (4) edge node[right]{$main_0 \leftarrow responder_1$} (6);
     \end{tikzpicture}
 \end{minipage}
 
 \subsection{Infinite loop con molteplici partecipanti}
+% TODO simplify example
 \begin{minipage}[t]{0.50\textwidth}
     \lstinputlisting[language=Go]{Snippets/Example2.go}
 \end{minipage}\hfill
