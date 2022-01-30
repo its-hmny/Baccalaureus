@@ -1,27 +1,27 @@
 % "Changes and adaptations" chapter
-\chapter{Coreografie per Go} 
+\chapter{Coreografie per Go}
 \section{Outline} \label{sec:GoOutline}
-L'obiettivo del progetto, ad alto livello, è quello di prendere del codice sorgente \emph{Go} ed estrarre il Choreography Automata che esprima come le Goroutine interagiscono tra loro durante l'esecuzione del programma, in modo da tale da fornire uno strumento allo sviluppatore per \emph{visualizzare} il sistema concorrente.\\
+L'obiettivo del progetto, ad alto livello, è quello di prendere del codice sorgente \emph{Go} ed estrarre il Choreography Automata che esprima come le Goroutine interagiscono tra loro durante l'esecuzione del programma, in modo da tale da fornire allo sviluppatore uno strumento per \emph{visualizzare} il sistema concorrente.\\
 Concettualmente possiamo dividere questo obiettivo in 4 fasi:
 \begin{enumerate}
     \item \textbf{Validazione e parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstact Syntax Tree} (AST).
     \item \textbf{Estrazione dei metadati}: Viene navigato l'AST estraendo tutte le informazioni necessarie (i metadati relativi a funzioni, canali, ecc) e salvandole in strutture dati appropriate.
     \item \textbf{Derivazione delle local views}: Partendo dai metadati si derivano le local views delle varie Goroutine (gli attori del sistema concorrente).
-    \item \textbf{Generazione della coreografia}: Dalle local view ottenute, è necessario generare un singolo Choreography Automata che rappresenti l'intera Coreografia del sistema (la view globale).
+    \item \textbf{Generazione della coreografia}: Dalle local view ottenute, è necessario generare un singolo Choreography Automata che rappresenti l'intera coreografia del sistema (la view globale).
 \end{enumerate}
-Questo approccio è chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{Top-Down}, abbiamo visto infatti come sia possibile, partendo dal Choreography Automata ricavare le singole view locali attraverso l'operazione di \emph{Proiezione}.\\
-Come accennato sopra si rende necessaria l'implementazione di un'operazione opposta alla proiezione che permetta di ottenere un view globale a partire dalle sue singole componenti, ovvero le view locali. \\
-Il punto cruciale della nostra tecnica è quello di \emph{approssimare} ogni funzione trovata all'interno del codice sorgente in un automa a stati finiti che ne rappresenti il flusso d'esecuzione, in particolare ogni transizione di questo automa rappresenterà un'interazione tra la funzione stessa e il resto della Coreografia. \bigskip \\
+Questo approccio è chiaramente \emph{Bottom-Up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{Top-Down}: abbiamo visto infatti come sia possibile, partendo dal Choreography Automata ricavare le singole view locali attraverso l'operazione di \emph{Proiezione}.\\
+Si rende dunque necessaria l'implementazione di un'operazione opposta alla proiezione che permetta di ottenere un view globale a partire dalle sue singole componenti, ovvero le view locali, questo tipo di operazione riprendera' alcuni concetti dall'operazione di \emph{composizione} (illustrata precedentemente) oppurtunamenti adattati alla nostra situazione. \\
+Il punto cruciale della nostra tecnica è quello di \emph{approssimare} ogni funzione dichiarata all'interno del codice sorgente in un automa a stati finiti che rappresenti il flusso d'esecuzione, in particolare ogni transizione di questo automa rappresenterà un'interazione tra la funzione stessa e il resto della coreografia. \bigskip \\
 Per ragioni di chiarezza e semplicità questa tesi si concentra su un sottoinsieme di Go limitato all'utilizzo di canali, iterazione determinata sugli stessi, \texttt{select} statement, canali passati come argomento tra funzioni e creazione di nuove Goroutine. Altre \emph{feature} del linguaggio come \emph{selector expression}, \emph{anonymous functions}, \emph{high order function} o iterazioni su liste e mappe non sono attualmente supportare e potrebbero dunque causare delle inconsistenze nel Choreography Automata finale. \\
 Alcuni esempi di programmi che non sono supportati includono: programmi che utilizzano ricorsione o spawn di Goroutine in ricorsione e programmi che utilizzano collection (liste, mappe o altri tipi di strutture) contenenti canali o iterano sulle stesse. \\
 
 \subsection{Peculiarità di Go}
 Per gli scopi di questa tesi è bene considerare le particolarità di Go in modo da adattare il modello teorico allo stesso e \emph{risolvere} le eventuali incongruenze.\bigskip \\
-Mentre aspetti tipici di Go come i canali e il costrutto \texttt{select} non generano particolari conflitti con il modello teorico lo stesso non si può dire per le Goroutine: quest'ultime sono intrinsicamente \emph{gerarchiche}, ovvero per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \texttt{main} e che si comporta come \emph{entry point} del programma stesso) sarà poi questa, durante la sua esecuzione, ad avviarne altre, quest'ultime a loro volta potranno avviarne altre ancora e cosi via.
-Il \emph{conflitto} con il modello teorico deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe tenere traccia della Goroutine \emph{parent} e del momento di avvio della Goroutine in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale, senza questo ulteriore controllo si potrebbero verificare delle inconsistenze.\bigskip \\
-Per fare questo possiamo estendere la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
+Mentre aspetti tipici di Go come i canali e il costrutto \texttt{select} non generano particolari conflitti con il modello teorico lo stesso non si può dire per le Goroutine: quest'ultime sono intrinsicamente \emph{gerarchiche}: per ogni programma Go viene avviata sempre e solo una Goroutine (quella che esegue la funzione \texttt{main} e che si comporta come \emph{entry point} del programma stesso) sarà poi questa, durante la sua esecuzione, ad avviarne altre, quest'ultime a loro volta potranno avviarne altre ancora e cosi via.
+Il \emph{conflitto} con il modello teorico deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe tenere traccia del momento in cui una Goroutine viene avviata in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale. Senza questo ulteriore controllo si potrebbero verificare delle inconsistenze, per esempio potremmo avere interazioni tra Goroutine prima ancora che queste siano avviate.\bigskip \\
+Estendiamo dunque la definizione di Choreography Automata e di Communicating Finite-State Machine date riespettivamente in \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
-\begin{definition}[Choreography Automata - Estesa]
+\begin{definition}[Choreography Automata - Estesa]\label{def:Choreography_Automata_Ext}
     Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\bigskip \\
     \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$} \bigskip \\
     con $\mathcal{L}_{int}$ e $\mathcal{P}$ definiti come in \ref{def:Choreography_Automata} e $\mathcal{M}$ definito come in \ref{subsec:Static_Analysis_Limits}
@@ -39,8 +39,8 @@ Per fare questo possiamo estendere la definizione di Choreography Automata e di 
 
 
 \section{Estrazione dei metadati}
-Una volta ottenuto un AST valido, serve estrarre i metadati necessari da quest'ultimo. Per gli scopi di questa tesi siamo interessati ad estrarre informazioni sui canali, per esempio: il nome della variabile associata, il \emph{tipo} di messaggi che possono essere scambiati sullo stesso e la tipologia del canale (\emph{buffered} o \emph{unbuffered}) con particolare distinzione tra canali dichiarati nello scope globale e quelli dichiarati in uno scope locale. Inoltre siamo interessati ad estrarre metadati dalle \emph{function declarations} come: il nome della funzione, canali dichiarati nello scope della stessa e un FSA che rappresenti il flusso d'esecuzione all'interno della funzione stessa (detto Scope Automata). Inoltre vogliamo memorizzare eventuali \emph{parametri formali} della funzione che richiedono trattamenti particolari come canali o \emph{callback functions}, infatti i canali passati come parametro dal chiamante dovranno poi essere \emph{sostituiti} nel momento in cui la funzione viene chiamata o avviata come Goroutine da un'altra funzione. \bigskip \\
-Questa estrazione dei metadati avviene tramite analisi statica, una tecnica di analisi descritta al capitolo \ref{cap:Preliminaries}. Questa tecnica è preferibile rispetto all'analisi dinamica poichè non richiede alcun tipo di esecuzione e quindi protegge da programmi potenzialmente pericolosi e sconosciuti, evita lo scaricamento di eventuali dipendenze per il programma in input e in generale fornisce una visione più ampia e meglio approssimata per i nostri scopi senza richiedere profilazioni multiple. Infatti utilizzando analisi dinamica per questo progetto otterremmo per ogni profilazione eseguita solo un sottografo del Choreography Automata finale che rappresenta il particolare percorso intrapreso dalla Coreografia durante quella esecuzione e non l'intera Coreografia.
+Una volta ottenuto un AST valido, serve estrarre i metadati necessari da quest'ultimo. Per gli scopi di questa tesi siamo interessati ad estrarre informazioni sui canali dichiarati all'interno del programma, in particolare: il nome della variabile associata, il \emph{tipo} di messaggi che possono essere scambiati sullo stesso e la tipologia del canale (\emph{buffered} o \emph{unbuffered}) con particolare distinzione tra canali dichiarati nello scope globale e quelli dichiarati in uno scope locale. Inoltre siamo interessati ad estrarre metadati dalle \emph{function declarations} come: il nome della funzione, canali dichiarati nello scope della stessa e un FSA che rappresenti il flusso d'esecuzione all'interno della funzione stessa (detto Scope Automata). Vogliamo anche memorizzare eventuali \emph{parametri formali} della funzione che richiedono trattamenti particolari come canali o \emph{callback functions}, infatti i canali passati come parametro dal chiamante dovranno poi essere \emph{sostituiti} con i parametri formali nel momento in cui la funzione viene chiamata o avviata come Goroutine da un'altra. \bigskip \\
+Questa estrazione dei metadati avviene tramite analisi statica, una tecnica descritta al capitolo \ref{cap:Preliminaries}. Questa tecnica è preferibile rispetto all'analisi dinamica poichè non richiede alcun tipo di esecuzione e quindi protegge da programmi potenzialmente pericolosi e sconosciuti, evita lo scaricamento di eventuali dipendenze per il programma in input e in generale fornisce una visione più ampia e meglio approssimata per i nostri scopi senza richiedere profilazioni multiple. Utilizzando analisi dinamica per questo progetto otterremmo per ogni profilazione eseguita solo un sottografo del Choreography Automata finale che rappresenta il particolare percorso intrapreso dalla coreografia durante quella esecuzione/profilazione e non l'intera coreografia.
 
 \subsection{Limiti dell'analisi statica} \label{subsec:Static_Analysis_Limits}
 Anche per questa fase sorge un'inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messaggi non è determinabile in modo preciso attraverso l'analisi statica. La definizione \ref{def:Choreography_Automata} sembra suggerire che esista un numero finito e definito di messaggi scambiabili tra i vari attori tuttavia questo insieme non è calcolabile con l'approccio utilizzato.
@@ -49,7 +49,7 @@ L'esempio sottostante mostra un caso di possibile di codice sorgente Go in cui l
 \lstinputlisting[language=Go, caption={Codice sorgente per cui non è possibile calcolare $\mathcal{M}$ tramite analisi statica}, label={lst:DynamicAnalysis}]{Snippets/DynamicAnalysis.go}
 \bigskip
 Come possiamo vedere il programma mostrato è in realtà alquanto banale: la Goroutine \texttt{main} genera un intero random che poi invia su un canale precedentemente condiviso con le due Goroutine \texttt{worker}, uno dei due processi riceverà questo intero lo incrementerà per poi inviarlo nuovamente con un timestamp aggiuntivo. Attraverso l'analisi statica non solo non riusciamo a determinare il valore inviato sul canale \texttt{in} nè entrambi i valori inviati sul canale \texttt{out}. \bigskip \\
-La soluzione da noi adottata è in realtà molto semplice e permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $main \xrightarrow{int} worker$ oppure $worker \xrightarrow{payload} main$.
+La soluzione da noi adottata è in realtà molto semplice ma permette di mantenere una sufficente espressività del modello: generalizziamo $\mathcal{M}$ all'\emph{insieme dei tipi} dei messaggi scambiati, i tipi infatti possono essere inferiti e ricavati senza particolari problemi per mezzo di analisi statica. Nel caso della figura sopra $\mathcal{M}$ sarà definito come: $\mathcal{M} = \{ int, payload \}$ e le label nel Choreography Automata associato saranno del tipo $worker \leftarrow main : int$ oppure $main \leftarrow worker : payload$.
 
 \iffalse
     \subsection{Gestione degli stati finali}
@@ -58,14 +58,19 @@ La soluzione da noi adottata è in realtà molto semplice e permette di mantener
 \fi
 
 \section{Derivazione delle local views}
-Una volta ottenuti tutti i metadati necessari sorge la necessità di derivare dagli stessi le local views di ogni Gorountine creata durante l'esecuzione dell'intero programma, da queste poi potremmo procedere alla costruzione della global view.\bigskip\\
+Una volta ottenuti tutti i metadati necessari sorge la necessità di derivare dagli stessi le local views di ogni Gorountine creata durante l'esecuzione del programma, da queste poi potremmo procedere alla costruzione della global view.\bigskip\\
 Partiamo definendo la struttura dell'automa che verra prodotto durante queste fase, rispetto alla fase precedente dove l'automa è associato ad una singola funzione qui l'automma ottenuto sarà associato ad un intera Goroutine. Per i nostri scopi non siamo interessati all'intero flusso d'esecuzione bensì solo alle interazioni con i canali, allo \emph{spawn} di nuove Goroutine e alle \emph{function call} effettuate. \\
-Un pattern tipico di Go è quello di avviare Goroutine passando alle stesse il canale/i su cui comunnicare, questo comporta un meccanisco di sostituzione dei \emph{parametri formali} con i \emph{parametri attuali} all'innterno dell'automa associato alla funzione. \\
-Un altro aspetto da tenere in considerazione riguarda le chiamate di funzione effettuate, in questo caso per avere una migliore approssimazione serve che l'automa associato al \emph{chiamato} venga collegato all'automa del chiamante. Questo tipo di operazione ha il nome di \emph{inlining} ed è usata come ottimizzazione dai compilatori per evitare l'overhead della \emph{function call} quando possibile, esattamente come nell'inlining sostituiamo la chiamata di funzione con il corpo (nel nostro caso l'automa) della funzione stessa. Così facendo otterremo alla fine un unico automa che rappresenta l'esecuzione delle Goroutine tenendo in considerazione anche le eventuali function call fatte durante la stessa.\bigskip \\
-Ora che abbiamo definito alcune problematiche da prendere in considerazione durante questa fase, vediamo l'algoritmo per l'estrazione delle local views. Fortunamente l'esistenza di una gerarchia \emph{intrinseca} nelle Goroutine ci è di aiuto poichè sappiamo che inizialmente esiste solo una Goroutine, quella che esegue il \texttt{main}, e sarà questa ad avviare le altre \emph{in cascata}.
-
-% TODO ADD PRELIMINARIES NOTES ON INLINING AND FSA TRANSITION IN SCOPEAUTOMATA
-
+\begin{definition}[Goroutine FSA]
+    Un Goroutine FSA e' un fsa G con insieme di labels:
+    \begin{center}
+        $\mathcal{L} = \{ \leftarrow c, \rightarrow c, \bigtriangleup f | \text{c e' un canale ed f e' una funzione} \}$
+    \end{center}
+    le label indicano rispettivamente la ricezione da un canale, l'invio su un canale e lo spawn di una nuova Goroutine con entrypoint f
+\end{definition}
+Un pattern tipico di Go è quello di avviare Goroutine passando alle stesse il canale/i su cui comunnicare, questo comporta un meccanisco di sostituzione dei \emph{parametri formali} con i \emph{parametri attuali}. \\
+Un altro aspetto da tenere in considerazione riguarda le chiamate di funzione effettuate, in questo caso per avere una migliore approssimazione serve che l'automa associato al \emph{chiamato} venga \emph{fuso} all'automa del chiamante. Questo tipo di operazione e' simile all'\emph{inlining} un'ottimizzazione usata dai compilatori per evitare l'overhead della \emph{function call} quando possibile, esattamente come nell'inlining sostituiamo la transizione con la chiamata di funzione con l'automa associato alla funzione chiamata. In questo modo otteniamo un automa che rappresenta il flusso d'esecuzione delle Goroutine tenendo in considerazione anche le eventuali function call fatte.\bigskip \\
+Vediamo ora l'algoritmo per l'estrazione delle local views. In questo caso l'esistenza di una gerarchia \emph{intrinseca} nelle Goroutine ci è di aiuto poichè ci permette di assumere un input iniziale per l'algoritmo, ovvero la Goroutine che esegue la funzione \texttt{main}.
+% TODO ADD PRELIMINARIES NOTES ON INLINING AND FSA TRANSITION IN SCOPEAUTOMATA'
 \begin{algorithm}
     \caption{Derivazione delle local views}
     \begin{algorithmic}
@@ -83,9 +88,8 @@ Ora che abbiamo definito alcune problematiche da prendere in considerazione dura
         \State marca $gr$
         \EndWhile
     \end{algorithmic}
-\end{algorithm}
-
-
+\end{algorithm}\\
+Applicando l'algorimo di sopra al codice sorgente in figura 4.1 otteniamo i seguenti automi rispettivamente per le Goroutine $main_0$, $worker_1$ e $worker_2$:
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
@@ -93,18 +97,56 @@ Ora che abbiamo definito alcune problematiche da prendere in considerazione dura
         \node[state] (A1) [right of=A0] {$1$};
         \node[state,accepting] (A2) [right of=A1] {$2$};
         \node[state] (A3) [right of=A2] {$3$};
-        \node[state,initial,accepting] (B0) [below of=A1] {$0$};
+        \node[state,initial,accepting] (B0) [below of=A0] {$0$};
         \node[state] (B1) [right of=B0] {$1$};
+        \node[state,initial,accepting] (C0) [right of=B1] {$0$};
+        \node[state] (C1) [right of=C0] {$1$};
         \draw
         (A0) edge node{$\bigtriangleup$ worker} (A1)
         (A1) edge node{$\bigtriangleup$ worker} (A2)
         (A2) edge [bend left]node{$\rightarrow$ in} (A3)
         (A3) edge [bend left]node{$\leftarrow$ out} (A2)
         (B0) edge [bend left]node{$\leftarrow$ in} (B1)
-        (B1) edge [bend left]node{$\rightarrow$ out} (B0);
+        (B1) edge [bend left]node{$\rightarrow$ out} (B0)
+        (C0) edge [bend left]node{$\leftarrow$ in} (C1)
+        (C1) edge [bend left]node{$\rightarrow$ out} (C0);
     \end{tikzpicture}
     \caption{La local views per i processoi \texttt{main} e \texttt{worker} visti in \ref{lst:DynamicAnalysis}}
 \end{figure}
+\newpage % TODO avoid forcecully breaking pages
 
 \section{Generazione della coreografia}
-TODO % TODO
+% Todo: Spiegare perche serve l'operazione di composizione (canali come interfaccie), esplicare l'algoritmo di composizione nostro (prodotto - ok) e sincronizzazione (la nostra versione), spiegare anche la tecninca di simulazione che pero ha dei grossi drawbacks, dare la 
+Ottenuti gli automi associati alle singole Goroutine ci si presenta il problema di capire come unire questi in un unico automa che rappresenti la coreografia e rispetti la definizione data in \ref{def:Choreography_Automata_Ext}.\bigskip \\
+Il problema che si presenta in questa fase e' il seguente: in Go un canale c, in generale, puo' essere condiviso tra n Goroutine e ognuna di queste puo' inviare e ricevere a suo piacimento sullo stesso. Prendendo per esempio la figura precedente i dati inviati dalla Goroutine $main_0$ sul canale \texttt{in} possono essere ricevuti o da $worker_0$ o da $worker_1$ e non ci e' possibile determinare in maniera esatta quale delle due Goroutine ricevera' uno specifico messaggio. Questo problema si ripropone anche quando $main_0$ riceve dal canale \texttt{out} e la complessita' del problema peggiora se generalizziamo ad un caso con n sender ed m receiver o, peggio ancora, con n attori che eseguono sia operazione di send che di receive sullo stesso canale condiviso (questo caso addirittura apre alla possibilita' che un Goroutine riceva un messaggio inviato da se stessa). \bigskip \\
+Per risolvere questa problematica la nostra soluzione considera i canali come delle \emph{interfacce}, quindi tutte le transizioni con operazioni su canali all'interno di un Goroutine FSA sono considerate come interazioni tra un attore (la Goroutine) e un interfaccia (il canale). A questo punto pero' abbiamo gia' definito l'operazione di \emph{composizione} che permette di unire molteplici Choreography Automata, che comunicano tra loro mediante l'utilizzo di interfacce, in uno unico.\\
+Dobbiamo quindi riadattare la definizione di composizione in modo che prenda in considerazione dei Goroutine FSA anziche' dei Choreogaphy Automata, ricordiamo a tal proposito che l'operazione di composizione e' divisa in due step sequenziali, il prodotto degli automi e la sincronizzazione dell'automa prodotto. Per quanto riguarda il prodotto tra automi l'operazione rimane del tutto invariata rispetto alla definizione data in \ref{def:FSA_Product}, invece per quanto riguarda l'operazione di sincronizzazione usiamo il seguente algoritmo per sincronizzare l'automa prodotto:
+\begin{algorithm}
+    \caption{Algoritmo di sincronizzazione}
+    \begin{algorithmic}
+        \State $cFSA \gets createCompositionFSA(grSet)$ \Comment{Crea l'automa prodotto}
+        \ForEach {$s \in cFSA.states$}
+        \ForEach{$t_A \in s.transitions$}
+            \If {$t_A.Kind == Send$}
+            \State{$se \land \exists t_B \in  s.transitions. (t_B.Kind == Recv \land t_A.Channel == t_B.Channel)$}
+            \State Aggiungi 
+            \ElsIf{$t.Kind == Recv$}
+            \ElsIf{$t.Kind == Spawn$}
+            \Else{$Rimuovi la transizione t_A$}
+            \EndIf
+        \EndFor
+        \EndFor
+        % \While{$\exists$ gr $\in grSet$ non marcato} \Comment{Per ogni Goroutine trovata}
+        % \ForEach {$t \in gr$} \Comment{Per ogni transizione nell'FSA di questa Goroutine}
+        % \If {$t.kind = Call$}
+        % \State espande i parametri formali con quelli attuali
+        % \State inline del chiamato all'interno del chiamante
+        % \ElsIf {$t.kind = Spawn$}
+        % \State espande i parametri formali con quelli attuali
+        % \State $grSet \gets grSet \cup \{ t.target \}$
+        % \EndIf
+        % \EndFor
+        % \State marca $gr$
+        % \EndWhile
+    \end{algorithmic}
+\end{algorithm}\\
