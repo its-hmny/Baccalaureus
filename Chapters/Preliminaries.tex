@@ -353,12 +353,12 @@ L'operazione di sincronizzazione genera un nuovo automa le cui label sono defini
 \begin{equation*}
     \mathcal{S}(A \times B) =
     \begin{cases}
-        p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  p \xrightarrow{K \rightarrow B: m} q. (A \neq B) \\
+        p \xrightarrow{A \rightarrow B: m} r \hfill \text{ se } \exists p \xrightarrow{A \rightarrow H: m} q, \exists  q \xrightarrow{K \rightarrow B: m} r. (A \neq B) \\
         p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } A, B\in \mathcal{P}                                                                                     \\
         \text{nessuna transizione} \hfill \text{altrimenti}
     \end{cases}
 \end{equation*}
-Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.\\
+Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verrànno rimossi.\\
 Vediamo di seguito l'esempio di una composizione tra due automi:
 \begin{figure}[ht]
     \centering
