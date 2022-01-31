@@ -8,17 +8,17 @@ In ogni caso è possibile tramite \emph{command line} fornire alcuni parametri e
 \begin{table}[h!]
     \centering
     \begin{tabular}{l l l}
-        Breve & Esteso   & Descrizione                                              \\
-        -i    & --input  & Il \emph{path} del file .go in input                     \\
-        -o    & --output & La directory in cui verrano salvati i file i vari automi \\
-        -t    & --trace  & Stampa l'AST sullo \texttt{stdout}                       \\
-        -h    & --help   & Mostra un messaggio di aiuto con una breve spiegazione   \\
+        Breve & Esteso   & Descrizione                                               \\
+        -i    & --input  & Il \emph{path} del file .go in input                      \\
+        -o    & --output & La directory in cui verranno salvati i file i vari automi \\
+        -t    & --trace  & Stampa l'AST sullo \texttt{stdout}                        \\
+        -h    & --help   & Mostra un messaggio di aiuto con una breve spiegazione    \\
     \end{tabular}
     \caption{La lista di argomenti da linea di comando  accettati da Choreia}
 \end{table}
 
 \section{Struttura del progetto}
-Il progetto è strutturto su 3 moduli principali, ognuno con uno specifico compito: Il modulo \texttt{fsa} fornisce un implementazione per gli Automi a stati finiti (implementati attraverso i multigrafi), il modulo \texttt{static analysis} gestisce il parsing (fatto tramite la \emph{standard library} golang) e l'estrazione dei metadati dall'AST ed infine il modulo \texttt{transforms} implementa varie operazioni su FSA come per esempio: determinizzazione e minimizzazione (per FSA generici) o la composizione (per Choreography Automata). \\
+Il progetto è strutturato su 3 moduli principali, ognuno con uno specifico compito: Il modulo \texttt{fsa} fornisce un'implementazione per gli Automi a stati finiti (implementati attraverso i multigrafi), il modulo \texttt{static analysis} gestisce il parsing (fatto tramite la \emph{standard library} golang) e l'estrazione dei metadati dall'AST ed infine il modulo \texttt{transforms} implementa varie operazioni su FSA come per esempio: determinizzazione e minimizzazione (per FSA generici) o la composizione (per Choreography Automata). \\
 La validazione dei dati e l'orchestrazione delle funzionalità fornite dai vari moduli sono gestite nel \texttt{main} che agisce come entry point del programma.\bigskip \\
 \begin{forest}
     for tree={
@@ -70,7 +70,7 @@ La validazione dei dati e l'orchestrazione delle funzionalità fornite dai vari 
 \end{forest}
 
 \section{Flusso d'esecuzione}
-Il flusso d'esecuzione riprende le quattro macrofasi definite nella sezione \ref{sec:GoOutline}.\bigskip\\
+Il flusso d'esecuzione riprende le quattro macro fasi definite nella sezione \ref{sec:GoOutline}.\bigskip\\
 Come prima cosa il file in input viene validato e parsato, generando un AST (queste funzionalità sono fornite dal modulo \texttt{go/ast} della standard library), l'AST viene poi navigato da un \emph{visitor} che si occupa di raccogliere e organizzare i dati in apposite strutture dati. Durante questa fase vengono generati degli automi a stati finiti non deterministici ad ogni funzione dichiarata all'interno del file in input, questi NFA descriveranno l'evoluzione della computazione nello scope di funzione.\bigskip\\
 Una volta ottenuti gli automi e i metadati si procede con lo step successivo, ovvero ricavare gli automi associati alle Goroutine presenti nel programma. Per fare questo si utilizza l'algoritmo sopra che attraverso l'\emph{inlining} delle chiamate di funzione e la sostituzione dei parametri formali con quelli attuali ricava in maniera ricorsiva degli automi non deterministici che rappresentano il flusso d'esecuzione completo della Goroutine. Come fase finale di questo step gli automi, ancora non deterministici, vengono determinizzati e minimizzati tramite mostrati algoritmi al capitolo \ref{cap:Preliminaries}.\bigskip\\
 L'ultimo step dell'esecuzione è quello di generare la global view a partire dalle view locali (e rispettivi automi), esattamente come detto sopra generiamo l'automa prodotto di tutte le local views e poi eseguiamo l'operazione di sincronizzazione su quest'ultimo. Come ultima cosa esportiamo questo automa \emph{finale} in formato DOT.
@@ -78,9 +78,23 @@ L'ultimo step dell'esecuzione è quello di generare la global view a partire dal
 \section{Esempi pratici}
 Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography Automata associatogli da Choreia. % TODO add link to Choreia repo /folders
 
+\subsection{Loop determinato su canale}
+\begin{minipage}[t]{0.50\textwidth}
+    \lstinputlisting[language=Go]{Snippets/ForLoop.go}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (0)[below=0.3cm] {$0$};
+        \node[state, accepting] (1)[below of=0] {$1$};
+        \draw
+        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
+        (1) edge [loop right] node{$main_0 \leftarrow worker_1$} (1);
+    \end{tikzpicture}
+\end{minipage}
+
 \subsection{Operazioni condizionali con \texttt{select}}
 \begin{minipage}[t]{0.50\textwidth}
-    \lstinputlisting[language=Go]{Snippets/Example1.go}
+    \lstinputlisting[language=Go]{Snippets/Select.go}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.45\textwidth}
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
@@ -101,28 +115,3 @@ Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography 
     \end{tikzpicture}
 \end{minipage}
 
-\subsection{Infinite loop con molteplici partecipanti}
-% TODO simplify example
-\begin{minipage}[t]{0.50\textwidth}
-    \lstinputlisting[language=Go]{Snippets/Example2.go}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.45\textwidth}
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
-        \node[state,initial] (0)[below=0.3cm] {$0$};
-        \node[state] (1)[below of=0] {$1$};
-        \node[state] (2)[below of=1] {$2$};
-        \node[state] (3)[below of=2, left=30pt] {$3$};
-        \node[state] (4)[below of=2, right=30pt] {$4$};
-        \node[state] (5)[below of=3] {$5$};
-        \node[state] (6)[below of=4] {$6$};
-        \draw
-        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
-        (1) edge node{$main_0 \bigtriangleup worker_2$} (2)
-        (2) edge node[left=10pt]{$worker_1 \leftarrow main_0$} (3)
-        (2) edge node[right=10pt]{$worker_2 \leftarrow main_0$} (4)
-        (3) edge node[left=10pt]{$main_0 \leftarrow worker_1$} (5)
-        (3) edge node[above]{$main_0 \leftarrow worker_2$} (6)
-        (4) edge node[below]{$main_0 \leftarrow worker_2$} (5);
-        (4) edge node[right=10pt]{$main_0 \leftarrow worker_1$} (6);
-    \end{tikzpicture}
-\end{minipage}
