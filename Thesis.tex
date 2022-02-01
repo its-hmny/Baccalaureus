@@ -141,7 +141,10 @@
 \tableofcontents
 
 % Introduction chapter
-\chapter{Introduzione} % TODO Should be improved
+\chapter{Introduzione}
+Negli ultimi anni si è visto un progressivo aumento nell'utilizzo di \emph{sistemi distribuiti} e delle cosidette \emph{architetture orientate ai microservizi} così come un rinnovato interesse verso lo sviluppo concorrente.\\
+Questo nuovo interesse ha portato cambiamenti  e trasformato i linguaggi di programmazione e il \emph{language design}, si è cercato infatti di venire incontro alle richieste dei programmatori per quanto riguarda l'approccio del linguaggio alla concorrenza. Ricordiamo infatti che alcuni linguaggi non offrivano funzionalità native o talvolta le API fornite erano troppo complicate ed intricate per garantirne un utilizzo chiaro. In generale la concorrenza era un \emph{afterthought}. Alcuni esempi pratici di queste trasformazioni possono essere visti in nuovi linguaggi di programmazione come Go ed Elixir che offrono un'approccio semplificato e più chiaro alla concorrenza ma anche in linguaggi più consolidati come C++, che con lo standard 20 ha introdotto construtti che facilitano l'utilizzo rispetto alle implementazioni precedenti.\\
+Tuttavia sviluppare è estremamente complesso sviluppare un sistema concorrente (o distribuito) esente da errori, allo stesso modo si presentano varie problematiche legate al \emph{debugging} dello stesso, in entrambi i casi si fatica a riprodurre il bug o a testare tutte le casiste possibili. Questo aspetto di difficoltà è intrinsicamente legato alla natura non deterministica di un sistema concorrente. Inoltre questi problemi di riproducibilità e validazioni crescono esponenzialmente in difficoltà al crescere della complessità del sistema stesso.\bigskip \\
 \iffalse
     Negli ultimi anni si è visto un interesse sempre più pronunciato verso lo sviluppo di sistemi concorrenti e distribuiti, questo si riflette nella progettazione a microservizi o in linguaggi di programmazione più recenti come Go, Rust o C++ 20 i quali implementano tutti, in forme disparate, un approccio alla concorrenza facilitato e univoco evitando la complessità e frammentazione che può derivare dall'utilizzo di librerie esterne e non standardizzate.\\
     % ? Keep this paragraph
