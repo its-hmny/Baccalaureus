@@ -21,7 +21,7 @@ Mentre aspetti tipici di Go come i canali e il costrutto \texttt{select} non gen
 Il \emph{conflitto} con il modello teorico deriva dal fatto che nella definizione di Choreography Automata si assume in qualche modo che tutti i partecipanti siano già avviati e pronti a comunicare tra loro mentre per i nostri scopi servirebbe tenere traccia del momento in cui una Goroutine viene avviata in modo da poter definire quando la sua \emph{local view} diventa rilevante nel contesto globale. Senza questo ulteriore controllo si potrebbero verificare delle inconsistenze, per esempio potremmo avere interazioni tra Goroutine prima ancora che queste siano avviate.\bigskip \\
 Estendiamo dunque le nozioni di Choreography Automata e di Communicating Finite-State Machine date rispettivamente nelle definizioni \ref{def:Choreography_Automata} e \ref{def:CommunicatingFiniteStateMachine} come segue:
 
-\begin{definition}[Choreography Automata - Estesa]\label{def:Choreography_Automata_Ext}
+\begin{definition}[Choreography Automata - Estesa] \label{def:Choreography_Automata_Ext}
     Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label:\bigskip \\
     \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$} \bigskip \\
     con $\mathcal{L}_{int}$, $\mathcal{P}$ e $\mathcal{M}$ definiti come nella definizione \ref{def:Choreography_Automata}
@@ -65,7 +65,7 @@ Un pattern tipico di Go è quello di avviare Goroutine passando alle stesse il c
 Un altro aspetto da tenere in considerazione riguarda le chiamate di funzione effettuate, in questo caso per avere una migliore approssimazione serve che l'automa associato al \emph{chiamato} venga \emph{fuso} all'automa del chiamante. Questo tipo di operazione è simile all'\emph{inlining} un'ottimizzazione usata dai compilatori per evitare l'overhead della \emph{function call} quando possibile, esattamente come nell'inlining sostituiamo la transizione con la chiamata di funzione con l'automa associato alla funzione chiamata. In questo modo otteniamo un automa che rappresenta il flusso d'esecuzione delle Goroutine tenendo in considerazione anche le eventuali function call fatte.\bigskip \\
 Vediamo ora l'algoritmo per l'estrazione delle local views. In questo caso l'esistenza di una gerarchia \emph{intrinseca} nelle Goroutine ci è di aiuto poichè ci permette di assumere un input iniziale per l'algoritmo, ovvero la Goroutine che esegue la funzione \texttt{main}.
 \begin{algorithm}
-    \caption{Derivazione delle local views}\label{alg:Local_Views_Extraction}
+    \caption{Derivazione delle local views} \label{alg:Local_Views_Extraction}
     \begin{algorithmic}
         \State $grSet \gets \{ main \}$
         \While{$\exists$ gr $\in grSet$ non marcato} \Comment{Per ogni Goroutine trovata}
@@ -108,7 +108,7 @@ Applicando l'algoritmo di sopra al codice sorgente in figura 4.1 otteniamo i seg
 \end{figure}
 \newpage % TODO avoid forcecully breaking pages
 
-\section{Generazione della coreografia}\label{sec:Go_Composition}
+\section{Generazione della coreografia} \label{sec:Go_Composition}
 Ottenuti gli automi associati alle singole Goroutine, che ricordiamo essere nel nostro caso le local views, ci si presenta il problema di capire come \emph{fondere} questi in un unico automa che rappresenti la coreografia e rispetti la definizione data in \ref{def:Choreography_Automata_Ext}.\bigskip \\
 Il problema che si presenta in questa fase è il seguente: in Go un canale può essere condiviso tra \emph{n} Goroutine ed ognuna di queste può inviare e ricevere a suo piacimento sullo stesso. Prendendo per esempio la figura precedente i dati inviati dalla Goroutine $main_0$ sul canale \texttt{in} possono essere ricevuti o da $worker_0$, o da $worker_1$ e non ci è possibile determinare in esattamente quale delle due Goroutine sia il destinatario effettivo di uno specifico messaggio. Inoltre la complessità del problema peggiora se generalizziamo ad un caso con \emph{n} sender ed \emph{m} receiver o, peggio ancora, con \emph{n} attori che eseguono sia operazione di send che di receive sullo stesso canale condiviso (questo caso apre anche alla possibilità che una Goroutine riceva un messaggio inviato precedentemente da lei stessa). \bigskip \\
 La nostra soluzione considera i canali come delle \emph{interfacce}, quindi tutte le transizioni con operazioni su canali all'interno di un Goroutine FSA sono considerate come interazioni tra un attore (la Goroutine) e un'interfaccia (il canale). Nel capitolo \ref{cap:Preliminaries} però abbiamo già definito l'operazione di \emph{composizione} che permette di unire molteplici Choreography Automata, comunicanti tra loro mediante interfacce, in uno unico.\\

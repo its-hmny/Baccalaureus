@@ -1,6 +1,5 @@
 % Preliminaries and Notation chapter
-\chapter{Nozioni preliminari e notazione}
-\label{cap:Preliminaries}
+\chapter{Nozioni preliminari e notazione} \label{cap:Preliminaries}
 % Finite State Automata (+ related) section
 \section{FSA non deterministici e deterministici}
 Prima di introdurre le coreografie e i Choreography Automata è necessario fare un breve richiamo di alcune nozioni fondamentali quali la nozione di Automa a Stati Finiti (FSA)\cite{Linguaggi_di_Prorgammazione} e alcune operazioni possibili sugli stessi.
@@ -81,7 +80,7 @@ In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso
 \end{definition}
 L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
 \begin{algorithm}
-    \caption{Costruzione per sottoinsiemi}\label{alg:SubsetConstruction_Algorithm}
+    \caption{Costruzione per sottoinsiemi} \label{alg:SubsetConstruction_Algorithm}
     \begin{algorithmic}
         \State $x \gets$ $\epsilon$-clos($s_0$) \Comment{Lo stato iniziale del DFA}
         \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
@@ -136,7 +135,7 @@ Negli automi incompleti la funzione di transizione è parziale e dunque sorgono 
 L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
 L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \begin{algorithm}
-    \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
+    \caption{Riempimento della Tabella a Scala} \label{alg:Minimization_Algorithm}
     \begin{algorithmic}
         \State Inizializza la tabella a scala con le coppie (p,q)
         \State Marca con marca $x_0$ le coppie $(m,n)$ con $m \in \mathcal{F}$ e $n \notin \mathcal{F}$
@@ -149,8 +148,8 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
     \end{algorithmic}
 \end{algorithm}\\
 Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fig:Deterministic_Example} con l'algoritmo di \emph{Riempimento della Tabella a Scala}. Anche questo automa riconosce sempre la RegEx $(a|b)^*ba$.
-\begin{figure}[ht]
-    \label{fig:Minimization_Example} \centering
+\begin{figure}[ht] \label{fig:Minimization_Example}
+    \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (AB) {$A,B$};
         \node[state] (C) [right of=A] {$C$};
@@ -178,8 +177,7 @@ Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fi
 
 \subsection{Prodotto}
 L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
-\begin{definition}[Prodotto di automi]
-    \label{def:FSA_Product}
+\begin{definition}[Prodotto di automi] \label{def:FSA_Product}
     Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
     \begin{itemize}
         \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
@@ -240,7 +238,6 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
         (10) edge node{$c$} (8);
     \end{tikzpicture}
     \caption{Prodotto tra due automi}
-    \label{}
 \end{figure}
 
 \section{Choreography Automata}
@@ -252,7 +249,7 @@ Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} 
 \end{itemize}
 La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop "nested" ed "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
-\begin{figure}[ht]
+\begin{figure}[ht] \label{fig:ChoreographyAutomata_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.8cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
@@ -264,7 +261,6 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
     \caption{Un esempio di Choreography Automata}
-    \label{fig:ChoreographyAutomata_Example}
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
@@ -283,8 +279,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 \subsection{CFSM e Local Views}
 Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un'operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}\cite{CFSM}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
-\begin{definition}[Communicating Finite-State Machine]
-    \label{def:CommunicatingFiniteStateMachine}
+\begin{definition}[Communicating Finite-State Machine] \label{def:CommunicatingFiniteStateMachine}
     Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels: \bigskip \\
     \centerline{$\mathcal{L}_{act} = \{$A B ! m, A B ? m $|$ A, B $ \in \mathcal{P},$ m $ \in \mathcal{M}\}$}
     \\ \\
@@ -314,7 +309,7 @@ La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \r
 \\ \\
 Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
 
-\begin{figure}[ht]
+\begin{figure}[ht] \label{fig:Projection_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
         \node[state,initial] (A0) {0};
@@ -337,7 +332,6 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
         (C1) edge[bend left, above] node[rotate=90]{CA! toc} (C0);
     \end{tikzpicture}
     \caption{Le tre view locali estratte dall'automa in figura \ref{fig:ChoreographyAutomata_Example}}
-    \label{fig:Projection_Example}
 \end{figure}
 
 \subsection{Composizione delle global views}
@@ -359,7 +353,7 @@ L'operazione di sincronizzazione genera un nuovo automa le cui label sono defini
 \end{equation*}
 Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verrànno rimossi.\\
 Vediamo di seguito l'esempio di una composizione tra due automi:
-\begin{figure}[ht]
+\begin{figure}[ht] \label{fig:Composition_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape, initial text=$ $,]
         \node[state, initial] (X0) {$0$};
@@ -386,7 +380,6 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
         (Z2) edge[bend right, above] node{$A \rightarrow C : p$} (Z0);
     \end{tikzpicture}
     \caption{Un esempio di composizione tra due Choreography Automata}
-    \label{fig:Composition_Example}
 \end{figure}\\
 
 \section{Analisi statica e dinamica}
