@@ -26,95 +26,8 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano
 \begin{remark}
     Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}). Una sottoclasse particolarmente rilevante è quella dei DFA (\emph{Deterministic Finite Automata}) che andremo a definire di seguito.
 \end{remark}
-
-\begin{definition}[Deterministic Finite Automata]
-    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
-\end{definition}
-Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono né l'utilizzo di $\epsilon$ transizioni, né l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
-In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente anche se quest'ultimo spesso ha un numero maggiore di stati rispetto all' NFA di partenza. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funzione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
-
-\begin{definition}[$\epsilon$ closure]
-    Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s), il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
-    \begin{itemize}
-        \item $s \in \epsilon$-clos(s)
-        \item se x $\in \epsilon$-clos(s) allora $\delta(x, \epsilon) \subseteq \epsilon$-clos(s)
-    \end{itemize}
-\end{definition}
-
-\begin{remark}
-    Se $\mathcal{X}$ è un insieme di stati definiamo $\epsilon$-clos($\mathcal{X}$) come $\bigcup_{x \in \mathcal{X}} \epsilon \mbox{-clos(x)}$.
-\end{remark}
-
-\begin{definition}[Mossa]
-    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}\delta(x, \alpha)$, ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
-\end{definition}
-\newpage % TODO Avoid forcefully break page
-L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
-\begin{algorithm}
-    \caption{Costruzione per sottoinsiemi}\label{alg:SubsetConstruction_Algorithm}
-    \begin{algorithmic}
-        \State $x \gets$ $\epsilon$-clos($s_0$) \Comment{Lo stato iniziale del DFA}
-        \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
-        \While{$\exists$ t $\in \mathcal{T}$ non marcato}
-        \State marca(t)
-        \ForEach {$\alpha \in \mathcal{L} $}
-        \State $r \gets \epsilon$-clos(mossa(t, $\alpha$))
-        \If {$r \notin \mathcal{T}$}
-        \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
-        \EndIf
-        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ darà output r}
-        \EndFor
-        \EndWhile
-    \end{algorithmic}
-\end{algorithm}\\
-Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.
-
-\subsection{Minimizzazione}
-Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
-L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
-Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
-L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
-L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
-\begin{algorithm}
-    \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
-    \begin{algorithmic}
-        \State Inizializza la tabella a scala con le coppie (p,q)
-        \State Marca con marca $x_0$ le coppie $(m,n)$ con $m \in \mathcal{F}$ e $n \notin \mathcal{F}$
-        \While{$\exists$ almeno un marchio $x_i$ all'iterazione i}
-        \If{$\exists \alpha \in \mathcal{L}, \exists p, q \in \mathcal{S}$ tale che $(p,q)$ non è marcata $\land$ $\delta(p, \alpha) \neq \delta(q, \alpha)$}
-        \State Marca $(p, q)$ con marca $x_i$
-        \EndIf
-        \State Considera all'iterazione seguente solo gli stati non marcati
-        \EndWhile
-    \end{algorithmic}
-\end{algorithm}
-
-\subsection{Prodotto}
-L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
-\begin{definition}[Prodotto di automi]
-    \label{def:FSA_Product}
-    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
-    \begin{itemize}
-        \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
-        \item $s_0 = (s_{01}, s_{02})$
-        \item $\mathcal{F} = \{ (s_1, s_2) | s_1 \in \mathcal{F}_1 \land s_2 \in \mathcal{F}_2 \}$
-        \item $\mathcal{L} = \mathcal{L}_1 \cap \mathcal{L}_2$
-        \item $\delta$ è invece definita nel seguente modo:
-    \end{itemize}
-    \begin{equation*}
-        \begin{cases}
-            \text{$\delta ((s_1, s_2), a) = \{ (x,y) | x \in \delta(s_1, a) \land y \in \delta(s_2, a) \}$ \hfill se $\delta_1$ e $\delta_2$ sono definite} \\
-            \text{non definito} \hfill \text{altrimenti}
-        \end{cases}
-    \end{equation*}
-\end{definition}
-\begin{remark}
-    Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo oppurtunamente le varie congiunzioni (insimistiche e logiche) con delle disgiunzioni.
-\end{remark}
-
-\subsection{Esempi}
-Per concludere questa sezione mostriamo di seguito esempi dei vari concetti definiti in precedenza. Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
-\begin{figure}[ht]
+Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
+\begin{figure}[h!] \label{fig:NonDeterministic_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=2cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
@@ -142,10 +55,52 @@ Per concludere questa sezione mostriamo di seguito esempi dei vari concetti defi
         (q8) edge[above] node{$a$} (q9);
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
-    \label{fig:NonDeterministic_Example}
 \end{figure}\\
-Si noti che questo è solo un \emph{possibile} NFA in grado di riconoscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso. Vediamo ora invece il DFA D, equivalente ad N, calcolato tramite l'algoritmo di \emph{Costruzione per sottoinsiemi}
-\begin{figure}[ht]
+Si noti che questo è solo un \emph{possibile} NFA in grado di riconoscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso.
+
+\begin{definition}[Deterministic Finite Automata]
+    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
+\end{definition}
+Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono né l'utilizzo di $\epsilon$ transizioni, né l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
+In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente anche se quest'ultimo spesso ha un numero maggiore di stati rispetto all' NFA di partenza. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funzione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
+
+\begin{definition}[$\epsilon$ closure]
+    Fissato un NFA N = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ ed uno stato $s \in \mathcal{S}$ si dice $\epsilon$ closure di s, indicata con $\epsilon$-clos(s), il più piccolo $\mathcal{R} \subseteq \mathcal{S}$ tale che:
+    \begin{itemize}
+        \item $s \in \epsilon$-clos(s)
+        \item se x $\in \epsilon$-clos(s) allora $\delta(x, \epsilon) \subseteq \epsilon$-clos(s)
+    \end{itemize}
+\end{definition}
+
+\begin{remark}
+    Se $\mathcal{X}$ è un insieme di stati definiamo $\epsilon$-clos($\mathcal{X}$) come $\bigcup_{x \in \mathcal{X}} \epsilon \mbox{-clos(x)}$.
+\end{remark}
+
+\begin{definition}[Mossa]
+    Dato un insieme di stati $\mathcal{X} \subseteq \mathcal{S}$ e un simbolo $\alpha \in \mathcal{L}$ definiamo la funzione \emph{mossa}: $\mathcal{P(S)} \times \mathcal{L} \longrightarrow \mathcal{P(S)}$ tale che: \emph{mossa}$(\mathcal{X}, \alpha) = \bigcup_{x \in \mathcal{X}}\delta(x, \alpha)$, ovvero l'insieme di stati raggiungibili da un dato insieme di stati di partenza, leggendo in input $\alpha$.
+\end{definition}
+L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
+\begin{algorithm}
+    \caption{Costruzione per sottoinsiemi}\label{alg:SubsetConstruction_Algorithm}
+    \begin{algorithmic}
+        \State $x \gets$ $\epsilon$-clos($s_0$) \Comment{Lo stato iniziale del DFA}
+        \State $\mathcal{T} \gets \{ x \}$                   \Comment{Un insieme di $\epsilon$-clos}
+        \While{$\exists$ t $\in \mathcal{T}$ non marcato}
+        \State marca(t)
+        \ForEach {$\alpha \in \mathcal{L} $}
+        \State $r \gets \epsilon$-clos(mossa(t, $\alpha$))
+        \If {$r \notin \mathcal{T}$}
+        \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
+        \EndIf
+        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ darà output r}
+        \EndFor
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}\\
+Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.\bigskip \\
+L'automa presentato di seguito riconosce sempre la RegEx $(a|b)^*ba$ ed è del tutto equivalente a quello in figura \ref{fig:NonDeterministic_Example}, tuttavia è stato ottenuto proprio da quest'ultimo tramite l'algoritmo di \emph{Costruzione per sottoinsiemi}
+\newpage
+\begin{figure}[t!] \label{fig:Deterministic_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (A) {$A$};
@@ -172,11 +127,30 @@ Si noti che questo è solo un \emph{possibile} NFA in grado di riconoscere il li
         \end{tabular}
     }
     \caption{Il DFA equivalente a quello in figura \ref{fig:NonDeterministic_Example}}
-    \label{fig:Deterministic_Example}
-\end{figure}\\
-Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati equivalenti tramite l'algoritmo di \emph{Riempimento della Tabella a Scala}
+\end{figure}
+
+\subsection{Minimizzazione}
+Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
+L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
+Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
+L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
+L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
+\begin{algorithm}
+    \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
+    \begin{algorithmic}
+        \State Inizializza la tabella a scala con le coppie (p,q)
+        \State Marca con marca $x_0$ le coppie $(m,n)$ con $m \in \mathcal{F}$ e $n \notin \mathcal{F}$
+        \While{$\exists$ almeno un marchio $x_i$ all'iterazione i}
+        \If{$\exists \alpha \in \mathcal{L}, \exists p, q \in \mathcal{S}$ tale che $(p,q)$ non è marcata $\land$ $\delta(p, \alpha) \neq \delta(q, \alpha)$}
+        \State Marca $(p, q)$ con marca $x_i$
+        \EndIf
+        \State Considera all'iterazione seguente solo gli stati non marcati
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}\\
+Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fig:Deterministic_Example} con l'algoritmo di \emph{Riempimento della Tabella a Scala}. Anche questo automa riconosce sempre la RegEx $(a|b)^*ba$.
 \begin{figure}[ht]
-    \centering
+    \label{fig:Minimization_Example} \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (AB) {$A,B$};
         \node[state] (C) [right of=A] {$C$};
@@ -200,14 +174,36 @@ Ora andiamo a minimizzare il DFA ottenuto precedentemente rimuovendo gli stati e
         \end{tabular}
     }
     \caption{Il DFA minimizzato ottenuto da quello in figura \ref{fig:Deterministic_Example}}
-    \label{fig:Minimization_Example}
 \end{figure}\\
-Concludiamo mostrando un esempio di prodotto tra due automi, prendiamo in considerazione i due automi di partenza:
+
+\subsection{Prodotto}
+L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
+\begin{definition}[Prodotto di automi]
+    \label{def:FSA_Product}
+    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
+    \begin{itemize}
+        \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
+        \item $s_0 = (s_{01}, s_{02})$
+        \item $\mathcal{F} = \{ (s_1, s_2) | s_1 \in \mathcal{F}_1 \land s_2 \in \mathcal{F}_2 \}$
+        \item $\mathcal{L} = \mathcal{L}_1 \cap \mathcal{L}_2$
+        \item $\delta$ è invece definita nel seguente modo:
+    \end{itemize}
+    \begin{equation*}
+        \begin{cases}
+            \text{$\delta ((s_1, s_2), a) = \{ (x,y) | x \in \delta(s_1, a) \land y \in \delta(s_2, a) \}$ \hfill se $\delta_1$ e $\delta_2$ sono definite} \\
+            \text{non definito} \hfill \text{altrimenti}
+        \end{cases}
+    \end{equation*}
+\end{definition}
+\begin{remark}
+    Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo oppurtunamente le varie congiunzioni (insimistiche e logiche) con delle disgiunzioni.
+\end{remark}
+Per concludere mostriamo un esempio di prodotto tra due automi: i primi due automi in figura sono quelli di partenza mentre il terzo è l'automa prodotto.
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
         % Automata 1
-        \node[state, initial] (0) {$0$};
+        \node[state, initial=A] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
         \node[state] (2) [right of=1] {$2$};
         % Automata 2
@@ -258,7 +254,7 @@ La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli
 Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.8cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
         \node[state] (q1) [right of=q0] {$q_1$};
         \node[state] (q2) [right of=q1] {$q_2$};
@@ -390,7 +386,7 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
         (Z2) edge[bend right, above] node{$A \rightarrow C : p$} (Z0);
     \end{tikzpicture}
     \caption{Un esempio di composizione tra due Choreography Automata}
-    \label{fig:NonDeterministic_Example}
+    \label{fig:Composition_Example}
 \end{figure}\\
 
 \section{Analisi statica e dinamica}
