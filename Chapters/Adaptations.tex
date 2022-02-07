@@ -83,7 +83,7 @@ Vediamo ora l'algoritmo per l'estrazione delle local views. In questo caso l'esi
     \end{algorithmic}
 \end{algorithm}\\
 Applicando l'algoritmo di sopra al codice sorgente in figura 4.1 otteniamo i seguenti automi rispettivamente per le Goroutine $main_0$, $worker_1$ e $worker_2$:
-\begin{figure}[ht]
+\begin{figure}[ht] \label{fig:Extracted_Local_View}
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (A0) {$0$};
@@ -124,4 +124,21 @@ Adattiamo dunque la nozione di composizione ai Goroutine FSA, anzichè ai Choreo
 \begin{remark}
     Con la notazione $p_A \xrightarrow{\rightarrow c} q_A$ indichiamo che esiste una transizione dallo stato p allo stato q con label $\rightarrow c$ nell'automa associato alla Goroutine A.
 \end{remark}
-In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possibili evoluzioni} della computazione parallela mentre l'operazione di sincronizzazione ci permette di \emph{filtrare} e \emph{unire} solo le evoluzioni che portano ad una interazione tra due Gouroutine sullo stesso canale. Queste tipo di interazioni, assieme a quelle di spawn, saranno le sole transizioni ammesse nell'automa finale dal momento che tutte le transizioni che non rispettano i casi definiti sopra vengono eliminate. Così facendo otteniamo in output dall'operazione di composizione un automa che rispetta la definizione \ref{def:Choreography_Automata_Ext}.
+In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possibili evoluzioni} della computazione parallela mentre l'operazione di sincronizzazione ci permette di \emph{filtrare} e \emph{unire} solo le evoluzioni che portano ad una interazione tra due Gouroutine sullo stesso canale. Queste tipo di interazioni, assieme a quelle di spawn, saranno le sole transizioni ammesse nell'automa finale dal momento che tutte le transizioni che non rispettano i casi definiti sopra vengono eliminate. Così facendo otteniamo in output dall'operazione di composizione un automa che rispetta la definizione \ref{def:Choreography_Automata_Ext}.\bigskip \\
+Concludiamo questo capitolo con il Choreography Automaton ottenuto a partire dalle local views mostrate in figura \ref{fig:Extracted_Local_View} mediante l'algoritmo di composizione descritto in questa sezione.
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',node distance=4.2cm,scale=1, transform shape, initial text=$ $,]
+        \node[state, initial] (0) {$0$};
+        \node[state] (1) [right of=0] {$1$};
+        \node[state, accepting] (2) [right of=1] {$2$};
+        \node[state] (3) [right of=2] {$3$};
+
+        \draw
+        (0) edge node[above]{$main \bigtriangleup worker_1$} (1)
+        (1) edge node[above]{$main \bigtriangleup worker_2$} (2)
+        (2) edge[bend left] node[above,align=center]{$main \rightarrow worker_1$\\$main \rightarrow worker_2$} (3)
+        (3) edge[bend left] node[below,align=center]{$worker_1 \rightarrow main$\\$worker_2 \rightarrow main$} (2);
+    \end{tikzpicture}
+    \caption{Il Choreography Automaton associato al codice sorgente in \ref{lst:DynamicAnalysis}}
+\end{figure}
