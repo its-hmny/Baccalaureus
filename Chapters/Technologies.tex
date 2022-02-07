@@ -2,7 +2,7 @@
 \chapter{Tecnologie e librerie utilizzate}
 \section{Go (golang)}
 \subsection{Overview}
-Go\cite{Go_Wikipedia} (anche chiamato {golang}) è un linguaggio di programmazione \emph{general purpose} open source sviluppato nel 2007 da Robert Griesemer, Rob Pike e Ken Thompson e poi supportato da Google negli anni a seguire. Fortemente ispirato al C presenta una sintassi minimale e molto semplice, Go è \emph{statically typed} e fornisce un \emph{Garbage Collector} lasciando comunque all'utente la possibilità di interagire con i puntatori e allocare dinamicamente la memoria in modo autonomo.\\
+Go\cite{Golang} (anche chiamato {golang}) è un linguaggio di programmazione \emph{general purpose} open source sviluppato nel 2007 da Robert Griesemer, Rob Pike e Ken Thompson e poi supportato da Google negli anni a seguire. Fortemente ispirato al C presenta una sintassi minimale e molto semplice, Go è \emph{statically typed} e fornisce un \emph{Garbage Collector} lasciando comunque all'utente la possibilità di interagire con i puntatori e allocare dinamicamente la memoria in modo autonomo.\\
 Alcuni dei problemi che Go mira a risolvere sono
 \begin{itemize}
     \item \textbf{Controllo restrittivo delle dipendenze}: Infatti per evitare di appesantire l'eseguibile finale Go rifiuta di compilare moduli o file dove non tutte le dipendenze importate vengono utilizzate
@@ -10,7 +10,7 @@ Alcuni dei problemi che Go mira a risolvere sono
     \item \textbf{Approccio semplificato alla concorrenza}: Il linguaggio utilizza le Goroutine, dei \emph{processi leggeri}, le quali permettono un approccio semplificato ed accessibile alla programmazione concorrente
 \end{itemize}
 Altre feature del linguaggio degne di nota sono: il package manager e l'ecosistema di pacchetti totalmente distribuito  e decentralizzato, il numero di moduli e librerie disponibili, e la grande varietà di architetture supportate (comprensive di \emph{microcontroller} e \emph{embedded systems}).\\
-Go è stato utilizzato nello sviluppo di tecnologie molto famose e largamente utilizzate come Docker e Kubernetes e attualmente viene regolarmente utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
+Go è stato utilizzato nello sviluppo di tecnologie molto famose e largamente utilizzate come Docker\cite{Docker} e Kubernetes\cite{Kubernetes} e attualmente viene regolarmente utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
 
 \subsection{Costrutti di concorrenza}
 Come accennato sopra Go fornisce un approccio semplificato e built-in alla concorrenza e alla gestione della stessa, il linguaggio permette di avviare dei processi leggeri chiamati Goroutine e scambiare messaggi tra quest'ultimi tramite l'utilizzo di \emph{canali}, i quali permettono sia comunicazione \emph{sincrona} che \emph{asincrona}.\\
@@ -24,7 +24,7 @@ Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizi
 \newpage % TODO Avoid forcefully break page
 \lstinputlisting[language=Go, caption=Esempio di utilizzo dei costrutti di concorrenza forniti da Go]{Snippets/GoConcurrency.go}
 \bigskip
-Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè attende di ricevere i vari messaggi da entrambi i canali contemporaneamente fintanto che entrambi non vengano chiusi per poi terminare.
+Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè, mentre le due nuove Goroutine inviano 10 messaggi ciascuna (con un timeout tra un invio e l'altro), la Goroutine \texttt{main} attende i vari messaggi tramite la \texttt{select} su entrambi i canali, questo significa che la Goroutine \texttt{main} eseguirà la prima operazione \emph{non bloccante} oppure il \texttt{default} branch se nessun canale ha un messaggio in coda. Il for loop terminerà solamente quando entrambi i canali saranno chiusi dalle rispettive Goroutine \texttt{worker} con l'apposita primitiva \texttt{close}.
 
 \section{Graphviz e DOT}
 Vista la necessità di \emph{rappresentare} in qualche modo il Choreography Automata finale e gli eventuali risultati intermedi si è reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi (i secondi sono una generalizzazione dei primi) abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
@@ -46,4 +46,5 @@ Di seguito un mostriamo un esempio banale di Choreography Automata definito attr
         q2 -> q0[label="C->A:toc"];
     }
 \end{lstlisting}
+Il seguente esempio definisce un grafo direzionato con tre nodi (q0, q1, e q2) e altrettanti archi, rispettivamente da q0 a q1, da q1 a q2 e da q2 a q0 con le rispettive label. DOT fornisce anche la possibilità all'utente di definire prima tutti i nodi che fanno parte del grafo e poi tutti gli archi.\\
 Chiaramente i Choreography Automata generati da Choreia non saranno così semplici e immediati, ciononostante dovrebbe essere comunque possibile interagirvi e comprenderli.

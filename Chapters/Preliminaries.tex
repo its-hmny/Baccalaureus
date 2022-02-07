@@ -20,7 +20,7 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano
 \end{definition}
 
 \begin{remark}
-    Tipicamente è solito trovare una definizione in cui è presente anche l'insieme degli stati di terminazione (o di accettazione) $\mathcal{F}$. In questo caso non è stato definito e pertanto assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
+    È possibile trovare una definizione in cui non è presente l'insieme degli stati di terminazione (o di accettazione) $\mathcal{F}$. In tal caso assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
 \end{remark}
 
 \begin{remark}
@@ -79,10 +79,10 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
     \caption{Riempimento della Tabella a Scala}\label{alg:Minimization_Algorithm}
     \begin{algorithmic}
         \State Inizializza la tabella a scala con le coppie (p,q)
-        \State Marca con marca $x_0$ le coppie (x,y) con $x \in \mathcal{F}$ e $y \notin \mathcal{F}$
+        \State Marca con marca $x_0$ le coppie $(m,n)$ con $m \in \mathcal{F}$ e $n \notin \mathcal{F}$
         \While{$\exists$ almeno un marchio $x_i$ all'iterazione i}
-        \If{$\exists \alpha \in \mathcal{L}, \exists p, q \in \mathcal{S}$ tale che $\delta(p, \alpha) \neq \delta(q, \alpha)$}
-        \State Marca (p, q) con marca $x_i$
+        \If{$\exists \alpha \in \mathcal{L}, \exists p, q \in \mathcal{S}$ tale che $(p,q)$ non è marcata $\land$ $\delta(p, \alpha) \neq \delta(q, \alpha)$}
+        \State Marca $(p, q)$ con marca $x_i$
         \EndIf
         \State Considera all'iterazione seguente solo gli stati non marcati
         \EndWhile
@@ -93,11 +93,12 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
 \begin{definition}[Prodotto di automi]
     \label{def:FSA_Product}
-    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{L}, \delta \rangle$ è definito come segue:
+    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
     \begin{itemize}
         \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
         \item $s_0 = (s_{01}, s_{02})$
-        \item $\mathcal{L} = \mathcal{L}_1 \cup \mathcal{L}_2$
+        \item $\mathcal{F} = \{ (s_1, s_2) | s_1 \in \mathcal{F}_1 \land s_2 \in \mathcal{F}_2 \}$
+        \item $\mathcal{L} = \mathcal{L}_1 \cap \mathcal{L}_2$
         \item $\delta$ è invece definita nel seguente modo:
     \end{itemize}
     \begin{equation*}
@@ -108,7 +109,7 @@ L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodot
     \end{equation*}
 \end{definition}
 \begin{remark}
-    Per quanto riguarda $\mathcal{F}$ si può procedere in due modi diversi: se siamo interessati all'unione dei due linguaggi allora $\mathcal{F} = \{(x,y) | x \in \mathcal{F}_1 \lor y \in \mathcal{F}_2 \} $ mentre se siamo interessati all'intersezione di tali linguaggi prenderemo $\mathcal{F} = \{(x,y) | x \in \mathcal{F}_1 \land y \in \mathcal{F}_2 \}$.
+    Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo oppurtunamente le varie congiunzioni (insimistiche e logiche) con delle disgiunzioni.
 \end{remark}
 
 \subsection{Esempi}
@@ -284,7 +285,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 \end{remark}
 
 \subsection{CFSM e Local Views}
-Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un'operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
+Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un'operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}\cite{CFSM}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
 \begin{definition}[Communicating Finite-State Machine]
     \label{def:CommunicatingFiniteStateMachine}
@@ -293,8 +294,8 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
-Dunque il \emph{soggetto} di un'azione in input "A B ? m" è A, lo stesso vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A. Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.\\
-Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata. \\
+Dunque il \emph{soggetto} di un'azione in input "A B ? m" è B, l'opposto vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A.\\
+Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
 Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione per indicare che esiste una transizione da $s_1$ a $s_2$ con label a, formalmente $\exists a \in \mathcal{L}_{act}, s_1, s_2 \in \mathcal{S}. \delta(s_1, a) = s_2$.
 
 \begin{definition}[Proiezione]
@@ -309,8 +310,10 @@ Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione
         \end{cases}
     \end{equation*}
 \end{definition}
-La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ è ottenuta ricavando in primis l'automa intermedio:
-\bigskip \\
+\begin{remark}
+    Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.
+\end{remark}
+La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ è ottenuta ricavando in primis l'automa intermedio: \bigskip \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
 Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
@@ -379,8 +382,8 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
         (X1) edge node[above]{$I \rightarrow A : n$} (X2)
         (X2) edge[bend left, above] node{$A \rightarrow C : p$} (X0)
 
-        (Y0) edge[bend left, above] node{$B \rightarrow J : m$} (Y1)
-        (Y1) edge[bend left, above] node[below]{$K \rightarrow B : n$} (Y0)
+        (Y0) edge[bend left, above] node{$J \rightarrow B : m$} (Y1)
+        (Y1) edge[bend left, above] node[below]{$B \rightarrow K : n$} (Y0)
 
         (Z0) edge node[above]{$A \rightarrow B : m$} (Z1)
         (Z1) edge node[above]{$B \rightarrow A : n$} (Z2)
@@ -394,8 +397,8 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
 Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questa tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
 A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
 \begin{itemize}
-    \item \textbf{Testuale}: ovvero il codice sorgente, un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrivono, ad alto livello, i passi che devono essere intrapresi durante la computazione. Questo formato è quello più utilizzato dagli umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
-    \item \textbf{Binario}: il codice macchina (o codice eseguibile) generato dal compilatore. Questo formato è difficilmente comprensibile da un umano, ma al contrario è perfettamente comprensibile per una macchina tant'è che può essere \emph{eseguito} dalla stessa.
+    \item \textbf{Codice sorgente}: un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrivono, ad alto livello, i passi che devono essere intrapresi durante la computazione. Questo formato è quello più utilizzato dagli esseri umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
+    \item \textbf{Codice binario}: detto anche codice macchina o codice eseguibile generato dal compilatore. Questo formato è difficilmente comprensibile da un umano, ma al contrario è perfettamente comprensibile per una macchina tant'è che può essere \emph{eseguito} dalla stessa.
 \end{itemize}
 Se consideriamo la definizione di programma come \emph{un insieme di istruzioni per arrivare ad un risultato finale partendo da input forniti} i formati suddetti sono due rappresentazioni equivalenti del medesimo programma e dunque possono essere usati intercambiabilmente e senza alterare la \emph{sostanza} del programma stesso. \bigskip \\
 Tornando all'estrazione dei dati da un programma esistono due diverse di tecniche, legate al \emph{formato} del programma stesso:
