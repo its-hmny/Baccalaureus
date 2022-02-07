@@ -28,7 +28,7 @@ Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \text
 
 \section{Graphviz e DOT}
 Vista la necessità di \emph{rappresentare} in qualche modo il Choreography Automata finale e gli eventuali risultati intermedi si è reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi (i secondi sono una generalizzazione dei primi) abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
-Abbiamo quindi scelto di usare Graphviz\cite{Graphviz_Wikipedia}, una libreria open source per la visualizzazione di grafi la quale utilizza DOT\cite{DOT_Wikipedia}, un formato specificatamente progettato per la descrizione dei grafi.\\
+Abbiamo quindi scelto di usare Graphviz\cite{Graphviz}, una libreria open source per la visualizzazione di grafi la quale utilizza DOT\cite{DOT_Lang}, un formato specificatamente progettato per la descrizione dei grafi.\\
 La scelta è ricaduta su DOT e Graphviz per alcuni motivi principali:
 \begin{itemize}
     \item Il linguaggio DOT è \emph{human readable} e particolarmente facile da comprendere, inoltre Graphviz permette di \emph{convertire} o \emph{esportare} in formati di uso più comune come PNG o SVG
