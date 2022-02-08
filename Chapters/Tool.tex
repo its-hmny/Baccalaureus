@@ -79,10 +79,96 @@ L'ultimo step dell'esecuzione è quello di generare la global view a partire dal
 Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography Automata associatogli da Choreia. % TODO add link to Choreia repo /folders
 
 \subsection{Loop determinato su canale}
-\begin{minipage}[t]{0.50\textwidth}
-    \lstinputlisting[language=Go]{Snippets/ForLoop.go}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.45\textwidth}
+% TODO add program description notes
+TODO add program description notes
+\lstinputlisting[language=Go]{Snippets/ForLoop.go}
+Di seguito troviamo gli automi delle local views associate rispettivamente alle Goroutine $\texttt{main}_0$ e $\texttt{worker}_1$ ottenuti tramite l'algoritmo di estrazione delle local views. Come si puo' facilmente osservare rispecchiano perfettamente il flusso d'esecuzione descritto dal codice che in questo caso e' particolarmente semplice.\\
+Si noti che l'automa della Goroutine $\texttt{worker}_1$ non presenta una transizione del tipo $\rightarrow shared$, come si potrebbe essere indotti a pensare, bensi' la label della transizione e' $  \rightarrow channel$ poiche' l'algoritmo di estrazione gestisce la sostituzione dei parametri formali con quelli attuali.
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (main0) {$0$};
+        \node[state, accepting] (main1)[right of=main0] {$1$};
+        \node[state, initial, accepting] (worker0)[right=10cm] {$0$};
+        \draw
+        (main0) edge node{$\bigtriangleup worker_1$} (main1)
+        (main1) edge [loop right] node{$\leftarrow channel$} (main1)
+        (worker0) edge [loop right] node{$\rightarrow channel$} (worker0);
+    \end{tikzpicture}
+\end{figure} \bigskip \\
+Il seguente e' invece l'automa associato alla global view ottenuto con l'algoritmo di coomposizione a partire dai due precedenti. Chiaramente in questo caso la sincronizzazione e' banale e avviene sulle sole due transizione di invio e ricezione presenti.
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.5cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (0){$0$};
+        \node[state, accepting] (1)[right of=0] {$1$};
+        \draw
+        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
+        (1) edge [loop right] node{$main_0 \leftarrow worker_1$} (1);
+    \end{tikzpicture}
+\end{figure}
+
+\subsection{Operazioni condizionali con \texttt{select}}
+% TODO add program description notes
+TODO add program description notes
+\lstinputlisting[language=Go]{Snippets/Select.go}
+Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $\texttt{responder}_2$ sono i seguenti. Si noti come viene \emph{mappato} il costrutto \texttt{select} attraverso gli automi, dal momento che il costrutto permette di \emph{valutare} operazioni su piu'canali eseguendo solo la prima tra queste che non sia bloccante nell'automa a stati finiti questo viene mappato come una biforcazione del flusso di esecuzione che poi procede nel suo \emph{sottografo} dando eventualmente la possibilita' di ricongiungersi con gli altri.
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=1, transform shape, baseline=0]
+        \node[state, initial] (main0) {$0$};
+        \node[state] (main1)[right of=main0] {$1$};
+        \node[state] (main2)[right of=main1] {$2$};
+        \node[state] (main3)[right of=main2, above=0.3cm] {$3$};
+        \node[state, accepting] (main4)[right of=main3] {$4$};
+        \node[state] (main5)[right of=main2, below=0.3cm] {$5$};
+        \node[state, accepting] (main6)[right of=main5] {$6$};
+
+        \node[state, initial] (responder10)[below of=main0, right=1cm] {$0$};
+        \node[state] (responder11)[right of=responder10] {$1$};
+
+        \node[state, initial] (responder20)[right of=responder11] {$0$};
+        \node[state] (responder21)[right of=responder20] {$1$};
+        \draw
+        (main0) edge node{$\bigtriangleup responder_1$} (main1)
+        (main1) edge node{$\bigtriangleup responder_2$} (main2)
+        (main2) edge node[rotate=13, above]{$\leftarrow chanA$} (main3)
+        (main3) edge node{$\leftarrow chanB$} (main4)
+        (main2) edge node[rotate=-13, below]{$\leftarrow chanB$} (main5)
+        (main5) edge node{$\leftarrow chanA$} (main6)
+
+        (responder10) edge node{$\rightarrow chanA$} (responder11)
+
+        (responder20) edge node{$\rightarrow chanB$} (responder21)
+        ;
+    \end{tikzpicture}
+\end{figure}\\
+Nel Choreography Automaton generato possiamo vedere come in questo caso l'utilizzo del \emph{prodotto tra automi} permette di considerare tutte le possibili evoluzioni del sistema concorrente che poi verrano elaborate ulteriomente e poste nella forma attuale dalla \emph{sincronizzazione}, in questo caso possiamo vedere infatti che la sincronizzazione del genera correttamente entrambi i possibili rami d'esecuzione.\bigskip \\
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.8cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (0) {$0$};
+        \node[state] (1)[right of=0] {$1$};
+        \node[state] (2)[right of=1] {$2$};
+        \node[state] (3)[right of=2, above=30pt] {$3$};
+        \node[state, accepting] (4)[left of=3, above=30pt] {$4$};
+        \node[state] (5)[right of=2, below=30pt] {$5$};
+        \node[state, accepting] (6)[left of=5, below=30pt] {$6$};
+        \draw
+        (0) edge node{$main_0 \bigtriangleup responder_1$} (1)
+        (1) edge node{$main_0 \bigtriangleup responder_2$} (2)
+        (2) edge node[rotate=18, above]{$main_0 \leftarrow responder_1$} (3)
+        (3) edge node[rotate=-18, above]{$main_0 \leftarrow responder_2$} (4)
+        (2) edge node[rotate=-18, below]{$main_0 \leftarrow responder_2$} (5)
+        (5) edge node[rotate=18, below]{$main_0 \leftarrow responder_1$} (6);
+    \end{tikzpicture}
+\end{figure}
+
+\subsection{Branching con \texttt{if-then-else}}
+
+\lstinputlisting[language=Go]{Snippets/If-Then-Else.go}
+
+\begin{figure}[h!]
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (0)[below=0.3cm] {$0$};
         \node[state, accepting] (1)[below of=0] {$1$};
@@ -90,28 +176,19 @@ Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography 
         (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
         (1) edge [loop right] node{$main_0 \leftarrow worker_1$} (1);
     \end{tikzpicture}
-\end{minipage}
+\end{figure}
 
-\subsection{Operazioni condizionali con \texttt{select}}
-\begin{minipage}[t]{0.50\textwidth}
-    \lstinputlisting[language=Go]{Snippets/Select.go}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.45\textwidth}
+\subsection{Function call con sostituzione dei parametri}
+
+\lstinputlisting[language=Go]{Snippets/FunctionCall.go}
+
+\begin{figure}[h!]
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (0)[below=0.3cm] {$0$};
-        \node[state] (1)[below of=0] {$1$};
-        \node[state] (2)[below of=1] {$2$};
-        \node[state] (3)[below of=2, left=7pt] {$3$};
-        \node[state] (4)[below of=2, right=7pt] {$4$};
-        \node[state, accepting] (5)[below of=3] {$5$};
-        \node[state, accepting] (6)[below of=4] {$6$};
+        \node[state, accepting] (1)[below of=0] {$1$};
         \draw
-        (0) edge node{$main_0 \bigtriangleup responder_1$} (1)
-        (1) edge node{$main_0 \bigtriangleup responder_2$} (2)
-        (2) edge node[left]{$main_0 \leftarrow responder_1$} (3)
-        (2) edge node[right]{$main_0 \leftarrow responder_2$} (4)
-        (3) edge node[left]{$main_0 \leftarrow responder_2$} (5)
-        (4) edge node[right]{$main_0 \leftarrow responder_1$} (6);
+        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
+        (1) edge [loop right] node{$main_0 \leftarrow worker_1$} (1);
     \end{tikzpicture}
-\end{minipage}
+\end{figure}
 
