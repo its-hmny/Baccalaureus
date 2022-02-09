@@ -165,19 +165,51 @@ Nel Choreography Automaton generato possiamo vedere come in questo caso l'utiliz
 \end{figure}
 
 \subsection{Branching con \texttt{if-then-else}}
-
+% TODO add program description notes
+TODO add program description notes
 \lstinputlisting[language=Go]{Snippets/If-Then-Else.go}
-
+Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{dummy}_1$, $\texttt{dummy}_2$ sono i seguenti. Si noti come viene \emph{mappato} l'\texttt{if-then-else} attraverso gli automi: la biforcazione del ramo then viene mappata correttamente ma allo stesso tempo procede un'esecuzione \emph{lineare} che rappresenta il caso in cui la condizione dell'if stesso non sia verificata. Sempre per quanto riguarda la condizione dell'if possiamo banalmente osservare le limitazioni dell'analisi statica descritte al capitolo \ref{cap:Preliminaries}: nonostante la condizione sia sempre verificata Choreia comunque assume il \emph{non determinismo} e si comporta biforcando il flusso d'esecuzione.
 \begin{figure}[h!]
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,scale=1, transform shape, baseline=0]
-        \node[state,initial] (0)[below=0.3cm] {$0$};
-        \node[state, accepting] (1)[below of=0] {$1$};
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (main0) {$0$};
+        \node[state] (main1)[right of=main0] {$1$};
+        \node[state] (main2)[right of=main1] {$2$};
+        \node[state] (main3)[above=2cm, right of=main2] {$3$};
+        \node[state, accepting] (main4)[below=2cm, right of=main3] {$4$};
+
+        \node[state,initial] (dummy10)[below=2cm] {$0$};
+        \node[state, accepting] (dummy11)[right of=dummy10] {$1$};
+
+        \node[state,initial] (dummy20)[right of=dummy11] {$0$};
+        \node[state, accepting] (dummy21)[right of=dummy20] {$1$};
         \draw
-        (0) edge node{$main_0 \bigtriangleup worker_1$} (1)
-        (1) edge [loop right] node{$main_0 \leftarrow worker_1$} (1);
+        (main0) edge node{$\bigtriangleup dummy_1$} (main1)
+        (main1) edge node{$\bigtriangleup dummy_2$} (main2)
+        (main2) edge node{$\leftarrow B$} (main4)
+        (main2) edge node[above, rotate=34]{$\leftarrow A$} (main3)
+        (main3) edge node[above, rotate=-32]{$\leftarrow B$} (main4)
+
+        (dummy10) edge node{$\rightarrow A$} (dummy11)
+
+        (dummy20) edge node{$\rightarrow B$} (dummy21);
+    \end{tikzpicture}
+\end{figure}\\
+Nel Choreogaphy Automaton generato possiamo vedere che la struttura dello stesso è del tutto simile a quella dell'automa associtato alla Goroutine $\texttt{main}_0$. Questo è dovuto al fatto che almeno per questi esempi il sistema concorrente è particolarmente semplice e \emph{gerarchico} e il main è la Goroutine dominante mentre le altre Goroutine sono piuttosto banali e immediate, dunque non aggiungono complessità al Choreography Automaton finale. Questo esempi \emph{semplicizzati} sono dovuti alla difficoltà di rappresentazione degli automi e all'incremento nella complessità degli stessi al crescere della complessità del sistema concorrente.
+\begin{figure}[h!]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4cm,scale=1, transform shape, baseline=0]
+        \node[state,initial] (main0) {$0$};
+        \node[state] (main1)[right of=main0] {$1$};
+        \node[state] (main2)[right of=main1] {$2$};
+        \node[state] (main3)[above=3cm, right of=main2] {$3$};
+        \node[state, accepting] (main4)[below=3cm, right=15cm] {$4$};
+        \draw
+        (main0) edge node{$\bigtriangleup dummy_1$} (main1)
+        (main1) edge node{$\bigtriangleup dummy_2$} (main2)
+        (main2) edge node{$main_0 \rightarrow dummy_2$} (main4)
+        (main2) edge node[above, rotate=38]{$main_0 \rightarrow dummy_1$} (main3)
+        (main3) edge node[above, rotate=-40]{$main_0 \rightarrow dummy_2$} (main4);
     \end{tikzpicture}
 \end{figure}
-
 \subsection{Function call con sostituzione dei parametri}
 
 \lstinputlisting[language=Go]{Snippets/FunctionCall.go}
