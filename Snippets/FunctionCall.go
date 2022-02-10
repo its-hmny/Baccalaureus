@@ -14,7 +14,7 @@ func f(channel chan string) {
 
 func main() {
 	// Creates the shared channel
-	channel := make(chan string)
+	channel := make(chan string, 1)
 	// Call the "f" function
 	f(channel)
 	// Receives something from "channel"
