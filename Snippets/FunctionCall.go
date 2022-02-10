@@ -1,22 +1,22 @@
 package main
 
-func fuzzer(channel chan string) {
-	channel <- "Hello from fuzzzer"
-	close(channel) // Closes the cannel before returning
+import "fmt"
+
+func dummy(channel chan string) {
+	channel <- "Hello from dummy" //Sends a message on the shared channel
 }
 
-func nested(channel chan string) {
-	channel <- "Hello from nested"
-	go fuzzer(channel)
-	<-channel
+func f(channel chan string) {
+	channel <- "Hello from nested" // Send a message on channel
+	go dummy(channel)              // Spawns a new "dummy" Goroutine
+	fmt.Println(<-channel)         // Receives the message sent by itself
 }
 
 func main() {
 	// Creates the shared channel
 	channel := make(chan string)
-
-	nested(channel)
-	go fuzzer(channel)
-
-	<-channel
+	// Call the "f" function
+	f(channel)
+	// Receives something from "channel"
+	fmt.Println(<-channel)
 }

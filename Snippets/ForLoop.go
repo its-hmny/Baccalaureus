@@ -5,7 +5,7 @@ import (
 )
 
 func worker(shared chan string) {
-	// Sends 100 messages on the shared channel
+	// Sends 100 numerated messages on the shared channel
 	for i := 0; i < 100; i++ {
 		shared <- fmt.Sprintf("This is message number: %d", i)
 	}
@@ -15,7 +15,7 @@ func worker(shared chan string) {
 func main() {
 	// Creates the shared channel
 	channel := make(chan string, 10)
-	// Starts the worker processes
+	// Starts the "worker" process
 	go worker(channel)
 	// Receives until the channel is closed by worker
 	for msg := range channel {

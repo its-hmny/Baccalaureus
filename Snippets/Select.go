@@ -3,17 +3,16 @@ package main
 import "math/rand"
 
 func responder(channel chan int) {
-	// ...
+	// ... do something else
 	channel <- rand.Int()
-	// ...
+	// ... do something else
 }
 
 func main() {
 	// Creates the channels
-	chanA := make(chan int)
-	chanB := make(chan int)
+	chanA, chanB := make(chan int), make(chan int)
 
-	// Starts the worker processes
+	// Starts the "responder" processes
 	go responder(chanA)
 	go responder(chanB)
 
@@ -21,9 +20,9 @@ func main() {
 	select {
 	case <-chanA:
 		<-chanB
-		// ...
+		// ... do something else
 	case <-chanB:
 		<-chanA
-		// ...
+		// ... do something else
 	}
 }
