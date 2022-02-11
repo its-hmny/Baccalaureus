@@ -27,7 +27,7 @@ Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizi
 Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè, mentre le due nuove Goroutine inviano 10 messaggi ciascuna (con un timeout tra un invio e l'altro), la Goroutine \texttt{main} attende i vari messaggi tramite la \texttt{select} su entrambi i canali, questo significa che la Goroutine \texttt{main} eseguirà la prima operazione \emph{non bloccante} oppure il \texttt{default} branch se nessun canale ha un messaggio in coda. Il for loop terminerà solamente quando entrambi i canali saranno chiusi dalle rispettive Goroutine \texttt{worker} con l'apposita primitiva \texttt{close}.
 
 \section{Graphviz e DOT}
-Vista la necessità di \emph{rappresentare} in qualche modo il Choreography Automata finale e gli eventuali risultati intermedi si è reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi (i secondi sono una generalizzazione dei primi) abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
+Vista la necessità di \emph{rappresentare} in qualche modo il Choreography Automaton finale e gli eventuali risultati intermedi si è reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi (i secondi sono una generalizzazione dei primi) abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
 Abbiamo quindi scelto di usare Graphviz\cite{Graphviz}, una libreria open source per la visualizzazione di grafi la quale utilizza DOT\cite{DOT_Lang}, un formato specificatamente progettato per la descrizione dei grafi.\\
 La scelta è ricaduta su DOT e Graphviz per alcuni motivi principali:
 \begin{itemize}
@@ -35,7 +35,7 @@ La scelta è ricaduta su DOT e Graphviz per alcuni motivi principali:
     \item Permette un utilizzo combinato con \emph{Corinne}\cite{Corinne},un tool grafico per la visualizzazione e manipolazione dei Choreography Automata
     \item Essendo Graphviz ormai uno standard \emph{de facto} sono presenti librerie e binding che ne permettono l'utilizzo con moltissimi linguaggi di programmazione, tra cui Go
 \end{itemize}
-Di seguito un mostriamo un esempio banale di Choreography Automata definito attraverso il linguaggio DOT.
+Di seguito un mostriamo un esempio banale di Choreography Automaton definito attraverso il linguaggio DOT.
 \begin{lstlisting}[caption=Rappresentazione in DOT dell'automa in figura \ref{fig:ChoreographyAutomata_Example}]
     digraph DOT_Graph_Example {
         node [shape=circle, fontsize=20]

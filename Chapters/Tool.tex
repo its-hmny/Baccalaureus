@@ -1,6 +1,6 @@
 % "Tool description" chapter
 \chapter{Choreia}
-Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreography Automata ricavato dal codice sorgente in formato DOT.. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
+Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreography Automaton ricavato dal codice sorgente in formato DOT.. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
 
 \section{Parametri da linea di comando}
 Il tool non ha una GUI in quanto, per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
@@ -76,7 +76,7 @@ Una volta ottenuti gli automi e i metadati si procede con lo step successivo, ov
 L'ultimo step dell'esecuzione è quello di generare la global view a partire dalle view locali (e rispettivi automi), esattamente come detto in \ref{sec:Go_Composition} generiamo l'automa prodotto di tutte le local views e poi eseguiamo l'operazione di sincronizzazione su quest'ultimo, infine esportiamo questo automa \emph{finale} in formato DOT.
 
 \section{Esempi pratici}
-Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography Automata associatogli da Choreia. % TODO add link to Choreia repo /folders
+Di seguito mostriamo alcuni esempi di programmi Go e il rispettivo Choreography Automaton associatogli da Choreia. % TODO add link to Choreia repo /folders
 
 
 \subsection{Loop determinato su canale}
@@ -238,7 +238,7 @@ Gli automi associati alle Goroutine $\texttt{main}_0$ e $\texttt{dummy}_1$ sono 
     \end{tikzpicture}
 \end{figure}\\
 Choreia, allo stato attuale, non è in grado di generare un automa per il seguente codice, questo è dovuto al fatto che sono presenti diverse criticità all'interno dello stesso: prima di tutto la Goroutine \texttt{main} si sincronizza con se stessa inviando il primo messaggio su \texttt{channel} e ricevendolo poi dallo stesso. Questo, seppur possibile teoricamente in Go, non è \emph{catturabile} dal nostro algoritmo in quanto richiederebbe un adattamento della nozione di prodotto tra automi. Attualmente infatti il prodotto tra automi $A \times B$ non considera il caso con A utilizzato da entrambi i lati come fattore ($A \times A$) e questo comporta una \emph{perdita d'informazione}.\\
-Inoltre anche ammettendo che fosse implementato quanto detto sopra a questo punto avremmo nel Choreography Automata ben due sincronizzazione del tipo $main \rightarrow main$ sia nella transizione da 0 a 1, sia nella transizione da 2 a 3 e andrebbe quindi implementata un qualche tipo di algoritmo e/o validazione che eviti di incappare in questi casi particolari.\\
+Inoltre anche ammettendo che fosse implementato quanto detto sopra a questo punto avremmo nel Choreography Automaton ben due sincronizzazione del tipo $main \rightarrow main$ sia nella transizione da 0 a 1, sia nella transizione da 2 a 3 e andrebbe quindi implementata un qualche tipo di algoritmo e/o validazione che eviti di incappare in questi casi particolari.\\
 Un'ulteriore problematica legata a questo esempio invece è dovuta al fatto che il nostro algoritmo genererebbe due transizioni da 2 a 3 rispettivamente con label $main \rightarrow main$ e $dummy \rightarrow main$ questo perchè l'algoritmo di composizione attuale non tiene in considerazione che i canali sono gestiti con un politica di \emph{First In First Out (FIFO)} e dunque in questo caso l'unica sincronizzazione possibile tra gli stati 2 e 3 è quella tra main e sè stesso.\bigskip \\
 Il Choreography Automaton corretto è il seguente:
 \begin{figure}[h!]

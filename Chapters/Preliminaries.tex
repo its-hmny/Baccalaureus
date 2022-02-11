@@ -248,7 +248,7 @@ Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} 
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
 La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop "nested" ed "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
-Un esempio di Choreography Automata è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
+Un esempio di Choreography Automaton è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
 \begin{figure}[ht] \label{fig:ChoreographyAutomata_Example}
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.8cm,scale=1, transform shape]
@@ -260,13 +260,13 @@ Un esempio di Choreography Automata è visibile nella figura sottostante, la sin
         (q1) edge[above] node{$B \rightarrow C: count$} (q2)
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
-    \caption{Un esempio di Choreography Automata}
+    \caption{Un esempio di Choreography Automaton}
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
 \begin{definition}[Choreography Automata]
     \label{def:Choreography_Automata}
-    Un Choreography Automata (c-automata) è un $\epsilon$-free FSA con un insieme di label $\mathcal{L}_{int} = \{ A \rightarrow B : m | A \neq B \in \mathcal{P}, m \in \mathcal{M} \}$ dove:
+    Un Choreography Automaton (c-automaton) è un $\epsilon$-free FSA con un insieme di label $\mathcal{L}_{int} = \{ A \rightarrow B : m | A \neq B \in \mathcal{P}, m \in \mathcal{M} \}$ dove:
     \begin{itemize}
         \item $\mathcal{P}$ è l'insieme dei partecipanti (per esempio A, B, ecc)
         \item $\mathcal{M}$ è l'insieme dei messaggi che possono essere scambiati (m, n, ecc)
@@ -286,11 +286,11 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
 Dunque il \emph{soggetto} di un'azione in input "A B ? m" è B, l'opposto vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A.\\
-Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
+Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automaton.
 Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione per indicare che esiste una transizione da $s_1$ a $s_2$ con label a, formalmente $\exists a \in \mathcal{L}_{act}, s_1, s_2 \in \mathcal{S}. \delta(s_1, a) = s_2$.
 
 \begin{definition}[Proiezione]
-    La proiezione su A di una transizione $t = s_1$ $\xrightarrow{a}$ $s_2$ di un Choreography Automata, scritta $t\downarrow_{A}$ è definita come:
+    La proiezione su A di una transizione $t = s_1$ $\xrightarrow{a}$ $s_2$ di un Choreography Automaton, scritta $t\downarrow_{A}$ è definita come:
     \begin{equation*}
         t \downarrow_{A} =
         \begin{cases}
@@ -383,7 +383,7 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
 \end{figure}\\
 
 \section{Analisi statica e dinamica}
-Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questa tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automata partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
+Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questa tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automaton partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
 A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
 \begin{itemize}
     \item \textbf{Codice sorgente}: un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrivono, ad alto livello, i passi che devono essere intrapresi durante la computazione. Questo formato è quello più utilizzato dagli esseri umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
