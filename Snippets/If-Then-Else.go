@@ -7,7 +7,7 @@ import (
 
 func dummy(channel chan int) {
 	channel <- rand.Int() // Send some random message
-	close(channel)        // Closes the cannel before returning
+	close(channel)        // Closes the channel before returning
 }
 
 func main() {

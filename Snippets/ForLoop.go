@@ -9,7 +9,7 @@ func worker(shared chan string) {
 	for i := 0; i < 100; i++ {
 		shared <- fmt.Sprintf("This is message number: %d", i)
 	}
-	close(shared) // Close the cannel before returning
+	close(shared) // Close the channel before returning
 }
 
 func main() {
