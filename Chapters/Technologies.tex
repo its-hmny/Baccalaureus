@@ -20,7 +20,7 @@ Introduciamo brevemente i principali costrutti di concorrenza messi a disposizio
     \item \textbf{Goroutine}: è possibile far partire delle Goroutine anteponendo la keyword \texttt{go} ad una qualsiasi function call, questa funzione verrà eseguita in un contesto condiviso (si preservano gli \emph{scope} e le variabili locali) ma parallelo rispetto alla Goroutine che l'ha creato.
     \item \textbf{Select}: Un costrutto particolare che permette di eseguire operazioni di invio o ricezione su più canali ed eseguire la prima, tra queste operazioni, che non sia bloccante, oltre a questo è possibile definire anche un blocco da eseguire una volta completata suddetta operazione. Opzionalmente è possibile definire un blocco di default che viene eseguito quando nessuna delle operazioni sopra può essere completata in maniera non bloccante.
 \end{itemize}
-Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verrànno trattati in questa tesi.
+Oltre ai costrutti presentati sopra la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi.
 \newpage % TODO Avoid forcefully break page
 \lstinputlisting[language=Go, caption=Esempio di utilizzo dei costrutti di concorrenza forniti da Go]{Snippets/GoConcurrency.go}
 \bigskip

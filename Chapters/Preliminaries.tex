@@ -91,7 +91,7 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
         \If {$r \notin \mathcal{T}$}
         \State $\mathcal{T} \gets \mathcal{T} \cup \{r\}$
         \EndIf
-        \State $\delta(t, \alpha) \gets r$  \Comment{Denota che la $\delta$ del DFA con input t ed $\alpha$ darà output r}
+        \State $\delta(t, \alpha) = r$  \Comment{Denota che $\delta$ del DFA sarà definita su t ed $\alpha$ con output r}
         \EndFor
         \EndWhile
     \end{algorithmic}
@@ -194,7 +194,7 @@ L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodot
     \end{equation*}
 \end{definition}
 \begin{remark}
-    Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo oppurtunamente le varie congiunzioni (insimistiche e logiche) con delle disgiunzioni.
+    Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo opportunamente le varie congiunzioni (insiemistiche e logiche) con delle disgiunzioni.
 \end{remark}
 Per concludere mostriamo un esempio di prodotto tra due automi: i primi due automi in figura sono quelli di partenza mentre il terzo è l'automa prodotto.
 \begin{figure}[ht]
@@ -351,7 +351,7 @@ L'operazione di sincronizzazione genera un nuovo automa le cui label sono defini
         \text{nessuna transizione} \hfill \text{altrimenti}
     \end{cases}
 \end{equation*}
-Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verrànno rimossi.\\
+Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.\\
 Vediamo di seguito l'esempio di una composizione tra due automi:
 \begin{figure}[ht] \label{fig:Composition_Example}
     \centering
