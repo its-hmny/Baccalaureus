@@ -19,14 +19,14 @@ Si noti che sebbene per gli scopi di questa tesi gli automi a stati finiti siano
 \end{definition}
 
 \begin{remark}
-    È possibile trovare una definizione in cui non è presente l'insieme degli stati di terminazione (o di accettazione) $\mathcal{F}$. In tal caso assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
+    È possibile trovare una definizione alternativa in cui non è presente l'insieme degli stati di terminazione (o di accettazione) $\mathcal{F}$. In tal caso assumiamo che ogni $s \in \mathcal{S}$ sia uno stato di accettazione.
 \end{remark}
 
 \begin{remark}
-    Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}). Una sottoclasse particolarmente rilevante è quella dei DFA (\emph{Deterministic Finite Automata}) che andremo a definire di seguito.
+    Va notato anche che questa definizione coincide con quella di automa a stati finiti \emph{non deterministico}, solitamente indicato in letteratura con la sigla NFA (\emph{Non Deterministic Finite Automata}). Una sottoclasse particolarmente rilevante è quella dei DFA (\emph{Deterministic Finite Automata}) che andremo a definire nelle prossime pagine.
 \end{remark}
-Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$:
-\begin{figure}[h!] \label{fig:NonDeterministic_Example}
+Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba$. Si noti che questo è solo un \emph{possibile} NFA in grado di riconoscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso.
+\begin{figure}[h!]
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=2cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
@@ -42,23 +42,23 @@ Il seguente è un NFA N un grado di riconoscere la Regular Expression $(a|b)^*ba
         \draw
         (q0) edge[above] node{$\epsilon$} (q1)
         (q0) edge[bend left=60, above] node{$\epsilon$} (q7)
-        (q1) edge[above] node{$\epsilon$} (q2)
+        (q1) edge[above] node[rotate=45]{$\epsilon$} (q2)
         (q2) edge[above] node{$a$} (q3)
-        (q3) edge[above] node{$\epsilon$} (q6)
-        (q1) edge[above] node{$\epsilon$} (q4)
+        (q3) edge[above] node[rotate=-45]{$\epsilon$} (q6)
+        (q1) edge[above] node[rotate=-45]{$\epsilon$} (q4)
         (q4) edge[above] node{$b$} (q5)
-        (q5) edge[above] node{$\epsilon$} (q6)
+        (q5) edge[above] node[rotate=45]{$\epsilon$} (q6)
         (q6) edge[above] node{$\epsilon$} (q7)
         (q6) edge[above] node{$\epsilon$} (q1)
         (q7) edge[above] node{$b$} (q8)
         (q8) edge[above] node{$a$} (q9);
     \end{tikzpicture}
     \caption{Un possibile NFA che riconosce la RegEx $(a|b)^*ba$}
-\end{figure}\\
-Si noti che questo è solo un \emph{possibile} NFA in grado di riconoscere il linguaggio dato ma ne esistono infiniti altri equivalenti ad esso.
+    \label{fig:NonDeterministic_Example}
+\end{figure}
 
 \begin{definition}[Deterministic Finite Automata]
-    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times L \rightarrow \mathcal{S}$
+    Un automa a stati finiti deterministico è una tupla D = $\langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ dove $\delta : \mathcal{S} \times \mathcal{L} \rightarrow \mathcal{S}$
 \end{definition}
 Le varianti deterministiche si distinguono dalle loro controparti non deterministiche dal fatto che non ammettono né l'utilizzo di $\epsilon$ transizioni, né l'utilizzo di transizioni \emph{uscenti}, dallo stesso stato, con la medesima etichetta. Sebbene queste due varianti siano tra loro equivalenti, l'utilizzo di una variante rispetto all'altra può essere determinato da fattori come: necessità di una maggiore elasticità (gli NFA sono meno stringenti rispetto ai DFA) o di una migliore chiarezza (i DFA sono più immediati e semplici).\\
 In ogni caso è sempre possibile, dato un NFA qualunque, ottenere un DFA ad esso equivalente anche se quest'ultimo spesso ha un numero maggiore di stati rispetto all' NFA di partenza. L'algoritmo che permette di fare questa trasformazione fa uso estensivo di \emph{$\epsilon$ closure}\cite{Linguaggi_di_Prorgammazione} e della funzione \emph{mossa}\cite{Linguaggi_di_Prorgammazione} che andremo a definire di seguito:
@@ -97,9 +97,9 @@ L'algoritmo che permette di ricavare un DFA da un qualsiasi NFA è il seguente:
     \end{algorithmic}
 \end{algorithm}\\
 Si noti che $x$, $\mathcal{T}$ e $\delta$ saranno rispettivamente lo stato iniziale, l'insieme degli stati e la funzione di transizione del DFA corrispondente, $\mathcal{F}$ sarà invece l'insieme di tutti i $t \in \mathcal{T}$ che al loro interno contengono almeno uno stato finale dell'NFA di partenza mentre $\mathcal{L}$ rimane invariato. Quindi il DFA ottenuto in output sarà D = $\langle \mathcal{T}, x, \mathcal{F}, \mathcal{L}, \delta \rangle$.\bigskip \\
-L'automa presentato di seguito riconosce sempre la RegEx $(a|b)^*ba$ ed è del tutto equivalente a quello in figura \ref{fig:NonDeterministic_Example}, tuttavia è stato ottenuto proprio da quest'ultimo tramite l'algoritmo di \emph{Costruzione per sottoinsiemi}
+L'automa presentato di seguito riconosce sempre la RegEx $(a|b)^*ba$ ed è del tutto equivalente a quello in figura \ref{fig:NonDeterministic_Example} ma è stato ottenuto proprio da quest'ultimo tramite l'algoritmo di \emph{Costruzione per sottoinsiemi}.
 \newpage
-\begin{figure}[t!] \label{fig:Deterministic_Example}
+\begin{figure}[t!]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (A) {$A$};
@@ -125,15 +125,15 @@ L'automa presentato di seguito riconosce sempre la RegEx $(a|b)^*ba$ ed è del t
             \{ 1,2,3,4,6,7,9 \} & D
         \end{tabular}
     }
-    \caption{Il DFA equivalente a quello in figura \ref{fig:NonDeterministic_Example}}
+    \caption{Il DFA equivalente all'NFA in figura \ref{fig:NonDeterministic_Example}}
+    \label{fig:Deterministic_Example}
 \end{figure}
 
 \subsection{Minimizzazione}
-Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo infine un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di Costruzione per sottoinsiemi mostrato sopra.\\
-L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Tuttavia occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
+Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di costruzione per sottoinsiemi mostrato sopra.\\
+L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
 Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$) il nome di stato di pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
-L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti.\\
-L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
+L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti. L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \begin{algorithm}
     \caption{Riempimento della Tabella a Scala} \label{alg:Minimization_Algorithm}
     \begin{algorithmic}
@@ -148,7 +148,7 @@ L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
     \end{algorithmic}
 \end{algorithm}\\
 Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fig:Deterministic_Example} con l'algoritmo di \emph{Riempimento della Tabella a Scala}. Anche questo automa riconosce sempre la RegEx $(a|b)^*ba$.
-\begin{figure}[ht] \label{fig:Minimization_Example}
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
         \node[state,initial] (AB) {$A,B$};
@@ -173,12 +173,13 @@ Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fi
         \end{tabular}
     }
     \caption{Il DFA minimizzato ottenuto da quello in figura \ref{fig:Deterministic_Example}}
+    \label{fig:Minimization_Example}
 \end{figure}\\
 
 \subsection{Prodotto}
 L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodotto} tra automi. Solitamente questa operazione viene usata per ricavare, a partire da due o più linguaggi e rispettivi automi, un automa che riconosca l'unione e/o l'intersezione di tali linguaggi.
 \begin{definition}[Prodotto di automi] \label{def:FSA_Product}
-    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
+    Siano $A_1 = \langle \mathcal{S}_1, s_{01}, \mathcal{F}_1, \mathcal{L}_1, \delta_1 \rangle$ e \\ $A_2 = \langle \mathcal{S}_2, s_{02}, \mathcal{F}_2, \mathcal{L}_2, \delta_2 \rangle$ due automi a stati finiti, il loro prodotto $C = \langle \mathcal{S}, s_0, \mathcal{F}, \mathcal{L}, \delta \rangle$ è definito come segue:
     \begin{itemize}
         \item   $\mathcal{S} = \mathcal{S}_1 \times \mathcal{S}_2$
         \item $s_0 = (s_{01}, s_{02})$
@@ -201,12 +202,12 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
         % Automata 1
-        \node[state, initial=A] (0) {$0$};
+        \node[state, initial] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
-        \node[state] (2) [right of=1] {$2$};
+        \node[state, accepting] (2) [right of=1] {$2$};
         % Automata 2
         \node[state, initial] (3) [right of=2] {$0$};
-        \node[state] (4) [right of=3] {$1$};
+        \node[state, accepting] (4) [right of=3] {$1$};
         % Product automata
         \node[state, initial, initial where=below] (5) [below of=0, right of=1] {$0, 0$};
         \node[state] (6) [below of=0, right of=0] {$0, 1$};
@@ -248,8 +249,8 @@ Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} 
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
 La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop "nested" ed "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
-Un esempio di Choreography Automaton è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender}$\rightarrow$\emph{receiver}:\emph{message}.
-\begin{figure}[ht] \label{fig:ChoreographyAutomata_Example}
+Un esempio di Choreography Automaton è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender} $\rightarrow$ \emph{receiver} : \emph{message}.
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.8cm,scale=1, transform shape]
         \node[state,initial] (q0) {$q_0$};
@@ -261,6 +262,7 @@ Un esempio di Choreography Automaton è visibile nella figura sottostante, la si
         (q2) edge[bend left,above] node[below]{$C \rightarrow A: toc$} (q0);
     \end{tikzpicture}
     \caption{Un esempio di Choreography Automaton}
+    \label{fig:ChoreographyAutomata_Example}
 \end{figure}\\
 In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
@@ -273,7 +275,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
     \end{itemize}
 \end{definition}
 \begin{remark}
-    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibile, come vedremo anche più avanti in questo lavoro.
+    Anche se nella definizione non sono ammesse $\epsilon$-transizioni una variante non deterministica rimane sempre possibile.
 \end{remark}
 
 \subsection{CFSM e Local Views}
@@ -286,7 +288,7 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
 Dunque il \emph{soggetto} di un'azione in input "A B ? m" è B, l'opposto vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A.\\
-Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automaton.
+Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
 Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione per indicare che esiste una transizione da $s_1$ a $s_2$ con label a, formalmente $\exists a \in \mathcal{L}_{act}, s_1, s_2 \in \mathcal{S}. \delta(s_1, a) = s_2$.
 
 \begin{definition}[Proiezione]
@@ -302,14 +304,14 @@ Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione
     \end{equation*}
 \end{definition}
 \begin{remark}
-    Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua relativa CFSM $M_p$.
+    Si noti che esiste ed è possibile definire formalmente una funzione \emph{projection} che assegna ad ogni partecipante $p \in \mathcal{P}$ la sua CFSM $M_p$.
 \end{remark}
 La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \rangle$ sul partecipante $p \in \mathcal{P}$, denotata con CA$\downarrow_p$ è ottenuta ricavando in primis l'automa intermedio: \bigskip \\
 \centerline{$A_p = \langle \mathcal{S}, s_0, \mathcal{L}_{act}, \{ s \xrightarrow{t\downarrow_{p}} s' | s \xrightarrow{t} s' \in \delta \} \rangle$}
 \\ \\
-Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. è dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendone una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
+Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. È dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendo una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
 
-\begin{figure}[ht] \label{fig:Projection_Example}
+\begin{figure}[ht] 
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
         \node[state,initial] (A0) {0};
@@ -322,16 +324,17 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
         \node[state] (C1) [below of=C0] {2};
 
         \draw
-        (A0) edge[bend left, above] node[rotate=270]{AB! tic} (A1)
-        (A1) edge[bend left, above] node[rotate=90]{AC? toc} (A0)
+        (A0) edge[bend left, above] node[rotate=270]{A B ! tic} (A1)
+        (A1) edge[bend left, above] node[rotate=90]{A C ? toc} (A0)
 
-        (B0) edge[bend left, above] node[rotate=270]{BA? tic} (B1)
-        (B1) edge[bend left, above] node[rotate=90]{BC! count} (B0)
+        (B0) edge[bend left, above] node[rotate=270]{B A ? tic} (B1)
+        (B1) edge[bend left, above] node[rotate=90]{B C ! count} (B0)
 
-        (C0) edge[bend left, above] node[rotate=270]{BC? count} (C1)
-        (C1) edge[bend left, above] node[rotate=90]{CA! toc} (C0);
+        (C0) edge[bend left, above] node[rotate=270]{B C ? count} (C1)
+        (C1) edge[bend left, above] node[rotate=90]{C A ! toc} (C0);
     \end{tikzpicture}
     \caption{Le tre view locali estratte dall'automa in figura \ref{fig:ChoreographyAutomata_Example}}
+    \label{fig:Projection_Example}
 \end{figure}
 
 \subsection{Composizione delle global views}
@@ -341,7 +344,7 @@ Introduciamo dunque l'operazione di \emph{composizione}, in questo caso assumiam
     \item \textbf{Prodotto} tra tutte le $n$ global views
     \item \textbf{Sincronizzazione} dell'automa prodotto precedentemente ottenuto
 \end{itemize}
-L'operazione di prodotto tra automi è stata definita in \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta la global view A vorrà mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. La Sincronizzazione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
+L'operazione di prodotto tra automi è stata enunciata nella definizione \ref{def:FSA_Product} e rimane pressochè invariata, l'operazione di \emph{sincronizzazione} è invece particolare: abbiamo appurato che le global views comunicano tra loro attraverso le interfacce, possiamo considerare quest'ultime come partecipanti alla coreografia con il solo ruolo di fare \emph{forwarding} dei messaggi tra una view e l'altra. Quindi ogni qualvolta la global view A vorrà mandare un messaggio a B, manderà un messaggio all'interfaccia I, lo stesso vale per B quando vorrà ricevere messaggi da A. La Sincronizzazione mira proprio a \emph{rimpiazzare} le interazioni che avvengono tramite interfacce con interazioni tra attori effettivi.\\\\
 L'operazione di sincronizzazione genera un nuovo automa le cui label sono definite come segue:
 \begin{equation*}
     \mathcal{S}(A \times B) =
@@ -353,7 +356,7 @@ L'operazione di sincronizzazione genera un nuovo automa le cui label sono defini
 \end{equation*}
 Si noti che come step aggiuntivo alla trasformazione di sopra tutti gli stati non raggiungibili da quello iniziale verranno rimossi.\\
 Vediamo di seguito l'esempio di una composizione tra due automi:
-\begin{figure}[ht] \label{fig:Composition_Example}
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape, initial text=$ $,]
         \node[state, initial] (X0) {$0$};
@@ -380,10 +383,11 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
         (Z2) edge[bend right, above] node{$A \rightarrow C : p$} (Z0);
     \end{tikzpicture}
     \caption{Un esempio di composizione tra due Choreography Automata}
+    \label{fig:Composition_Example}
 \end{figure}\\
 
 \section{Analisi statica e dinamica}
-Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le Coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questa tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automaton partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
+Ora che abbiamo chiarito le nozioni di base per quanto riguarda la Teoria degli Automi e le coreografie, passiamo ad un'altro aspetto altrettanto importante per i fini di questa tesi. Considerando che l'obiettivo è quello di ottenere un Choreography Automaton partendo da un programma Go dobbiamo determinare in che modo è possibile estrarre delle informazioni da tale programma.\\
 A questo riguardo ricordiamo che un programma può avere due \emph{formati}:
 \begin{itemize}
     \item \textbf{Codice sorgente}: un testo scritto in un linguaggio \emph{human readable} con una specifica \emph{grammatica} e specifici \emph{costrutti} che descrivono, ad alto livello, i passi che devono essere intrapresi durante la computazione. Questo formato è quello più utilizzato dagli esseri umani in quanto più facile da comprendere (ed eventualmente modificare), tuttavia non è comprensibile ai calcolatori che, come sappiamo, lavorano con formati binari.
@@ -396,7 +400,7 @@ Tornando all'estrazione dei dati da un programma esistono due diverse di tecnich
     \item \textbf{Analisi dinamica}\cite{Dynamic_Analysis}: questo tipo di analisi invece viene fatta attraverso la \emph{profilazione} del programma mentre lo stesso esegue, il programma è dunque in un formato binario. La profilazione può avvenire attraverso dei log emessi dal programma stesso oppure attraverso l'utilizzo di un'altro programma (detto \emph{tracer}) che controlla le operazioni eseguite dal programma target (il \emph{tracee})
 \end{itemize}
 Entrambe le tecniche presentano i rispettivi vantaggi e svantaggi: l'analisi statica permette una visione più completa in tempo più breve poichè osservando il codice sorgente riesce a catturare tutti i possibili percorsi in cui un programma potrebbe entrare, al contrario l'analisi dinamica non permette di avere sempre una visione completa in quanto è limitata ad osservare solo il percorso che l'esecuzione ha preso in quel momento.\\
-Un esempio di questo comportamento è dato da un semplice costrutto come l'\texttt{if-then-else}: tramite l'analisi statica è possibile catturare con facilità entrambi i rami mentre tramite l'analisi dinamica è possibile solo osservare un ramo, quello che a runtime verifica la condizione specificata. Per questo specifico aspetto l'analisi dinamica restituisce dei dati \emph{parziali} e non è possibile fare assunzioni sul ramo che non è stato eseguito, tuttavia l'approssimazione di queste informazioni può essere migliorata eseguendo più profilazioni con input diversi. Si noti però che questo non è sufficiente a garantire che le informazioni siano complete ma solo meglio approssimate e il tempo richiesto per completare l'analisi diventa maggiore (proporzionale rispetto al numero di profilazioni).\\
+Un esempio di questo comportamento può essere dato da un semplice costrutto come l'\texttt{if-then-else}: tramite l'analisi statica è possibile catturare con facilità entrambi i rami mentre tramite l'analisi dinamica è possibile solo osservare un ramo, quello che a runtime verifica la condizione specificata. Per questo specifico aspetto l'analisi dinamica restituisce dei dati \emph{parziali} e non è possibile fare assunzioni sul ramo che non è stato eseguito, tuttavia l'approssimazione di queste informazioni può essere migliorata eseguendo più profilazioni con input diversi. Si noti però che questo non è sufficiente a garantire che le informazioni siano complete ma solo meglio approssimate e il tempo richiesto per completare l'analisi diventa maggiore (proporzionale rispetto al numero di profilazioni).\\
 In maniera opposta l'analisi statica non riesce a catturare completamente l'evoluzione del programma osservato nel tempo o l'influenza che fattori esterni quale il \emph{contesto d'esecuzione} abbiano sullo stesso, questi aspetti sono invece facilmente osservabili attraverso l'analisi dinamica. Anche in questo caso le informazioni restituite dall'analisi statica sono parziali e vanno approssimate, per esempio usando dei valori predefiniti.\bigskip \\
 In conclusione, anche se le tecniche mostrate sopra prese singolarmente rappresentano un ottimo strumento per estrarre informazione da un programma, sono fondamentalmente complementari e andrebbero usate in combinazione per ottenere una visione \emph{completa} del programma stesso.
 

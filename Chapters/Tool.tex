@@ -1,6 +1,6 @@
 % "Tool description" chapter
 \chapter{Choreia}
-Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreography Automaton ricavato dal codice sorgente in formato DOT.. È un software \emph{open source} con licenza GPL-3.0 scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. è disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
+Choreia è il tool sviluppato come progetto per questa tesi. Il tool si occupa di tutte le fasi descritte nel capitolo precedente e consente all'utente finale di esportare il Choreography Automaton ricavato dal codice sorgente in formato DOT. È un software \emph{open source} con licenza GPL-3.0\cite{GPL-3.0} scritto completamente in Go, non richiede alcun tipo di setup se non l'installazione iniziale delle dipendenze. È disponibile al download al seguente url: \url{https://github.com/its-hmny/Choreia}\\
 
 \section{Parametri da linea di comando}
 Il tool non ha una GUI in quanto, per gli scopi attuali, non è necessaria: infatti non è stato progettato come un tool di uso comune ma come uno strumento per persone interessate e con un minimo di conoscenza pregressa.\\
@@ -112,12 +112,12 @@ Il seguente è invece l'automa associato alla global view ottenuto con l'algorit
 
 
 \subsection{Operazioni condizionali con \texttt{select}}
-In questo esempio la Goroutine \texttt{main} crea due canali \texttt{chanA} e \texttt{chanB} e avvia due Goroutine \texttt{responder}, ciascuna con uno dei due canali, dopodichè tramite il costrutto \texttt{select} esegue il primo ramo che presenta un'operazione \emph{non bloccante}, nel caso in cui nessuno dei due canali abbia dei messaggi si mette \emph{in ascolto} aspettando che uno dei due abbia almeno un messaggio in coda. Nel nostro caso le Goroutine \texttt{responder} inviano solo un messaggio e non eseguono altre operazioni tuttavia possiamo assumere che portino avanti computazioni più complesse, inviando alla fine il risultato.\\
+In questo esempio la Goroutine \texttt{main} crea due canali \texttt{chanA} e \texttt{chanB} e avvia due Goroutine \texttt{responder}, ciascuna con uno dei due canali, dopodichè tramite il costrutto \texttt{select} esegue il primo ramo che presenta un'operazione \emph{non bloccante}, nel caso in cui nessuno dei due canali abbia dei messaggi si mette \emph{in ascolto} aspettando che uno dei due abbia almeno un messaggio in coda. Nel nostro caso le Goroutine \texttt{responder} inviano solo un messaggio e non eseguono altre operazioni tuttavia possiamo assumere che portino avanti computazioni più complesse, inviando alla fine il risultato delle stesse sul canale.\\
 \lstinputlisting[language=Go]{Snippets/Select.go}
-Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $\texttt{responder}_2$ sono i seguenti. Si noti come viene \emph{mappato} il costrutto \texttt{select} attraverso gli automi, dal momento che il costrutto permette di \emph{valutare} operazioni su più canali eseguendo solo la prima tra queste che non sia bloccante nell'automa a stati finiti questo viene mappato come una biforcazione del flusso di esecuzione che poi procede nel suo \emph{sottografo} dando eventualmente la possibilità di ricongiungersi con gli altri.
+Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $\texttt{responder}_2$ sono i seguenti. Si noti come viene \emph{mappato} il costrutto \texttt{select} attraverso gli automi, dal momento che il costrutto permette di \emph{valutare} operazioni su più canali eseguendo solo la prima tra queste che non sia bloccante nell'automa a stati finiti questo viene mappato come una biforcazione del flusso di esecuzione che poi procede nel suo \emph{sottografo} dando eventualmente la possibilità di ricongiungersi con gli altri.\bigskip \\
 \begin{figure}[h!]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=1, transform shape, baseline=0]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=0.9, transform shape, baseline=0]
         \node[state, initial] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
@@ -148,31 +148,32 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $
 Nel Choreography Automaton generato possiamo vedere come in questo caso l'utilizzo del \emph{prodotto tra automi} permette di considerare tutte le possibili evoluzioni del sistema concorrente che poi verrano elaborate ulteriormente e poste nella forma attuale dalla \emph{sincronizzazione}, che in questo caso genera correttamente entrambi i rami d'esecuzione.\bigskip \\
 \begin{figure}[h!]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.8cm,scale=1, transform shape, baseline=0]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.8cm,scale=0.9, transform shape, baseline=0]
         \node[state,initial] (0) {$0$};
         \node[state] (1)[right of=0] {$1$};
         \node[state] (2)[right of=1] {$2$};
-        \node[state] (3)[right of=2, above=30pt] {$3$};
-        \node[state, accepting] (4)[left of=3, above=30pt] {$4$};
-        \node[state] (5)[right of=2, below=30pt] {$5$};
-        \node[state, accepting] (6)[left of=5, below=30pt] {$6$};
+        \node[state] (3)[right of=2, above=40pt] {$3$};
+        \node[state, accepting] (4)[left of=3, above=40pt] {$4$};
+        \node[state] (5)[right of=2, below=40pt] {$5$};
+        \node[state, accepting] (6)[left of=5, below=40pt] {$6$};
         \draw
         (0) edge node{$main_0 \bigtriangleup responder_1$} (1)
         (1) edge node{$main_0 \bigtriangleup responder_2$} (2)
-        (2) edge node[rotate=18, above]{$main_0 \leftarrow responder_1$} (3)
-        (3) edge node[rotate=-18, above]{$main_0 \leftarrow responder_2$} (4)
-        (2) edge node[rotate=-18, below]{$main_0 \leftarrow responder_2$} (5)
-        (5) edge node[rotate=18, below]{$main_0 \leftarrow responder_1$} (6);
+        (2) edge node[rotate=22, above]{$main_0 \leftarrow responder_1$} (3)
+        (3) edge node[rotate=-22, above]{$main_0 \leftarrow responder_2$} (4)
+        (2) edge node[rotate=-22, below]{$main_0 \leftarrow responder_2$} (5)
+        (5) edge node[rotate=22, below]{$main_0 \leftarrow responder_1$} (6);
     \end{tikzpicture}
 \end{figure}
 
 \subsection{Branching con \texttt{if-then-else}}
-In questo esempio la Goroutine \texttt{main} inizializza due canali \texttt{A} e \texttt{B} ed avvia due Goroutine \texttt{dummy} ciascuna con il proprio canale: Una volta completata questa prima fase di setup semplicemente riceve un messaggio da \texttt{A} e uno da \texttt{B}. La receive su \texttt{A} è sempre effettuata poichè la condizione dell'\texttt{if} è sempre verificata.
+In questo esempio la Goroutine \texttt{main} inizializza due canali \texttt{A} e \texttt{B} ed avvia due Goroutine \texttt{dummy} ciascuna con il proprio canale: Una volta completata questa prima fase di setup semplicemente riceve un messaggio da \texttt{A} e uno da \texttt{B}. Si noti che la receive su \texttt{A} è sempre effettuata poichè la condizione dell'\texttt{if} è sempre verificata.
 \lstinputlisting[language=Go]{Snippets/If-Then-Else.go}
 Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{dummy}_1$, $\texttt{dummy}_2$ sono i seguenti. Si noti come viene \emph{mappato} l'\texttt{if-then-else} attraverso gli automi: la biforcazione del ramo then viene mappata correttamente ma allo stesso tempo procede un'esecuzione \emph{lineare} che rappresenta il caso in cui la condizione dell'if non sia verificata. Sempre riguardante la condizione dell'if possiamo banalmente osservare le limitazioni dell'analisi statica descritte al capitolo \ref{cap:Preliminaries}: nonostante la condizione sia sempre verificata Choreia assume del \emph{non determinismo} e biforca il flusso d'esecuzione.
 \newpage % TODO avoid forcefully breaking page
 \begin{figure}[t!]
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=1, transform shape, baseline=0]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=0.9, transform shape, baseline=0]
         \node[state,initial] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
@@ -198,7 +199,8 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{dummy}_1$, $\tex
 \end{figure}
 Nel Choreography Automaton generato possiamo vedere che la struttura dello stesso è del tutto simile a quella dell'automa associato alla Goroutine $\texttt{main}_0$. Questo è dovuto al fatto che almeno per questi esempi il sistema concorrente è particolarmente semplice e \emph{gerarchico}: il \texttt{main} è la Goroutine dominante mentre le altre Goroutine sono piuttosto banali e immediate, dunque non aggiungono complessità al Choreography Automaton finale. Questi esempi \emph{semplificati} sono dovuti alla difficoltà di rappresentazione degli automi e all'incremento nella complessità degli stessi al crescere della complessità del sistema concorrente.
 \begin{figure}[h!]
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4cm,scale=1, transform shape, baseline=0]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4cm,scale=0.8, transform shape, baseline=0]
         \node[state,initial] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
@@ -215,7 +217,8 @@ Nel Choreography Automaton generato possiamo vedere che la struttura dello stess
 
 
 \subsection{Function call con sostituzione dei parametri}
-In questo esempio la Goroutine \texttt{main}, dopo aver creato il canale \texttt{channel} chiama la funzione \texttt{f} passandogli suddetto canale come argomento, questa funziona esegue le seguenti operazione: invia un messaggio sul canale, avvia una Goroutine \texttt{dummy} condividendo con essa il canale e infine riceve il messaggio inviato precedentemente prima di restituire il controllo a \texttt{main} che conclude ricevendo per la seconda volta dal canale. \bigskip \\
+In questo esempio la Goroutine \texttt{main}, dopo aver creato il canale \texttt{channel} chiama la funzione \texttt{f} passandogli suddetto canale come argomento, questa funzione esegue le seguenti operazioni: invia un messaggio sul canale, avvia la Goroutine \texttt{dummy} condividendo con essa il canale e infine riceve il messaggio inviato precedentemente prima di restituire il controllo a \texttt{main} che conclude ricevendo per la seconda volta dal canale. 
+\newpage % TODO Avoid forcefully breaking page
 \lstinputlisting[language=Go]{Snippets/FunctionCall.go}
 Gli automi associati alle Goroutine $\texttt{main}_0$ e $\texttt{dummy}_1$ sono i seguenti. Si noti che la funzione \texttt{f} subisce l'\emph{inlining} durante la fase di estrazione delle local views, difatti possiamo vedere che alcune delle transizioni nel primo automa sono proprio derivanti dall'esecuzione della funzione \texttt{f}.
 \begin{figure}[h!]
