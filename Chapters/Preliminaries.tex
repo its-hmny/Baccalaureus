@@ -197,7 +197,7 @@ L'ultima operazione su automi a stati finiti che introduciamo è il \emph{prodot
 \begin{remark}
     Nella definizione data sopra abbiamo definito l'automa prodotto che riconosce \l'\emph{intersezione} dei linguaggi riconosciuti dai due automi di partenza. Tuttavia è possibile anche definire l'automa prodotto che riconosce l'\emph{unione} dei due linguaggi invertendo opportunamente le varie congiunzioni (insiemistiche e logiche) con delle disgiunzioni.
 \end{remark}
-Per concludere mostriamo un esempio di prodotto tra due automi: i primi due automi in figura sono quelli di partenza mentre il terzo è l'automa prodotto.
+Per concludere mostriamo un esempio di prodotto tra due automi: i primi due automi in figura sono quelli di partenza e riconoscono rispettivamente le RegEx $ab(c^*)$ e $ab$ mentre il terzo è l'automa prodotto che riconosce la RegEx $ab$.
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
@@ -206,37 +206,24 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
         \node[state] (1) [right of=0] {$1$};
         \node[state, accepting] (2) [right of=1] {$2$};
         % Automata 2
-        \node[state, initial] (3) [right of=2] {$0$};
-        \node[state, accepting] (4) [right of=3] {$1$};
+        \node[state, initial, accepting] (3) [right of=2] {$0$};
+        \node[state] (4) [right of=3] {$1$};
         % Product automata
-        \node[state, initial, initial where=below] (5) [below of=0, right of=1] {$0, 0$};
-        \node[state] (6) [below of=0, right of=0] {$0, 1$};
-        \node[state] (7) [below of=0, left of=4] {$0, 2$};
-        \node[state] (9) [below of=6] {$1, 0$};
-        \node[state] (8) [below of=5] {$1, 1$};
-        \node[state] (10) [below of=7] {$1, 2$};
+        \node[state, initial] (5) [below of=1, right of=0] {$0, 0$};
+        \node[state] (6) [right of=5] {$1, 1$};
+        \node[state, accepting] (7) [right of=6] {$2, 0$};
 
         \draw
         % Automata 1
-        (0) edge[bend left, above] node{$a$} (1)
-        (1) edge[bend left, above] node{$b$} (2)
-        (2) edge[bend left, below] node{$c$} (0)
+        (0) edge node{$a$} (1)
+        (1) edge node{$b$} (2)
+        (2) edge[loop right] node{$c$} (2)
         % Automata 2
         (3) edge[bend left, above] node{$a$} (4)
-        (4) edge[bend left, below] node{$a$} (3)
+        (4) edge[bend left, below] node{$b$} (3)
         % Product Automata
         (5) edge node{$a$} (6)
-        (5) edge[bend left] node{$a$} (8)
-        (6) edge[bend left, above] node{$b$} (7)
-        (6) edge[bend left] node{$a$} (9)
-        (7) edge[bend left] node{$a$} (10)
-        (7) edge node{$c$} (5)
-        (8) edge[bend left] node{$b$} (5)
-        (8) edge node{$a$} (9)
-        (9) edge[bend left] node{$b$} (6)
-        (9) edge[bend right, below] node{$b$} (10)
-        (10) edge[bend left] node{$b$} (7)
-        (10) edge node{$c$} (8);
+        (6) edge node{$b$} (7);
     \end{tikzpicture}
     \caption{Prodotto tra due automi}
 \end{figure}
@@ -311,7 +298,7 @@ La proiezione di un CA = $\langle \mathcal{S}, s_0, \mathcal{L}_{int}, \delta \r
 \\ \\
 Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio è non deterministico. È dunque necessario rimuovere le eventuali $\epsilon$ transizioni, ottenendo una versione deterministica e successivamente minimizzare quest'ultima. Entrambe le operazioni sono le medesime definite rispettivamente negli algoritmi \ref{alg:SubsetConstruction_Algorithm} e \ref{alg:Minimization_Algorithm}
 
-\begin{figure}[ht] 
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
         \node[state,initial] (A0) {0};
