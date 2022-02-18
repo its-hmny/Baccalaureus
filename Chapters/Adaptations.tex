@@ -12,8 +12,7 @@ Concettualmente possiamo dividere questo obiettivo in 4 fasi:
 Questo approccio è chiaramente \emph{bottom-up} mentre l'approccio delle definizioni nel capitolo \ref{cap:Preliminaries} è invece \emph{top-down}: abbiamo visto infatti come sia possibile, partendo dal Choreography Automaton ricavare le singole view locali attraverso l'operazione di \emph{proiezione}.\\
 Si rende dunque necessaria l'implementazione di un'operazione opposta alla proiezione che permetta di ottenere una view globale a partire dalle sue singole componenti, ovvero le view locali, questo tipo di operazione riprenderà alcuni concetti dall'operazione di \emph{composizione} opportunamente adattati alla nostra situazione. \\
 Il punto cruciale della nostra tecnica è quello di \emph{approssimare} ogni funzione dichiarata all'interno del codice sorgente in un automa a stati finiti che rappresenti il flusso d'esecuzione, in particolare ogni transizione di questo automa rappresenterà un'interazione tra la funzione stessa e il resto della coreografia. \bigskip \\
-Per ragioni di chiarezza e semplicità questa tesi si concentra su un sottoinsieme di Go limitato all'utilizzo di canali, iterazione determinata sugli stessi, \texttt{select} statement, canali passati come argomento tra funzioni e creazione di nuove Goroutine. Altre \emph{feature} del linguaggio come \emph{selector expression}, \emph{anonymous functions}, \emph{high order function} o iterazioni su liste e mappe non sono attualmente supportare e potrebbero dunque causare delle inconsistenze nel Choreography Automaton finale. \\
-Alcuni esempi di programmi che non sono supportati includono: programmi che utilizzano ricorsione o spawn di Goroutine in ricorsione e programmi che utilizzano collection (liste, mappe o altri tipi di strutture) contenenti canali o iterano sulle stesse. \\
+Per ragioni di chiarezza e semplicità questa tesi si concentra su un sottoinsieme di Go limitato all'utilizzo di canali, iterazione determinata sugli stessi, \texttt{select} statement, canali passati come argomento tra funzioni e creazione di nuove Goroutine. Altre \emph{feature} del linguaggio come ricorsione, \emph{selector expression}, \emph{anonymous functions}, \emph{high order function} o iterazioni su liste e mappe non sono attualmente supportare e potrebbero dunque causare delle inconsistenze nel Choreography Automaton finale.
 
 \subsection{Peculiarità di Go}
 Per gli scopi di questa tesi è bene considerare le particolarità di Go in modo da adattare il modello teorico allo stesso e \emph{risolvere} le eventuali incongruenze.\bigskip \\
@@ -24,7 +23,7 @@ Estendiamo dunque le nozioni di Choreography Automata e di Communicating Finite-
 \begin{definition}[Choreography Automata - Estesa] \label{def:Choreography_Automata_Ext}
     Un Choreography Automaton (c-automaton) è un $\epsilon$-free FSA con un insieme di label:\bigskip \\
     \centerline{$\mathcal{L}_{ext} = \mathcal{L}_{int} \cup \{ A \bigtriangleup B | A, B \in \mathcal{P}\}$} \bigskip \\
-    con $\mathcal{L}_{int}$, $\mathcal{P}$ e $\mathcal{M}$ definiti come nella definizione \ref{def:Choreography_Automata}
+    dove $A \bigtriangleup B$ indica che $A$ esegue lo \emph{spawn} di $B$ e con $\mathcal{L}_{int}$, $\mathcal{P}$ e $\mathcal{M}$ definiti come nella definizione \ref{def:Choreography_Automata}
 \end{definition}
 
 \begin{definition}[Communicating Finite-State Machine - Estesa]
@@ -34,7 +33,7 @@ Estendiamo dunque le nozioni di Choreography Automata e di Communicating Finite-
 \end{definition}
 
 \begin{remark}
-    Seppur non interessante per gli scopi di questa tesi è possibile adattare la nozione di proiezione in modo che tenga in considerazione di transizione del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
+    Seppur non interessante per gli scopi di questa tesi è possibile adattare la nozione di proiezione in modo che tenga in considerazione le transizioni del tipo $A \bigtriangleup B$ con $A, B \in \mathcal{P}$
 \end{remark}
 
 
@@ -43,7 +42,7 @@ Una volta ottenuto un AST valido, serve estrarre i metadati necessari da quest'u
 Questa estrazione dei metadati avviene tramite analisi statica, una tecnica descritta nel capitolo \ref{cap:Preliminaries}. Questa tecnica è preferibile rispetto all'analisi dinamica poichè non richiede alcun tipo di esecuzione e quindi protegge da programmi potenzialmente pericolosi e sconosciuti, evita lo scaricamento di eventuali dipendenze per il programma in input e in generale fornisce una visione più ampia e meglio approssimata per i nostri scopi senza richiedere profilazioni multiple. Utilizzando analisi dinamica per questo progetto otterremmo per ogni profilazione eseguita solo un sottografo del Choreography Automaton finale che rappresenta il particolare percorso intrapreso dalla coreografia durante quella esecuzione/profilazione e non l'intera coreografia.
 
 \subsection{Limiti dell'analisi statica} \label{subsec:Static_Analysis_Limits}
-Anche per questa fase sorge un'inconsistenza con la definizione formale di Choreography Automata data in precedenza: l'insieme $\mathcal{M}$ dei messaggi non è determinabile in modo preciso attraverso l'analisi statica. La definizione \ref{def:Choreography_Automata} sembra suggerire che esista un numero finito e definito di messaggi scambiabili tra i vari attori tuttavia questo insieme non è calcolabile con l'approccio utilizzato.
+Anche per questa fase sorge un'inconsistenza con la definizione formale di Choreography Automaton data in precedenza: l'insieme $\mathcal{M}$ dei messaggi non è determinabile in modo preciso attraverso l'analisi statica. La definizione \ref{def:Choreography_Automata} sembra suggerire che esista un numero finito e definito di messaggi scambiabili tra i vari attori tuttavia questo insieme non è calcolabile con l'approccio utilizzato.
 Ricordiamo infatti che questo tipo di analisi viene effettuata utilizzando solo il codice sorgente e ricavando dei dati senza mai eseguire il codice, in generale non è possibile solo attraverso l'analisi statica ricavare il valore esatto di tutte le variabili (e dunque tutti i messaggi inviati), questo perchè tale valore può essere soggetto a svariati \emph{side effect} durante l'esecuzione o può essere legato a parametri temporali (p.e. timestamp), input forniti dall'utente o altri valori ricavabili solo a runtime. Questi \emph{aspetti} non sono \emph{catturabili} attraverso l'analisi statica e dunque devono essere  gestiti in maniera opportuna.\\
 \lstinputlisting[language=Go, label={lst:DynamicAnalysis} caption={Codice sorgente per cui non è possibile calcolare $\mathcal{M}$ tramite analisi statica}, label={lst:DynamicAnalysis}]{Snippets/DynamicAnalysis.go}
 \bigskip
@@ -110,21 +109,18 @@ Applicando l'algoritmo di sopra al codice sorgente del listing \ref{lst:DynamicA
 
 \section{Generazione della coreografia} \label{sec:Go_Composition}
 Ottenuti gli automi associati alle singole Goroutine, che ricordiamo essere nel nostro caso le local views, ci si presenta il problema di capire come \emph{fondere} questi in un unico automa che rappresenti la coreografia e rispetti la definizione \ref{def:Choreography_Automata_Ext}.\bigskip \\
-Il problema che si presenta in questa fase è il seguente: in Go un canale può essere condiviso tra \emph{n} Goroutine ed ognuna di queste può inviare e ricevere a suo piacimento sullo stesso. Prendendo per esempio la figura precedente i dati inviati dalla Goroutine $main_0$ sul canale \texttt{in} possono essere ricevuti o da $worker_0$, o da $worker_1$ e non ci è possibile determinare in esattamente quale delle due Goroutine sia il destinatario effettivo di uno specifico messaggio. Inoltre la complessità del problema peggiora se generalizziamo ad un caso con \emph{n} sender ed \emph{m} receiver o, peggio ancora, con \emph{n} attori che eseguono sia operazione di send che di receive sullo stesso canale condiviso (questo caso apre anche alla possibilità che una Goroutine riceva un messaggio inviato precedentemente da lei stessa). \bigskip \\
+Il problema che si presenta in questa fase è il seguente: in Go un canale può essere condiviso tra \emph{n} Goroutine ed ognuna di queste può inviare e ricevere a suo piacimento sullo stesso. Prendendo per esempio la figura precedente i dati inviati dalla Goroutine $main_0$ sul canale \texttt{in} possono essere ricevuti da $worker_0$ o da $worker_1$ in maniera non deterministica e pertanto non è possibile determinare il destinatario effettivo di un messaggio. Inoltre la complessità del problema peggiora se generalizziamo ad un caso con \emph{n} sender ed \emph{m} receiver o, peggio ancora, con \emph{n} attori che eseguono sia operazione di send che di receive sullo stesso canale condiviso (questo caso apre anche alla possibilità che una Goroutine riceva un messaggio inviato precedentemente da lei stessa). \bigskip \\
 La nostra soluzione considera i canali come delle \emph{interfacce}, quindi tutte le transizioni con operazioni su canali all'interno di un Goroutine FSA sono considerate come interazioni tra un attore (la Goroutine) e un'interfaccia (il canale). Nel capitolo \ref{cap:Preliminaries} però abbiamo già definito l'operazione di \emph{composizione} che permette di unire molteplici Choreography Automata, comunicanti tra loro mediante interfacce, in uno unico.\\
-Adattiamo dunque la nozione di composizione ai Goroutine FSA, anzichè ai Choreography Automata: l'operazione di prodotto tra automi rimane invariata rispetto a quanto detto nella definizione \ref{def:FSA_Product} mentre definiamo ora l'operazione di sincronizzazione come segue:
+Adattiamo dunque la nozione di composizione ai Goroutine FSA, anzichè ai Choreography Automata: l'operazione di prodotto tra automi rimane invariata rispetto a quanto detto nella definizione \ref{def:FSA_Product} mentre definiamo ora l'operazione di sincronizzazione come segue. Si noti che indichiamo con la notazione $p_A \xrightarrow{\rightarrow c} q_A$ che esiste una transizione dallo stato p allo stato q con label $\rightarrow c$ nell'automa associato alla Goroutine A.
 \begin{equation*}
     \mathcal{S}(A \times B) =
     \begin{cases}
         p \xrightarrow{A \rightarrow B: m} q \hfill \text{ se } \exists p_A \xrightarrow{\rightarrow c} q_A,  p_B \xrightarrow{\leftarrow c} q_B \\
-        p \xrightarrow{A \bigtriangleup B} q \hfill \text{ se } A, B\in \mathcal{P}                                                              \\
+        p \xrightarrow{A \bigtriangleup B} q \hfill \text{ se } \exists p_A \xrightarrow{\bigtriangleup B}q_A                                    \\
         \text{nessuna transizione} \hfill \text{altrimenti}
     \end{cases}
 \end{equation*}
-\begin{remark}
-    Con la notazione $p_A \xrightarrow{\rightarrow c} q_A$ indichiamo che esiste una transizione dallo stato p allo stato q con label $\rightarrow c$ nell'automa associato alla Goroutine A.
-\end{remark}
-In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possibili evoluzioni} della computazione parallela mentre l'operazione di sincronizzazione ci permette di \emph{filtrare} e \emph{unire} solo le evoluzioni che portano ad una interazione tra due Gouroutine sullo stesso canale. Queste tipo di interazioni, assieme a quelle di spawn, saranno le sole transizioni ammesse nell'automa finale dal momento che tutte le transizioni che non rispettano i casi definiti sopra vengono eliminate. Così facendo otteniamo in output dall'operazione di composizione un automa che rispetta la definizione \ref{def:Choreography_Automata_Ext}.\bigskip \\
+In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possibili evoluzioni} della computazione concorrente mentre l'operazione di sincronizzazione ci permette di \emph{filtrare} e \emph{unire} solo le evoluzioni che portano ad una interazione tra due Goroutine sullo stesso canale. Queste tipo di interazioni, assieme a quelle di spawn, saranno le sole transizioni ammesse nell'automa finale dal momento che tutte le transizioni che non rispettano i casi definiti sopra vengono eliminate. Così facendo otteniamo in output dall'operazione di composizione un automa che rispetta la definizione \ref{def:Choreography_Automata_Ext}.\bigskip \\
 Concludiamo questo capitolo con il Choreography Automaton ottenuto a partire dalle local views mostrate in figura \ref{fig:Extracted_Local_View} mediante l'algoritmo di composizione descritto in questa sezione.
 \begin{figure}[h!]
     \centering

@@ -13,7 +13,7 @@ Altre feature del linguaggio degne di nota sono: il package manager e l'ecosiste
 Go è stato utilizzato nello sviluppo di tecnologie molto famose e largamente utilizzate come Docker\cite{Docker} e Kubernetes\cite{Kubernetes} e attualmente viene regolarmente utilizzato da grandi aziende quali Google, MongoDB, Dropbox, Netflix, Uber e altri.
 
 \subsection{Costrutti di concorrenza}
-Come accennato sopra Go fornisce un approccio semplificato e built-in alla concorrenza e alla gestione della stessa, il linguaggio permette di avviare dei processi leggeri chiamati Goroutine e scambiare messaggi tra quest'ultimi tramite l'utilizzo di \emph{canali}, i quali permettono sia comunicazione \emph{sincrona} che \emph{asincrona}.\\
+Come accennato sopra Go fornisce un approccio semplificato e built-in alla concorrenza e alla gestione della stessa. Il linguaggio permette di avviare dei processi leggeri chiamati Goroutine e scambiare messaggi tra quest'ultimi tramite l'utilizzo di \emph{canali}, i quali permettono sia comunicazione \emph{sincrona} che \emph{asincrona}.\\
 Introduciamo brevemente i principali costrutti di concorrenza messi a disposizione dal linguaggio:
 \begin{itemize}
     \item \textbf{Canali}: Go fornisce un tipo di dato built-in \texttt{chan} su cui è possibile fare operazioni di \emph{send} e \emph{receive}, i canali possono essere \emph{buffered} e \emph{unbuffered}, i primi permettono una comunicazione asincrona (fino al riempimento del buffer) mentre i secondi permettono solo comunicazione sincrona.
@@ -22,9 +22,9 @@ Introduciamo brevemente i principali costrutti di concorrenza messi a disposizio
 \end{itemize}
 Oltre ai costrutti presentati sopra, la \emph{standard library} mette a disposizione altri tipi di dato e costrutti \emph{classici} come \emph{Mutex}, \emph{Semafori}, \emph{Monitor} che tuttavia non verranno trattati in questa tesi.
 \newpage % TODO Avoid forcefully break page
-\lstinputlisting[language=Go, caption=Esempio di utilizzo dei costrutti di concorrenza forniti da Go]{Snippets/GoConcurrency.go}
+\lstinputlisting[language=Go, label=lst:Go_Example, caption=Esempio di utilizzo dei costrutti di concorrenza forniti da Go]{Snippets/GoConcurrency.go}
 \bigskip
-Come possiamo vedere in questo esempio: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè, mentre le due nuove Goroutine inviano 10 messaggi ciascuna (con un timeout tra un invio e l'altro), la Goroutine \texttt{main} attende i vari messaggi tramite la \texttt{select} su entrambi i canali, questo significa che la Goroutine \texttt{main} eseguirà la prima operazione \emph{non bloccante} oppure il \texttt{default} branch se nessun canale ha un messaggio in coda. Il for loop terminerà solamente quando entrambi i canali saranno chiusi dalle rispettive Goroutine \texttt{worker} con l'apposita primitiva \texttt{close}.
+Come possiamo vedere nel listing \ref{lst:Go_Example}: l'esecuzione parte dalla Goroutine \texttt{main} che inizializza i canali \texttt{a} e \texttt{b} e li passa alle Goroutine \texttt{fuzzer}, dopodichè, mentre le due nuove Goroutine inviano 10 messaggi ciascuna (con un delay tra un invio e l'altro), la Goroutine \texttt{main} attende i vari messaggi tramite la \texttt{select} su entrambi i canali, questo significa che la Goroutine \texttt{main} eseguirà la prima operazione \emph{non bloccante} oppure il \texttt{default} branch se nessun canale ha un messaggio in coda. Il for loop terminerà solamente quando entrambi i canali saranno chiusi dalle rispettive Goroutine \texttt{worker} con l'apposita primitiva \texttt{close}.
 
 \section{Graphviz e DOT}
 Vista la necessità di \emph{rappresentare} in qualche modo il Choreography Automaton finale e gli eventuali risultati intermedi si è reso necessario l'utilizzo di un qualche tipo di \emph{meccanismo di serializzazione}. Fortunatamente considerando la somiglianza tra Finite State Automata e Grafi (i secondi sono una generalizzazione dei primi) abbiamo potuto riutilizzare tool e strumenti pensati \emph{principalmente} per quest'ultimi.\\
@@ -35,8 +35,8 @@ La scelta è ricaduta su DOT e Graphviz per alcuni motivi principali:
     \item Permette un utilizzo combinato con \emph{Corinne}\cite{Corinne},un tool grafico per la visualizzazione e manipolazione dei Choreography Automata
     \item Essendo Graphviz ormai uno standard \emph{de facto} sono presenti librerie e binding che ne permettono l'utilizzo con moltissimi linguaggi di programmazione, tra cui Go
 \end{itemize}
-Di seguito un mostriamo un esempio banale di Choreography Automaton definito attraverso il linguaggio DOT.
-\begin{lstlisting}[caption=Rappresentazione in DOT dell'automa in figura \ref{fig:ChoreographyAutomata_Example}]
+Nel listing \ref{lst:DOT_Example} mostriamo un esempio banale di Choreography Automaton definito attraverso il linguaggio DOT.
+\begin{lstlisting}[label=lst:DOT_Example, caption=Rappresentazione in DOT dell'automa in figura \ref{fig:ChoreographyAutomata_Example}]
     digraph DOT_Graph_Example {
         node [shape=circle, fontsize=20]
         edge [length=100, fontcolor=black]
@@ -46,5 +46,5 @@ Di seguito un mostriamo un esempio banale di Choreography Automaton definito att
         q2 -> q0[label="C->A:toc"];
     }
 \end{lstlisting}
-Il seguente esempio definisce un grafo direzionato con tre nodi (q0, q1, e q2) e altrettanti archi, rispettivamente da q0 a q1, da q1 a q2 e da q2 a q0 con le rispettive label. DOT fornisce anche la possibilità all'utente di definire prima tutti i nodi che fanno parte del grafo e poi tutti gli archi.\\
+Il seguente esempio definisce un grafo diretto con tre nodi (q0, q1, e q2) e altrettanti archi, rispettivamente da q0 a q1, da q1 a q2 e da q2 a q0 con le rispettive label. DOT fornisce anche la possibilità all'utente di definire prima tutti i nodi che fanno parte del grafo e poi tutti gli archi.\\
 Chiaramente i Choreography Automata generati da Choreia non saranno così semplici e immediati, ciononostante dovrebbe essere comunque possibile interagirvi e comprenderli.
