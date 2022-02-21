@@ -84,14 +84,14 @@ Vediamo ora l'algoritmo per l'estrazione delle local views. In questo caso l'esi
 Applicando l'algoritmo di sopra al codice sorgente del listing \ref{lst:DynamicAnalysis} otteniamo i seguenti automi rispettivamente per le Goroutine $main_0$, $worker_1$ e $worker_2$:
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
-        \node[state,initial] (A0) {$0$};
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=1, transform shape, baseline=0]
+        \node[state,initial,initial text=$\texttt{main}_0$] (A0) {$0$};
         \node[state] (A1) [right of=A0] {$1$};
         \node[state,accepting] (A2) [right of=A1] {$2$};
         \node[state] (A3) [right of=A2] {$3$};
-        \node[state,initial,accepting] (B0) [below of=A0] {$0$};
+        \node[state,initial,,initial text=$\texttt{worker}_1$,accepting] (B0) [below of=A0] {$0$};
         \node[state] (B1) [right of=B0] {$1$};
-        \node[state,initial,accepting] (C0) [right of=B1] {$0$};
+        \node[state,initial,,initial text=$\texttt{worker}_2$,accepting] (C0) [right of=B1] {$0$};
         \node[state] (C1) [right of=C0] {$1$};
         \draw
         (A0) edge node{$\bigtriangleup$ worker} (A1)
@@ -125,7 +125,7 @@ In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possi
 Concludiamo questo capitolo con il Choreography Automaton ottenuto a partire dalle local views mostrate in figura \ref{fig:Extracted_Local_View} mediante l'algoritmo di composizione descritto in questa sezione.
 \begin{figure}[h!]
     \centering
-    \begin{tikzpicture}[->,>=stealth',node distance=4.2cm,scale=1, transform shape, initial text=$ $,]
+    \begin{tikzpicture}[->,>=stealth',node distance=4.2cm,scale=1, transform shape,]
         \node[state, initial] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
         \node[state, accepting] (2) [right of=1] {$2$};

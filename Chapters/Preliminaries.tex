@@ -202,14 +202,14 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0, initial text=$ $,]
         % Automata 1
-        \node[state, initial] (0) {$0$};
+        \node[state, initial, initial text=$A$] (0) {$0$};
         \node[state] (1) [right of=0] {$1$};
         \node[state, accepting] (2) [right of=1] {$2$};
         % Automata 2
-        \node[state, initial, accepting] (3) [right of=2] {$0$};
+        \node[state, initial, , initial text=$B$, accepting] (3) [right of=2] {$0$};
         \node[state] (4) [right of=3] {$1$};
         % Product automata
-        \node[state, initial] (5) [below of=1, right of=0] {$0, 0$};
+        \node[state, initial, initial text=$A \times B$] (5) [below of=1, right of=0] {$0, 0$};
         \node[state] (6) [right of=5] {$1, 1$};
         \node[state, accepting] (7) [right of=6] {$2, 0$};
 
@@ -217,7 +217,7 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
         % Automata 1
         (0) edge node{$a$} (1)
         (1) edge node{$b$} (2)
-        (2) edge[loop right] node{$c$} (2)
+        (2) edge[loop below] node{$c$} (2)
         % Automata 2
         (3) edge[bend left, above] node{$a$} (4)
         (4) edge[bend left, below] node{$b$} (3)
@@ -301,13 +301,13 @@ Tuttavia, come possiamo vedere nella definizione sopra, questo automa intermedio
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.7cm,scale=1, transform shape]
-        \node[state,initial] (A0) {0};
+        \node[state,initial,initial text=$CA\downarrow_A$] (A0) {0};
         \node[state] (A1) [below of=A0] {1,2};
 
-        \node[state,initial] (B0) [right of=A0] {0,2};
+        \node[state,initial,initial text=$CA\downarrow_B$] (B0) [right of=A0] {0,2};
         \node[state] (B1) [below of=B0] {1};
 
-        \node[state,initial] (C0) [right of=B0] {0,1};
+        \node[state,initial,initial text=$CA\downarrow_C$] (C0) [right of=B0] {0,1};
         \node[state] (C1) [below of=C0] {2};
 
         \draw
@@ -346,14 +346,14 @@ Vediamo di seguito l'esempio di una composizione tra due automi:
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,>=stealth',node distance=3.5cm,scale=1, transform shape, initial text=$ $,]
-        \node[state, initial] (X0) {$0$};
+        \node[state, initial, initial text=$A$] (X0) {$0$};
         \node[state] (X1) [right of=X0] {$1$};
         \node[state] (X2) [right of=X1] {$2$};
 
-        \node[state, initial] (Y0) [right of=X2] {$0$};
+        \node[state, initial, initial text=$B$] (Y0) [right of=X2] {$0$};
         \node[state] (Y1) [right of=Y0] {$1$};
 
-        \node[state, initial] (Z0) [below of=X1] {$0$};
+        \node[state, initial, initial text=$\mathcal{S}(A \times B)$] (Z0) [below of=X1] {$0$};
         \node[state] (Z1) [right of=Z0] {$1$};
         \node[state] (Z2) [right of=Z1] {$2$};
 

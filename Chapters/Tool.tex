@@ -89,9 +89,9 @@ Si noti che l'automa della Goroutine $\texttt{worker}_1$ non presenta una transi
 \begin{figure}[h!]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,scale=1, transform shape, baseline=0]
-        \node[state,initial] (main0) {$0$};
+        \node[state,initial, initial text=$\texttt{main}_0$] (main0) {$0$};
         \node[state, accepting] (main1)[right of=main0] {$1$};
-        \node[state, initial, accepting] (worker0)[right=10cm] {$0$};
+        \node[state, initial, initial text=$\texttt{worker}_1$, accepting] (worker0)[right=9.5cm] {$0$};
         \draw
         (main0) edge node{$\bigtriangleup worker_1$} (main1)
         (main1) edge [loop right] node{$\leftarrow channel$} (main1)
@@ -118,7 +118,7 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $
 \begin{figure}[h!]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=0.9, transform shape, baseline=0]
-        \node[state, initial] (main0) {$0$};
+        \node[state, initial, initial text=$\texttt{main}_0$] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
         \node[state] (main3)[right of=main2, above=0.3cm] {$3$};
@@ -126,10 +126,10 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{responder}_1$, $
         \node[state] (main5)[right of=main2, below=0.3cm] {$5$};
         \node[state, accepting] (main6)[right of=main5] {$6$};
 
-        \node[state, initial] (responder10)[below of=main0, right=1cm] {$0$};
+        \node[state, initial, initial where=above, initial text=$\texttt{responder}_1$] (responder10)[below of=main0, right=0.7cm] {$0$};
         \node[state] (responder11)[right of=responder10] {$1$};
 
-        \node[state, initial] (responder20)[right of=responder11] {$0$};
+        \node[state, initial, initial where=above, initial text=$\texttt{responder}_2$] (responder20)[right of=responder11] {$0$};
         \node[state] (responder21)[right of=responder20] {$1$};
         \draw
         (main0) edge node{$\bigtriangleup responder_1$} (main1)
@@ -174,16 +174,16 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{dummy}_1$, $\tex
 \begin{figure}[t!]
     \centering
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm,scale=0.9, transform shape, baseline=0]
-        \node[state,initial] (main0) {$0$};
+        \node[state,initial, initial text=$\texttt{main}_0$] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
         \node[state] (main3)[above=2cm, right of=main2] {$3$};
         \node[state, accepting] (main4)[below=2cm, right of=main3] {$4$};
 
-        \node[state,initial] (dummy10)[below=2cm] {$0$};
+        \node[state,initial, initial text=$\texttt{dummy}_1$] (dummy10)[below=2cm] {$0$};
         \node[state, accepting] (dummy11)[right of=dummy10] {$1$};
 
-        \node[state,initial] (dummy20)[right of=dummy11] {$0$};
+        \node[state,initial,initial text=$\texttt{dummy}_2$] (dummy20)[right of=dummy11] {$0$};
         \node[state, accepting] (dummy21)[right of=dummy20] {$1$};
         \draw
         (main0) edge node{$\bigtriangleup dummy_1$} (main1)
@@ -200,18 +200,18 @@ Gli automi associati alle Goroutine $\texttt{main}_0$, $\texttt{dummy}_1$, $\tex
 Nel Choreography Automaton generato possiamo vedere che la struttura dello stesso è del tutto simile a quella dell'automa associato alla Goroutine $\texttt{main}_0$. Questo è dovuto al fatto che almeno per questi esempi il sistema concorrente è particolarmente semplice e \emph{gerarchico}: il \texttt{main} è la Goroutine dominante mentre le altre Goroutine sono piuttosto banali e immediate, dunque non aggiungono complessità al Choreography Automaton finale. Questi esempi \emph{semplici} sono dovuti alla difficoltà di rappresentazione degli automi e all'incremento nella complessità degli stessi al crescere della complessità del sistema concorrente, tuttavia Choreia è in grado di riconoscere e gestire sistemi concorrenti più complessi ed intricati che sarebbero difficili da riportare graficamente in questa tesi.
 \begin{figure}[h!]
     \centering
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4cm,scale=0.8, transform shape, baseline=0]
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.3cm,scale=0.75, transform shape, baseline=0]
         \node[state,initial] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
-        \node[state] (main3)[above=3cm, right of=main2] {$3$};
-        \node[state, accepting] (main4)[below=3cm, right=15cm] {$4$};
+        \node[state] (main3)[above=2cm, right of=main2] {$3$};
+        \node[state, accepting] (main4)[below=3cm, right=17cm] {$4$};
         \draw
-        (main0) edge node{$\bigtriangleup dummy_1$} (main1)
-        (main1) edge node{$\bigtriangleup dummy_2$} (main2)
+        (main0) edge node{$main_0 \bigtriangleup dummy_1$} (main1)
+        (main1) edge node{$main_0 \bigtriangleup dummy_2$} (main2)
         (main2) edge node{$main_0 \rightarrow dummy_2$} (main4)
-        (main2) edge node[above, rotate=38]{$main_0 \rightarrow dummy_1$} (main3)
-        (main3) edge node[above, rotate=-40]{$main_0 \rightarrow dummy_2$} (main4);
+        (main2) edge node[above, rotate=26]{$main_0 \rightarrow dummy_1$} (main3)
+        (main3) edge node[above, rotate=-23]{$main_0 \rightarrow dummy_2$} (main4);
     \end{tikzpicture}
 \end{figure}
 
@@ -223,13 +223,13 @@ In questo esempio la Goroutine \texttt{main}, dopo aver creato il canale \texttt
 Gli automi associati alle Goroutine $\texttt{main}_0$ e $\texttt{dummy}_1$ sono i seguenti. Si noti che la funzione \texttt{f} subisce l'\emph{inlining} durante la fase di estrazione delle local views, difatti possiamo vedere che alcune delle transizioni nel primo automa sono proprio derivanti dall'esecuzione della funzione \texttt{f}.
 \begin{figure}[h!]
     \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.2cm,scale=1, transform shape, baseline=0]
-        \node[state,initial] (main0) {$0$};
+        \node[state,initial,initial text=$\texttt{main}_0$] (main0) {$0$};
         \node[state] (main1)[right of=main0] {$1$};
         \node[state] (main2)[right of=main1] {$2$};
         \node[state] (main3)[right of=main2] {$3$};
         \node[state, accepting] (main4)[right of=main3] {$4$};
 
-        \node[state,initial] (dummy0)[below of=main1, right=1cm] {$0$};
+        \node[state,initial,initial text=$\texttt{dummy}_1$] (dummy0)[below of=main1, right=1cm] {$0$};
         \node[state, accepting] (dummy1)[right of=dummy0] {$1$};
         \draw
         (main0) edge node{$\rightarrow channel$} (main1)
@@ -245,15 +245,16 @@ Inoltre, anche ammettendo che fosse implementato quanto detto sopra, a questo pu
 Un'ulteriore problematica legata a questo esempio invece è dovuta al fatto che il nostro algoritmo genererebbe due transizioni da 2 a 3 rispettivamente con label $main \rightarrow main$ e $dummy \rightarrow main$ questo perchè l'algoritmo di composizione attuale non tiene in considerazione che i canali sono gestiti con un politica di \emph{First In First Out (FIFO)} e dunque in questo caso l'unica sincronizzazione possibile tra gli stati 2 e 3 è quella tra main e sè stesso.\bigskip \\
 Il Choreography Automaton corretto è il seguente:
 \begin{figure}[h!]
-    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4cm,scale=1, transform shape, baseline=0]
+    \centering
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=4.5cm,scale=0.95,transform shape, baseline=0]
         \node[state,initial] (0) {$0$};
         \node[state] (1)[right of=0] {$1$};
         \node[state] (2)[right of=1] {$2$};
         \node[state, accepting] (3)[right of=2] {$3$};
         \draw
-        (0) edge node{$\bigtriangleup dummy$} (1)
-        (1) edge node{$main \rightarrow main$} (2)
-        (2) edge node{$dummy \rightarrow main$} (3)
+        (0) edge node{$main_0 \bigtriangleup dummy_1$} (1)
+        (1) edge node{$main_0 \rightarrow main_0$} (2)
+        (2) edge node{$dummy_1 \rightarrow main_0$} (3)
         ;
     \end{tikzpicture}
 \end{figure}
