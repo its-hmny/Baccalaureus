@@ -4,7 +4,7 @@
 L'obiettivo del progetto, ad alto livello, è quello di prendere del codice sorgente \emph{Go} ed estrarre il Choreography Automaton che esprima come le Goroutine interagiscono tra loro durante l'esecuzione del programma, in modo da tale da fornire allo sviluppatore uno strumento per \emph{visualizzare} il sistema concorrente.\\
 Concettualmente possiamo dividere questo obiettivo in 4 fasi:
 \begin{enumerate}
-    \item \textbf{Validazione e parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstact Syntax Tree} (AST).
+    \item \textbf{Validazione e parsing}: Il codice sorgente viene validato e trasformato in un \emph{Abstract Syntax Tree} (AST).
     \item \textbf{Estrazione dei metadati}: Viene navigato l'AST estraendo tutte le informazioni necessarie (i metadati relativi a funzioni, canali, ecc) e salvandole in strutture dati appropriate.
     \item \textbf{Derivazione delle local views}: Partendo dai metadati si derivano le local views delle varie Goroutine (gli attori del sistema concorrente).
     \item \textbf{Generazione della coreografia}: Dalle local view ottenute, è necessario generare un singolo Choreography Automata che rappresenti l'intera coreografia del sistema (la view globale).
@@ -122,6 +122,7 @@ Adattiamo dunque la nozione di composizione ai Goroutine FSA, anzichè ai Choreo
     \end{cases}
 \end{equation*}
 In questo modo l'automa prodotto ci permette di considerare tutti le \emph{possibili evoluzioni} della computazione concorrente mentre l'operazione di sincronizzazione ci permette di \emph{filtrare} e \emph{unire} solo le evoluzioni che portano ad una interazione tra due Goroutine sullo stesso canale. Queste tipo di interazioni, assieme a quelle di spawn, saranno le sole transizioni ammesse nell'automa finale dal momento che tutte le transizioni che non rispettano i casi definiti sopra vengono eliminate. Così facendo otteniamo in output dall'operazione di composizione un automa che rispetta la definizione \ref{def:Choreography_Automata_Ext}.\bigskip \\
+Si noti che se una Goroutine non interagisce con il resto della coreografia, per esempio comunicando su un canale non utilizzato dagli altri attori, allora essa non comparirà all'interno della coreografia finale. Questa è una conseguenza derivante dal fatto che l'operazione di composizione \emph{filtra} le possibili evoluzioni della composizione mantenendo solo quelle che presentano l'interazione/i tra due Goroutine e dunque una Goroutine che non interagisce con il resto della coreografia viene \emph{scartata} durante questa \emph{trasformazione}.\bigskip \\
 Concludiamo questo capitolo con il Choreography Automaton ottenuto a partire dalle local views mostrate in figura \ref{fig:Extracted_Local_View} mediante l'algoritmo di composizione descritto in questa sezione.
 \begin{figure}[h!]
     \centering
