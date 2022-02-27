@@ -232,10 +232,10 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
 Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{coreografia} e \emph{Choreography Automata}\cite{Choreography_Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece un'\emph{istanza} possibile per questo modello. In questo caso noi stiamo scegliendo di rappresentare le coreografie tramite degli Automi a Stati Finiti ma questo non esclude altre possibili realizzazioni.\\
 Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
-    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} "as a whole" specificando anche come questi interagiscono tra loro.
+    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} ``as a whole" specificando anche come questi interagiscono tra loro.
     \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
-La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop "nested" ed "entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop ``nested" ed ``entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
 Un esempio di Choreography Automaton è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender} $\rightarrow$ \emph{receiver} : \emph{message}.
 \begin{figure}[ht]
     \centering
@@ -266,7 +266,7 @@ In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in part
 \end{remark}
 
 \subsection{CFSM e Local Views}
-Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un'operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}\cite{CFSM}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo "A B ? m" o "A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
+Ora che abbiamo una definizione formale dei Choreography Automata, possiamo concentrarci sull'estrapolazione delle varie view locali a partire dallo stesso. Ricordiamo che le view locali descrivono il comportamento di un singolo partecipante all'interno della coreografia e che sono ottenute attraverso un'operazione di \emph{proiezione} applicata all'intera coreografia (la view globale). Prima di definire però questa operazione di proiezione serve introdurre il concetto di \emph{Communicating Finite-State Machine (CFSM)}\cite{CFSM}. Come il nome suggerisce questo è sempre un modello basato su automi a stati finiti usato specificatamente per la descrizione delle local views. La principale differenza rispetto ai Choreography Automata sta nel fatto che le label sono \emph{direzionali}, ovvero possono essere del tipo ``A B ? m" o ``A B ! m" per indicare che A riceve (rispettivamente invia) un messaggio m a B.
 
 \begin{definition}[Communicating Finite-State Machine] \label{def:CommunicatingFiniteStateMachine}
     Una Communicating Finite State Machine (CFSM) è un FSA $C$ con insieme di labels: \bigskip \\
@@ -274,7 +274,7 @@ Ora che abbiamo una definizione formale dei Choreography Automata, possiamo conc
     \\ \\
     dove $\mathcal{P}$ e $\mathcal{M}$ sono definiti come in precedenza.
 \end{definition}
-Dunque il \emph{soggetto} di un'azione in input "A B ? m" è B, l'opposto vale per l'azione di output "A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A.\\
+Dunque il \emph{soggetto} di un'azione in input ``A B ? m" è B, l'opposto vale per l'azione di output ``A B ! m", indichiamo quindi con $M_a$ la CFSM che ha solo transizioni con soggetto A.\\
 Ora che abbiamo introdotto tutti i concetti necessari possiamo definire di seguito l'operazione di \emph{Proiezione} su Choreography Automata.
 Definiamo brevemente la notazione $s_1 \xrightarrow{a} s_{2}$ come abbreviazione per indicare che esiste una transizione da $s_1$ a $s_2$ con label $a$, formalmente $\exists a \in \mathcal{L}_{act}, s_1, s_2 \in \mathcal{S}. \delta(s_1, a) = s_2$.
 
