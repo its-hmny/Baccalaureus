@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func dummy(channel chan int) {
+func bar(channel chan int) {
 	channel <- rand.Int() // Send some random message
 	close(channel)        // Closes the channel before returning
 }
@@ -15,8 +15,8 @@ func main() {
 	A, B := make(chan int), make(chan int)
 
 	// Starts the "dummy" processes
-	go dummy(A)
-	go dummy(B)
+	go bar(A)
+	go bar(B)
 
 	// Sleeps in order to let the other Goroutine send messages
 	time.Sleep(5 * time.Second)

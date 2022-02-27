@@ -2,13 +2,13 @@ package main
 
 import "fmt"
 
-func dummy(channel chan string) {
+func baz(channel chan string) {
 	channel <- "Hello from dummy" //Sends a message on the shared channel
 }
 
 func f(channel chan string) {
 	channel <- "Hello from nested" // Send a message on channel
-	go dummy(channel)              // Spawns a new "dummy" Goroutine
+	go baz(channel)                // Spawns a new "dummy" Goroutine
 	fmt.Println(<-channel)         // Receives the message sent by itself
 }
 

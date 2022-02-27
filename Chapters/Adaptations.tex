@@ -134,8 +134,8 @@ Concludiamo questo capitolo con il Choreography Automaton ottenuto a partire dal
         \draw
         (0) edge node[above]{$main \bigtriangleup worker_1$} (1)
         (1) edge node[above]{$main \bigtriangleup worker_2$} (2)
-        (2) edge[bend left] node[above,align=center]{$main \rightarrow worker_1$\\$main \rightarrow worker_2$} (3)
-        (3) edge[bend left] node[below,align=center]{$worker_1 \rightarrow main$\\$worker_2 \rightarrow main$} (2);
+        (2) edge[bend left] node[above,align=center]{$main \rightarrow worker_1 : int$\\$main \rightarrow worker_2 : int$} (3)
+        (3) edge[bend left] node[below,align=center]{$worker_1 \rightarrow main : payload$\\$worker_2 \rightarrow main : payload$} (2);
     \end{tikzpicture}
     \caption{Il Choreography Automaton associato al codice sorgente del listing \ref{lst:DynamicAnalysis}}
 \end{figure}

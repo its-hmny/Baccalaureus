@@ -2,7 +2,7 @@ package main
 
 import "math/rand"
 
-func responder(channel chan int) {
+func foo(channel chan int) {
 	// ... do something else
 	channel <- rand.Int()
 	// ... do something else
@@ -13,8 +13,8 @@ func main() {
 	chanA, chanB := make(chan int), make(chan int)
 
 	// Starts the "responder" processes
-	go responder(chanA)
-	go responder(chanB)
+	go foo(chanA)
+	go foo(chanB)
 
 	// Select from both channels
 	select {
