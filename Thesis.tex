@@ -131,7 +131,7 @@
 
 % Abstract
 \begin{abstract}
-    Le coreografie sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli ultimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento che permetta di capire in maniera immediata la \emph{coreografia} dei partecipanti all'interno del sistema e come questi interagiscono tra loro. Partendo dai singoli partecipanti, e le loro \emph{viste locali}, è possibile ricomporre in maniera bottom-up l'intera coreografia (o \emph{vista globale}) del sistema.
+    Le coreografie sono un paradigma emergente per la descrizione dei sistemi concorrenti che sta prendendo piede negli ultimi anni. Lo scopo principale è quello di fornire al programmatore uno strumento che permetta di capire in maniera immediata il \emph{comportamento} dei partecipanti all'interno del sistema e come questi interagiscono tra loro. Partendo dai singoli partecipanti, e le loro \emph{viste locali}, è possibile ricomporre in maniera bottom-up l'intera coreografia (o \emph{vista globale}) del sistema.
     Un ulteriore vantaggio delle coreografie è che, quando rispettano alcune proprietà definite, danno garanzie sull'assenza di tipici problemi di concorrenza quali Deadlocks, Liveness e Race Conditions.
     Esistono vari modelli formali di coreografie, questa tesi tratta nello specifico i \emph{Choreography Automata}, basati su \emph{Finite State Automata} (FSA).
     In questa tesi viene presentato Choreia: un tool di analisi statica che, partendo da un codice sorgente Go, ricava il Choreography Automaton del sistema concorrente in maniera bottom-up.

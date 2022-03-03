@@ -132,7 +132,7 @@ L'automa presentato di seguito riconosce sempre la RegEx $(a|b)^*ba$ ed è del t
 \subsection{Minimizzazione}
 Nell'ambito della teoria degli automi esistono una serie di operazioni e trasformazioni che è possibile effettuare, per esempio la composizione di più automi, tuttavia nel nostro caso poniamo particolare riguardo alla minimizzazione. Capita spesso infatti che un automa abbia un numero di stati maggiore del necessario e che alcuni di questi stati siano equivalenti tra loro (e dunque duplicati). Attraverso la minimizzazione è possibile \emph{fondere} insieme questi stati tra loro ottenendo un automa più snello (in numero di stati e transizioni) e più facile da comprendere. Si noti che questo problema degli stati duplicati non sorge solo dalla progettazione umana ma può anche essere un \emph{side effect} di algoritmi come quello di costruzione per sottoinsiemi mostrato sopra.\\
 L'algoritmo più conosciuto per minimizzare un automa è detto \emph{Algoritmo di Riempimento a Scala}\cite{Linguaggi_di_Prorgammazione} e, di seguito, vedremo il suo funzionamento. Occorre fare un'importante premessa prima di introdurre l'algoritmo, il funzionamento dello stesso è legato al fatto che la funzione di transizione $\delta$ sia definita su ogni $\alpha \in \mathcal{L}$, la letteratura distingue gli automi \emph{incompleti}, che non verificano questa condizione, da quelli \emph{completi}.\\
-Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} $\mathcal{E}$ (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(\mathcal{E}, \alpha) = \mathcal{E}$). Il nome di stato pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
+Negli automi incompleti la funzione di transizione è parziale e dunque sorgono dei problemi nel momento in cui cerchiamo di minimizzarli, una soluzione molto semplice è quella di usare uno \emph{stato di errore} $E$ (detto anche \emph{stato pozzo}). Essenzialmente si va a completare la funzione di transizione nei casi mancanti (non definiti) con una transizione verso questo stato di errore, allo stesso tempo tutte le transizioni uscenti da questo stato di errore tornano sullo stesso ($\forall_{ \alpha \in \mathcal{L}} \delta(E, \alpha) = E$). Il nome di stato pozzo deriva infatti dal fatto che una volta raggiunto non è possibile uscirne.\\
 L'intuizione alla base dell'algoritmo di riempimento a scala è la seguente, valutiamo le singole coppie $(p, q)$ con $p, q \in \mathcal{S}$ e cerchiamo un $\alpha \in \mathcal{L}$ tale che lo stato p si comporti diversamente rispetto allo stato q, questo ci permette di dimostrare che p e q non sono equivalenti e dunque non hanno ragione di essere fusi insieme. Alla fine dell'esecuzione tutte le coppie di stati che non saranno distinte tra loro indicheranno degli stati equivalenti. L'algoritmo di Riempimento della Tabella a Scala è definito come segue:
 \begin{algorithm}
     \caption{Riempimento della Tabella a Scala} \label{alg:Minimization_Algorithm}
@@ -160,7 +160,7 @@ Di seguito troviamo la versione \emph{minimizzata} dell'automa in figura \ref{fi
         (C) edge[loop above] node{$b$} (C)
         (C) edge[bend left, above] node{$a$} (D)
         (D) edge[bend left, above] node{$b$} (C)
-        (D) edge[bend left, below] node{$b$} (A);
+        (D) edge[bend left, below] node{$a$} (AB);
     \end{tikzpicture}
     \space \space \space
     \parbox{5cm}{
@@ -232,10 +232,10 @@ Per concludere mostriamo un esempio di prodotto tra due automi: i primi due auto
 Passiamo ora alla definizione dei \emph{Choreography Automata} (CA); iniziamo diversificando la nozione di \emph{coreografia} e \emph{Choreography Automata}\cite{Choreography_Automata} il primo è un modello logico che permette di specificare le interazioni tra più attori (siano essi processi, programmi, etc.) all'interno di un sistema (concorrente nel nostro caso) mentre i secondi sono invece un'\emph{istanza} possibile per questo modello. In questo caso noi stiamo scegliendo di rappresentare le coreografie tramite degli Automi a Stati Finiti ma questo non esclude altre possibili realizzazioni.\\
 Per prima cosa ricordiamo che le coreografie hanno due tipologie di \emph{view} possibili:
 \begin{itemize}
-    \item \textbf{Global View}: Che descrive il comportamento dei \emph{partecipanti} ``as a whole" specificando anche come questi interagiscono tra loro.
-    \item \textbf{Local View}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
+    \item \textbf{Global view}: Che descrive il comportamento dei \emph{partecipanti} ``as a whole" specificando anche come questi interagiscono tra loro.
+    \item \textbf{Local view}: Che descrive il comportamento di un singolo partecipante in \emph{isolamento} rispetto agli altri.
 \end{itemize}
-La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop ``nested" ed ``entangled" e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
+La \emph{scelta implementativa} di utilizzare gli FSA è dovuta al fatto che gli stessi, oltre ad essere semplici ma espressivi, permettono di utilizzare loop \emph{nested} ed \emph{entangled} e permettono di sfruttare in maniera molto conveniente i risultati e le nozioni descritti in precedenza. I Choreography Automata sono dunque dei \emph{casi particolari} di automi a stati finiti in cui le transizioni specificano le interazioni tra i vari partecipanti della coreografia.\\
 Un esempio di Choreography Automaton è visibile nella figura sottostante, la sintassi delle label sulle transizioni è la seguente: \emph{sender} $\rightarrow$ \emph{receiver} : \emph{message}.
 \begin{figure}[ht]
     \centering
@@ -251,7 +251,7 @@ Un esempio di Choreography Automaton è visibile nella figura sottostante, la si
     \caption{Un esempio di Choreography Automaton}
     \label{fig:ChoreographyAutomata_Example}
 \end{figure}\\
-In questo caso sono rappresentate le interazioni tra gli attori A,B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
+In questo caso sono rappresentate le interazioni tra gli attori A, B e C, in particolare: A inizia la comunicazione mandando un messaggio \emph{tic} a B, B (dopo aver ricevuto tale messaggio) invia a sua volta \emph{count} a C ed infine C risponde ad A con messaggio \emph{toc}.
 
 \begin{definition}[Choreography Automata]
     \label{def:Choreography_Automata}

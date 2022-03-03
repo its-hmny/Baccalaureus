@@ -3,9 +3,9 @@ package main
 import "math/rand"
 
 func foo(channel chan int) {
-	// ... do something else
+	// ... do something
 	channel <- rand.Int()
-	// ... do something else
+	// ... do something
 }
 
 func main() {
@@ -20,9 +20,9 @@ func main() {
 	select {
 	case <-chanA:
 		<-chanB
-		// ... do something else
+		// ... do something
 	case <-chanB:
 		<-chanA
-		// ... do something else
+		// ... do something
 	}
 }
